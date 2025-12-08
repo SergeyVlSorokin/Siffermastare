@@ -32,12 +32,17 @@ _This file contains critical rules and patterns that AI agents must follow when 
 
 ### Architecture & Lifecycle
 - **Lifecycle Runtime KTX:** 2.8.4
+- **Lifecycle ViewModel Compose:** 2.8.4
 - **Core KTX:** 1.13.1
 
+### Navigation & Async
+- **Navigation Compose:** 2.8.0
+- **Coroutines Android:** 1.7.3
+- **Coroutines Core:** 1.7.3
+
 ### Planned Dependencies (Not Yet Added)
-- **Room:** 2.6.1 (for local persistence)
-- **Hilt:** 2.50 (for dependency injection)
-- **Coroutines & Flow:** 1.7.3 (for async operations)
+- **Room:** 2.6.1 (for local persistence - add before Epic 2)
+- **Hilt:** 2.50 (for dependency injection - add before Epic 2)
 
 ### Testing
 - **JUnit:** 4.13.2
