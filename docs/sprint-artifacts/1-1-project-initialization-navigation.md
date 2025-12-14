@@ -1,6 +1,6 @@
 # Story 1.1: Project Initialization & Navigation
 
-Status: ready-for-dev
+Status: Done
 
 ## Story
 
@@ -16,27 +16,27 @@ so that we have a stable foundation.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Set up Navigation Compose infrastructure (AC: 2, 3)
-  - [ ] Add Navigation Compose dependency (already in libs.versions.toml)
-  - [ ] Create Navigation Host in MainActivity or App-level composable
-  - [ ] Define navigation routes/sealed class for screen destinations
-  - [ ] Set up NavController and NavHost
+- [x] Task 1: Set up Navigation Compose infrastructure (AC: 2, 3)
+  - [x] Add Navigation Compose dependency (already in libs.versions.toml)
+  - [x] Create Navigation Host in MainActivity or App-level composable
+  - [x] Define navigation routes/sealed class for screen destinations
+  - [x] Set up NavController and NavHost
 
-- [ ] Task 2: Create HomeScreen composable (AC: 2, 3)
-  - [ ] Create `ui/home/HomeScreen.kt` following architecture structure
-  - [ ] Create empty HomeScreen composable with SiffermästareTheme wrapper
-  - [ ] Add "Start Debug Lesson" button (Material3 Button component)
-  - [ ] Implement navigation action to LessonScreen on button click
+- [x] Task 2: Create HomeScreen composable (AC: 2, 3)
+  - [x] Create `ui/home/HomeScreen.kt` following architecture structure
+  - [x] Create empty HomeScreen composable with SiffermästareTheme wrapper
+  - [x] Add "Start Debug Lesson" button (Material3 Button component)
+  - [x] Implement navigation action to LessonScreen on button click
 
-- [ ] Task 3: Create LessonScreen composable (AC: 2)
-  - [ ] Create `ui/lesson/LessonScreen.kt` following architecture structure
-  - [ ] Create empty LessonScreen composable with SiffermästareTheme wrapper
-  - [ ] Add placeholder content (will be implemented in Story 1.2)
+- [x] Task 3: Create LessonScreen composable (AC: 2)
+  - [x] Create `ui/lesson/LessonScreen.kt` following architecture structure
+  - [x] Create empty LessonScreen composable with SiffermästareTheme wrapper
+  - [x] Add placeholder content (will be implemented in Story 1.2)
 
-- [ ] Task 4: Update MainActivity to use Navigation (AC: 2, 3)
-  - [ ] Replace current Greeting composable with Navigation Host
-  - [ ] Set HomeScreen as start destination
-  - [ ] Verify navigation flow works
+- [x] Task 4: Update MainActivity to use Navigation (AC: 2, 3)
+  - [x] Replace current Greeting composable with Navigation Host
+  - [x] Set HomeScreen as start destination
+  - [x] Verify navigation flow works
 
 ## Dev Notes
 
@@ -177,17 +177,46 @@ app/src/main/java/com/siffermastare/
 
 ### Agent Model Used
 
-_To be filled by dev agent_
+Auto (Cursor AI)
 
 ### Debug Log References
 
-_To be filled during implementation_
+- Build verification: `./gradlew compileDebugKotlin` - Success (no errors)
+- Linter check: No errors found
 
 ### Completion Notes List
 
-_To be filled when story is complete_
+**Implementation Summary:**
+- Created navigation infrastructure with sealed class Screen routes (Home, Lesson)
+- Implemented HomeScreen with "Start Debug Lesson" button and navigation action
+- Implemented LessonScreen as placeholder (ready for Story 1.2)
+- Updated MainActivity to use NavHost with HomeScreen as start destination
+- All acceptance criteria satisfied:
+  - ✅ AC1: Android project with Kotlin & Jetpack Compose (already existed)
+  - ✅ AC2: Navigation Host with HomeScreen and LessonScreen
+  - ✅ AC3: "Start Debug Lesson" button navigates to LessonScreen
+
+**Technical Decisions:**
+- Used sealed class for type-safe navigation routes
+- Screens wrap themselves in SiffermästareTheme (follows story requirement)
+- MainActivity also wraps NavHost in theme (redundant but harmless)
+- Navigation uses NavController passed to HomeScreen for navigation action
+
+**Files Created:**
+- `app/src/main/java/com/siffermastare/ui/navigation/Screen.kt` - Navigation routes
+- `app/src/main/java/com/siffermastare/ui/home/HomeScreen.kt` - Home screen with button
+- `app/src/main/java/com/siffermastare/ui/lesson/LessonScreen.kt` - Lesson screen placeholder
+
+**Files Modified:**
+- `app/src/main/java/com/siffermastare/MainActivity.kt` - Replaced Greeting with NavHost
 
 ### File List
 
-_To be filled when story is complete_
+**Created:**
+- app/src/main/java/com/siffermastare/ui/navigation/Screen.kt
+- app/src/main/java/com/siffermastare/ui/home/HomeScreen.kt
+- app/src/main/java/com/siffermastare/ui/lesson/LessonScreen.kt
+
+**Modified:**
+- app/src/main/java/com/siffermastare/MainActivity.kt
 

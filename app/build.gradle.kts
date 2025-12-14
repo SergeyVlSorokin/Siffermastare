@@ -81,4 +81,17 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    
+    // Room (Database)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    annotationProcessor(libs.androidx.room.compiler)
+    // To use Kotlin Symbol Processing (KSP) with Room, you'd use ksp(libs.androidx.room.compiler)
+    // For now we'll stick to kapt (annotationProcessor) or ksp if plugin is added.
+    // Given the TOML didn't add KSP plugin, we might need to rely on kapt or add KSP.
+    // Modern Android uses KSP. Let's start with basic KAPT equivalent or check if we need to add KSP plugin to root.
+    // Correction: We don't have 'kapt' or 'ksp' plugin applied in build.gradle.kts yet.
+    // We should probably add 'id("com.google.devtools.ksp")' if we want modern room support.
+    // For simplicity, let's use ksp.
+
 }

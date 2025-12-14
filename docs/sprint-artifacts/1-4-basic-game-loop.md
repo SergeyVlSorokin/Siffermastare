@@ -1,6 +1,6 @@
 # Story 1.4: Basic Game Loop (0-9)
 
-Status: ready-for-dev
+Status: Done
 
 ## Story
 
@@ -17,37 +17,37 @@ so that I know if I understood correctly.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Implement answer comparison logic (AC: 1)
-  - [ ] Create comparison function: `compareAnswer(userInput: String, targetNumber: Int): Boolean`
-  - [ ] Handle string to int conversion for comparison
-  - [ ] Compare `currentInput` (String) with `targetNumber` (Int)
-  - [ ] Handle edge cases: empty input, non-numeric input
+- [x] Task 1: Implement answer comparison logic (AC: 1)
+  - [x] Create comparison function: `compareAnswer(userInput: String, targetNumber: Int): Boolean`
+  - [x] Handle string to int conversion for comparison
+  - [x] Compare `currentInput` (String) with `targetNumber` (Int)
+  - [x] Handle edge cases: empty input, non-numeric input
 
-- [ ] Task 2: Implement Check button action (AC: 2)
-  - [ ] Connect Check button in LessonScreen to validation logic
-  - [ ] Get current `targetNumber` (from Story 1.2 - random 0-9)
-  - [ ] Compare `currentInput` with `targetNumber`
-  - [ ] Handle both match and no-match cases
+- [x] Task 2: Implement Check button action (AC: 2)
+  - [x] Connect Check button in LessonScreen to validation logic
+  - [x] Get current `targetNumber` (from Story 1.2 - random 0-9)
+  - [x] Compare `currentInput` with `targetNumber`
+  - [x] Handle both match and no-match cases
 
-- [ ] Task 3: Correct answer flow (AC: 2)
-  - [ ] Show "Correct" Toast message
-  - [ ] Clear `currentInput` state (reset to empty string)
-  - [ ] Generate new random digit 0-9
-  - [ ] Convert new digit to Swedish text
-  - [ ] Call TTS `speak()` with new Swedish number
-  - [ ] Update `targetNumber` state
+- [x] Task 3: Correct answer flow (AC: 2)
+  - [x] Show "Correct" Toast message
+  - [x] Clear `currentInput` state (reset to empty string)
+  - [x] Generate new random digit 0-9
+  - [x] Convert new digit to Swedish text
+  - [x] Call TTS `speak()` with new Swedish number
+  - [x] Update `targetNumber` state
 
-- [ ] Task 4: Incorrect answer flow (AC: 2)
-  - [ ] Show "Try Again" Toast message
-  - [ ] Keep `currentInput` unchanged (user can edit)
-  - [ ] Keep same `targetNumber` (user stays on question)
-  - [ ] Allow user to backspace and try again
+- [x] Task 4: Incorrect answer flow (AC: 2)
+  - [x] Show "Try Again" Toast message
+  - [x] Keep `currentInput` unchanged (user can edit)
+  - [x] Keep same `targetNumber` (user stays on question)
+  - [x] Allow user to backspace and try again
 
-- [ ] Task 5: State management updates
-  - [ ] Add `targetNumber: Int` state to LessonScreen
-  - [ ] Initialize `targetNumber` on screen load (random 0-9)
-  - [ ] Update `targetNumber` when correct answer is submitted
-  - [ ] Ensure state updates trigger UI recomposition
+- [x] Task 5: State management updates
+  - [x] Add `targetNumber: Int` state to LessonScreen
+  - [x] Initialize `targetNumber` on screen load (random 0-9)
+  - [x] Update `targetNumber` when correct answer is submitted
+  - [x] Ensure state updates trigger UI recomposition
 
 ## Dev Notes
 

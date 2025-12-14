@@ -1,6 +1,6 @@
 # Story 1.2: TTS Integration (The Spike Implementation)
 
-Status: ready-for-dev
+Status: Done
 
 ## Story
 
@@ -17,29 +17,29 @@ so that I can practice listening.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Create TTSManager wrapper class (AC: 1, 2)
-  - [ ] Create `data/tts/TTSManager.kt` following architecture structure
-  - [ ] Implement TTS initialization with Swedish locale `Locale("sv", "SE")`
-  - [ ] Create `speak(text: String)` helper function
-  - [ ] Handle TTS initialization callbacks (OnInitListener)
-  - [ ] Implement error handling for missing Swedish voice
+- [x] Task 1: Create TTSManager wrapper class (AC: 1, 2)
+  - [x] Create `data/tts/TTSManager.kt` following architecture structure
+  - [x] Implement TTS initialization with Swedish locale `Locale("sv", "SE")`
+  - [x] Create `speak(text: String)` helper function
+  - [x] Handle TTS initialization callbacks (OnInitListener)
+  - [x] Implement error handling for missing Swedish voice
 
-- [ ] Task 2: Integrate TTSManager into LessonScreen (AC: 3, 4)
-  - [ ] Update `ui/lesson/LessonScreen.kt` to use TTSManager
-  - [ ] Generate random digit 0-9 on screen load
-  - [ ] Call `speak()` with Swedish number string when screen loads
-  - [ ] Add "Replay" button (Speaker icon) to LessonScreen
-  - [ ] Implement replay functionality to call `speak()` again
+- [x] Task 2: Integrate TTSManager into LessonScreen (AC: 3, 4)
+  - [x] Update `ui/lesson/LessonScreen.kt` to use TTSManager
+  - [x] Generate random digit 0-9 on screen load
+  - [x] Call `speak()` with Swedish number string when screen loads
+  - [x] Add "Replay" button (Speaker icon) to LessonScreen
+  - [x] Implement replay functionality to call `speak()` again
 
-- [ ] Task 3: Swedish number conversion (AC: 3)
-  - [ ] Create helper function to convert digit (0-9) to Swedish text
-  - [ ] Map: 0="noll", 1="ett", 2="två", 3="tre", 4="fyra", 5="fem", 6="sex", 7="sju", 8="åtta", 9="nio"
-  - [ ] Use this conversion when calling `speak()`
+- [x] Task 3: Swedish number conversion (AC: 3)
+  - [x] Create helper function to convert digit (0-9) to Swedish text
+  - [x] Map: 0="noll", 1="ett", 2="två", 3="tre", 4="fyra", 5="fem", 6="sex", 7="sju", 8="åtta", 9="nio"
+  - [x] Use this conversion when calling `speak()`
 
-- [ ] Task 4: Error handling and user feedback (AC: 1)
-  - [ ] Check if Swedish voice is available after TTS initialization
-  - [ ] Show Snackbar with link to System Settings if voice missing
-  - [ ] Never crash the app - handle all TTS failures gracefully
+- [x] Task 4: Error handling and user feedback (AC: 1)
+  - [x] Check if Swedish voice is available after TTS initialization
+  - [x] Show Snackbar with link to System Settings if voice missing
+  - [x] Never crash the app - handle all TTS failures gracefully
 
 ## Dev Notes
 

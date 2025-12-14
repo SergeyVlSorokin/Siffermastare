@@ -1,6 +1,6 @@
 # Story 1.3: Custom Numpad UI
 
-Status: ready-for-dev
+Status: Done
 
 ## Story
 
@@ -18,44 +18,44 @@ so that I can enter my answer quickly without a system keyboard.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Create Numpad Composable component (AC: 1, 2)
-  - [ ] Create `ui/components/Numpad.kt` following architecture structure
-  - [ ] Implement grid layout using Compose `LazyVerticalGrid` or `Row`/`Column` with `GridCells`
-  - [ ] Create digit buttons 1-3 (top row), 4-6 (middle row), 7-9 (third row)
-  - [ ] Create digit button 0 (centered bottom row)
-  - [ ] Use Material3 Button components with appropriate styling
+- [x] Task 1: Create Numpad Composable component (AC: 1, 2)
+  - [x] Create `ui/components/Numpad.kt` following architecture structure
+  - [x] Implement grid layout using Compose `LazyVerticalGrid` or `Row`/`Column` with `GridCells`
+  - [x] Create digit buttons 1-3 (top row), 4-6 (middle row), 7-9 (third row)
+  - [x] Create digit button 0 (centered bottom row)
+  - [x] Use Material3 Button components with appropriate styling
 
-- [ ] Task 2: Implement Backspace button (AC: 3)
-  - [ ] Add "Backspace" button to numpad layout
-  - [ ] Use appropriate icon (Material Icons: `Icons.Default.Backspace` or text "⌫")
-  - [ ] Implement callback to remove last character from input
-  - [ ] Handle edge case: Backspace on empty input (no-op)
+- [x] Task 2: Implement Backspace button (AC: 3)
+  - [x] Add "Backspace" button to numpad layout
+  - [x] Use appropriate icon (Material Icons: `Icons.Default.Backspace` or text "⌫")
+  - [x] Implement callback to remove last character from input
+  - [x] Handle edge case: Backspace on empty input (no-op)
 
-- [ ] Task 3: Implement Check button (AC: 4)
-  - [ ] Add "Check" button as primary action button
-  - [ ] Use Material3 Button with primary styling (accent color)
-  - [ ] Position prominently (likely bottom center or right side)
-  - [ ] Implement callback for check action (validation will be in Story 1.4)
+- [x] Task 3: Implement Check button (AC: 4)
+  - [x] Add "Check" button as primary action button
+  - [x] Use Material3 Button with primary styling (accent color)
+  - [x] Position prominently (likely bottom center or right side)
+  - [x] Implement callback for check action (validation will be in Story 1.4)
 
-- [ ] Task 4: State management integration (AC: 5)
-  - [ ] Accept `currentInput: String` as parameter (state from parent)
-  - [ ] Accept callback `onDigitClick: (Int) -> Unit` for digit buttons
-  - [ ] Accept callback `onBackspaceClick: () -> Unit` for backspace
-  - [ ] Accept callback `onCheckClick: () -> Unit` for check button
-  - [ ] Update parent state through callbacks (no local state in Numpad)
+- [x] Task 4: State management integration (AC: 5)
+  - [x] Accept `currentInput: String` as parameter (state from parent)
+  - [x] Accept callback `onDigitClick: (Int) -> Unit` for digit buttons
+  - [x] Accept callback `onBackspaceClick: () -> Unit` for backspace
+  - [x] Accept callback `onCheckClick: () -> Unit` for check button
+  - [x] Update parent state through callbacks (no local state in Numpad)
 
-- [ ] Task 5: Integrate Numpad into LessonScreen (AC: 5)
-  - [ ] Add `currentInput` state variable to LessonScreen
-  - [ ] Add Numpad component to LessonScreen layout
-  - [ ] Connect digit button clicks to update `currentInput`
-  - [ ] Connect Backspace to remove last character
-  - [ ] Connect Check button (action will be implemented in Story 1.4)
+- [x] Task 5: Integrate Numpad into LessonScreen (AC: 5)
+  - [x] Add `currentInput` state variable to LessonScreen
+  - [x] Add Numpad component to LessonScreen layout
+  - [x] Connect digit button clicks to update `currentInput`
+  - [x] Connect Backspace to remove last character
+  - [x] Connect Check button (action will be implemented in Story 1.4)
 
-- [ ] Task 6: Styling and UX polish (AC: 1, 2)
-  - [ ] Apply Swedish Minimalist aesthetic (clean lines, ample whitespace)
-  - [ ] Use Swedish flag colors as accents (Blue #006AA7, Yellow #FECC00)
-  - [ ] Ensure buttons are large and easy to tap (accessibility)
-  - [ ] High contrast text for readability (WCAG AA compliance)
+- [x] Task 6: Styling and UX polish (AC: 1, 2)
+  - [x] Apply Swedish Minimalist aesthetic (clean lines, ample whitespace)
+  - [x] Use Swedish flag colors as accents (Blue #006AA7, Yellow #FECC00)
+  - [x] Ensure buttons are large and easy to tap (accessibility)
+  - [x] High contrast text for readability (WCAG AA compliance)
 
 ## Dev Notes
 

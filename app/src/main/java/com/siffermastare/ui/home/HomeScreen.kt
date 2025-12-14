@@ -14,26 +14,32 @@ import androidx.navigation.NavController
 import com.siffermastare.ui.navigation.Screen
 import com.siffermastare.ui.theme.SiffermästareTheme
 
+/**
+ * Home screen composable.
+ *
+ * Displays the main landing page with navigation options to lesson modes.
+ *
+ * @param navController The [NavController] used for navigating between screens.
+ * @param modifier Modifier to be applied to the layout.
+ */
 @Composable
 fun HomeScreen(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    SiffermästareTheme {
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Button(
-                onClick = {
-                    navController.navigate(Screen.Lesson.route)
-                }
-            ) {
-                Text("Start Debug Lesson")
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Button(
+            onClick = {
+                navController.navigate(Screen.Lesson.route)
             }
+        ) {
+            Text("Start Debug Lesson")
         }
     }
 }
