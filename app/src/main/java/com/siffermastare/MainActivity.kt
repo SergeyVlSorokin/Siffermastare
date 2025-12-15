@@ -7,12 +7,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.siffermastare.ui.home.HomeScreen
 import com.siffermastare.ui.lesson.LessonScreen
+import com.siffermastare.ui.summary.SummaryScreen
 import com.siffermastare.ui.navigation.Screen
 import com.siffermastare.ui.theme.SiffermästareTheme
 
@@ -35,7 +37,23 @@ class MainActivity : ComponentActivity() {
                             HomeScreen(navController = navController)
                         }
                         composable(Screen.Lesson.route) {
-                            LessonScreen()
+                            LessonScreen(
+                                onLessonComplete = {
+                                    navController.navigate(Screen.Summary.route) {
+                                        // Pop up to Home so back button from Summary goes to Home, 
+                                        // and Lesson state is cleared (ViewModel cleared)
+                                        popUpTo(Screen.Home.route) { inclusive = false }
+                                    }
+                                }
+                            )
+                        }
+                        composable(Screen.Summary.route) {
+                            SummaryScreen(
+                                onNavigateHome = {
+                                    // Pop back to Home
+                                    navController.popBackStack(Screen.Home.route, false)
+                                }
+                            )
                         }
                     }
                 }

@@ -28,6 +28,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.res.stringResource
+import com.siffermastare.R
 import com.siffermastare.data.tts.TTSManager
 import com.siffermastare.ui.components.Numpad
 import kotlinx.coroutines.launch
@@ -37,17 +41,20 @@ import kotlin.random.Random
  * Lesson screen composable.
  *
  * Displays a number to listen to, an input field for the answer, and a custom Numpad.
- * Implements the basic game loop: Listen -> Type -> Check -> Feedback.
+ * Implements the basic game loop via LessonViewModel.
  *
+ * @param onLessonComplete Callback when lesson is finished.
  * @param modifier Modifier to be applied to the layout.
+ * @param viewModel ViewModel for business logic.
  */
 @Composable
 fun LessonScreen(
-    modifier: Modifier = Modifier
+    onLessonComplete: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: LessonViewModel = viewModel()
 ) {
     val context = LocalContext.current
-    var targetNumber by remember { mutableIntStateOf(generateRandomDigit()) }
-    var currentInput by remember { mutableStateOf("") }
+    val uiState by viewModel.uiState.collectAsState()
     
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -63,9 +70,27 @@ fun LessonScreen(
     }
 
     // Speak on initial load/change of targetNumber
-    LaunchedEffect(targetNumber) {
-        val swedishText = digitToSwedish(targetNumber)
+    // We observe the state from ViewModel now
+    LaunchedEffect(uiState.targetNumber) {
+        val swedishText = digitToSwedish(uiState.targetNumber)
         ttsManager.speak(swedishText)
+    }
+
+    // Handle Feedback Messages
+    LaunchedEffect(uiState.feedbackMessage) {
+        uiState.feedbackMessage?.let { message ->
+            scope.launch {
+                snackbarHostState.showSnackbar(message)
+            }
+            viewModel.messageShown()
+        }
+    }
+
+    // Handle Lesson Completion
+    LaunchedEffect(uiState.isLessonComplete) {
+        if (uiState.isLessonComplete) {
+            onLessonComplete()
+        }
     }
 
     Scaffold(
@@ -82,9 +107,18 @@ fun LessonScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(16.dp)
             ) {
+                // Progress Indicator
+                Text(
+                    text = stringResource(R.string.lesson_progress_format, uiState.questionCount, uiState.totalQuestions),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                
+                Spacer(modifier = Modifier.height(8.dp))
+
                 // Instructions / Status
                 Text(
-                    text = "Listen and type the number",
+                    text = stringResource(R.string.lesson_instructions),
                     style = MaterialTheme.typography.titleMedium
                 )
 
@@ -93,7 +127,7 @@ fun LessonScreen(
                 // Replay Button (Large and Central)
                 IconButton(
                     onClick = {
-                        val swedishText = digitToSwedish(targetNumber)
+                        val swedishText = digitToSwedish(uiState.targetNumber)
                         ttsManager.speak(swedishText)
                     },
                     modifier = Modifier.padding(16.dp)
@@ -104,13 +138,13 @@ fun LessonScreen(
                         modifier = Modifier.fillMaxSize()
                     )
                 }
-                Text("Replay", style = MaterialTheme.typography.labelSmall)
+                Text(stringResource(R.string.lesson_replay), style = MaterialTheme.typography.labelSmall)
 
                 Spacer(modifier = Modifier.height(32.dp))
 
                 // User Input Display
                 Text(
-                    text = if (currentInput.isEmpty()) "_" else currentInput,
+                    text = if (uiState.currentInput.isEmpty()) "_" else uiState.currentInput,
                     style = MaterialTheme.typography.displayLarge,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -120,35 +154,13 @@ fun LessonScreen(
                 // Custom Numpad
                 Numpad(
                     onDigitClick = { digit ->
-                        currentInput += digit.toString()
+                        viewModel.onDigitClick(digit)
                     },
                     onBackspaceClick = {
-                        if (currentInput.isNotEmpty()) {
-                            currentInput = currentInput.dropLast(1)
-                        }
+                        viewModel.onBackspaceClick()
                     },
                     onCheckClick = {
-                        if (currentInput.isEmpty()) {
-                            scope.launch {
-                                snackbarHostState.showSnackbar("Please enter a number")
-                            }
-                            return@Numpad
-                        }
-
-                        if (compareAnswer(currentInput, targetNumber)) {
-                            // Correct Answer Flow
-                            scope.launch {
-                                snackbarHostState.showSnackbar("Correct!")
-                            }
-                            currentInput = ""
-                            targetNumber = generateRandomDigit() // Triggers LaunchedEffect to speak
-                        } else {
-                            // Incorrect Answer Flow
-                            scope.launch {
-                                snackbarHostState.showSnackbar("Try Again")
-                            }
-                            // Keep input and targetNumber state
-                        }
+                        viewModel.onCheckClick()
                     }
                 )
             }
@@ -156,10 +168,8 @@ fun LessonScreen(
     }
 }
 
-private fun generateRandomDigit(): Int {
-    return Random.nextInt(0, 10)
-}
-
+// Keeping this helper private here or could move to a util class if more widely used.
+// Since logic is mainly in VM now, the conversion to text is still UI concern for TTS.
 private fun digitToSwedish(digit: Int): String {
     return when (digit) {
         0 -> "noll"
@@ -174,9 +184,4 @@ private fun digitToSwedish(digit: Int): String {
         9 -> "nio"
         else -> "fel"
     }
-}
-
-private fun compareAnswer(userInput: String, targetNumber: Int): Boolean {
-    val userNumber = userInput.toIntOrNull()
-    return userNumber == targetNumber
 }

@@ -11,5 +11,8 @@ sealed class Screen(val route: String) {
     
     /** The lesson screen destination. */
     object Lesson : Screen("lesson")
+
+    /** The summary screen destination. */
+    object Summary : Screen("summary")
 }
 

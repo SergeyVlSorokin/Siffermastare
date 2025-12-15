@@ -11,6 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.compose.ui.res.stringResource
+import com.siffermastare.R
 import com.siffermastare.ui.navigation.Screen
 import com.siffermastare.ui.theme.SiffermästareTheme
 
@@ -39,7 +41,7 @@ fun HomeScreen(
                 navController.navigate(Screen.Lesson.route)
             }
         ) {
-            Text("Start Debug Lesson")
+            Text(stringResource(R.string.start_debug_lesson))
         }
     }
 }
