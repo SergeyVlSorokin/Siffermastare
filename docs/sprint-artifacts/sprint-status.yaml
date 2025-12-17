@@ -15,7 +15,7 @@ development_status:
   epic-2: in-progress
   2-1-the-10-question-lesson-structure: done
   2-2-visual-feedback-states-the-check-flow: done
-  2-3-room-database-setup: ready-for-dev
+  2-3-room-database-setup: done
   2-4-metric-calculation-saving: ready-for-dev
   epic-2-retrospective: optional
 

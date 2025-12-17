@@ -34,6 +34,9 @@ import com.siffermastare.R
 import com.siffermastare.data.tts.TTSManager
 import com.siffermastare.ui.components.Numpad
 import kotlinx.coroutines.launch
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.siffermastare.SiffermastareApplication
+import com.siffermastare.ui.lesson.LessonViewModelFactory
 
 /**
  * Lesson screen composable.
@@ -45,9 +48,15 @@ import kotlinx.coroutines.launch
 fun LessonScreen(
     onLessonComplete: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: LessonViewModel = viewModel()
 ) {
     val context = LocalContext.current
+    val application = context.applicationContext as SiffermastareApplication
+    val repository = application.lessonRepository
+    
+    val viewModel: LessonViewModel = viewModel(
+        factory = LessonViewModelFactory(repository)
+    )
+
     val uiState by viewModel.uiState.collectAsState()
     
     // Animation State

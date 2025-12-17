@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.random.Random
+import com.siffermastare.data.repository.LessonRepository
 
 enum class AnswerState {
     NEUTRAL,
@@ -26,7 +27,8 @@ data class LessonUiState(
     val replayTrigger: Int = 0 // Increments to trigger replay
 )
 
-class LessonViewModel : ViewModel() {
+
+class LessonViewModel(private val repository: LessonRepository) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LessonUiState())
     val uiState: StateFlow<LessonUiState> = _uiState.asStateFlow()

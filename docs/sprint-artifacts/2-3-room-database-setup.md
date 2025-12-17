@@ -1,6 +1,6 @@
 # Story 2.3: Room Database Setup
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 

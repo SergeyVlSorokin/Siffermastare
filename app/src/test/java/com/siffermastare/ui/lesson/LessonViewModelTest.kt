@@ -7,7 +7,6 @@ import org.junit.Test
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
-
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -18,12 +17,21 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 
+import com.siffermastare.data.database.LessonResult
+import com.siffermastare.data.repository.LessonRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class LessonViewModelTest {
+
+    private lateinit var viewModel: LessonViewModel
+    private val fakeRepository = FakeLessonRepository()
 
     @Before
     fun setup() {
         Dispatchers.setMain(UnconfinedTestDispatcher())
+        viewModel = LessonViewModel(fakeRepository)
     }
 
     @After
@@ -33,7 +41,6 @@ class LessonViewModelTest {
 
     @Test
     fun initialState_isQuestionOne_Neutral() = runTest {
-        val viewModel = LessonViewModel()
         val state = viewModel.uiState.first()
 
         assertEquals(1, state.questionCount)
@@ -43,7 +50,6 @@ class LessonViewModelTest {
 
     @Test
     fun correctAnswer_setsCorrectState_thenNeutral() = runTest {
-        val viewModel = LessonViewModel()
         val initialState = viewModel.uiState.first()
         val target = initialState.targetNumber
 
@@ -64,7 +70,6 @@ class LessonViewModelTest {
 
     @Test
     fun incorrectAnswer_setsIncorrectState_thenReplays() = runTest {
-        val viewModel = LessonViewModel()
         val initialState = viewModel.uiState.first()
         val target = initialState.targetNumber
         
@@ -80,5 +85,15 @@ class LessonViewModelTest {
         assertEquals(1, finalState.questionCount) // Count stays same
         assertEquals("", finalState.currentInput) // Input cleared
         assertTrue(finalState.replayTrigger > 0) // Replay triggered
+    }
+}
+
+class FakeLessonRepository : LessonRepository {
+    override suspend fun insertLessonResult(result: LessonResult) {
+        // No-op for now
+    }
+
+    override fun getAllLessonResults(): Flow<List<LessonResult>> {
+        return flowOf(emptyList())
     }
 }
