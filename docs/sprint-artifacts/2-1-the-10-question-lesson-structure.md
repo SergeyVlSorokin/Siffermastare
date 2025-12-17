@@ -1,6 +1,6 @@
 # Story 2.1: The 10-Question Lesson Structure
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 

@@ -78,7 +78,9 @@ graph TD
     Input -->|Tap Check| Validate{Is Answer Correct?}
     
     Validate -->|No| ErrorAnim[Trigger Shake Animation & Red Color]
-    ErrorAnim --> Input
+    ErrorAnim --> DelayErr[Wait 500ms]
+    DelayErr --> Clear[Clear Input & Replay Audio]
+    Clear --> Input
     
     Validate -->|Yes| SuccessAnim[Trigger Green Color]
     SuccessAnim --> Delay[Wait 500ms]
@@ -116,7 +118,7 @@ graph TD
       * **Replay Button:** Centered. Large (64dp+). Floating Action Button (FAB) style or prominent Circular Icon.
       * **Answer Display:** Below Replay. Large Text (H1). Displays current input (e.g., "4 5 \_").
           * *State (Empty):* Shows underline placeholder "\_".
-          * *State (Error):* Text turns Red, shakes.
+          * *State (Error):* Text turns Red, shakes. After animation, input clears and audio replays.
           * *State (Correct):* Text turns Green, checkmark icon appears next to it.
 
   * **Input Area (50% Height) - The "Control Center":**

@@ -1,11 +1,20 @@
 package com.siffermastare.ui.lesson
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlin.random.Random
+
+enum class AnswerState {
+    NEUTRAL,
+    CORRECT,
+    INCORRECT
+}
 
 data class LessonUiState(
     val targetNumber: Int = 0,
@@ -13,7 +22,8 @@ data class LessonUiState(
     val questionCount: Int = 1,
     val totalQuestions: Int = 10,
     val isLessonComplete: Boolean = false,
-    val feedbackMessage: String? = null
+    val answerState: AnswerState = AnswerState.NEUTRAL,
+    val replayTrigger: Int = 0 // Increments to trigger replay
 )
 
 class LessonViewModel : ViewModel() {
@@ -30,10 +40,15 @@ class LessonViewModel : ViewModel() {
     }
 
     fun onDigitClick(digit: Int) {
+        // Only allow typing if we are in NEUTRAL state (not currently showing feedback animation)
+        if (_uiState.value.answerState != AnswerState.NEUTRAL) return
+
         _uiState.update { it.copy(currentInput = it.currentInput + digit) }
     }
 
     fun onBackspaceClick() {
+        if (_uiState.value.answerState != AnswerState.NEUTRAL) return
+
         _uiState.update {
             if (it.currentInput.isNotEmpty()) {
                 it.copy(currentInput = it.currentInput.dropLast(1))
@@ -44,41 +59,58 @@ class LessonViewModel : ViewModel() {
     }
 
     fun onCheckClick() {
+        // Prevent multiple checks
+        if (_uiState.value.answerState != AnswerState.NEUTRAL) return
+
         val currentState = _uiState.value
         if (currentState.currentInput.isEmpty()) {
-            _uiState.update { it.copy(feedbackMessage = "Please enter a number") }
             return
         }
 
         val userNumber = currentState.currentInput.toIntOrNull()
-        if (userNumber == currentState.targetNumber) {
-            // Correct
-            if (currentState.questionCount >= currentState.totalQuestions) {
-                // Lesson Complete
-                _uiState.update {
-                    it.copy(
-                        feedbackMessage = "Correct!",
-                        isLessonComplete = true
-                    )
+        
+        viewModelScope.launch {
+            if (userNumber == currentState.targetNumber) {
+                // Correct Flow
+                _uiState.update { it.copy(answerState = AnswerState.CORRECT) }
+                
+                delay(FEEDBACK_DELAY) // Wait for visual cue
+                
+                if (currentState.questionCount >= currentState.totalQuestions) {
+                    _uiState.update {
+                        it.copy(
+                            isLessonComplete = true,
+                            answerState = AnswerState.NEUTRAL // Reset for next time if any
+                        )
+                    }
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            answerState = AnswerState.NEUTRAL,
+                            currentInput = "",
+                            questionCount = it.questionCount + 1,
+                            targetNumber = Random.nextInt(0, 10)
+                        )
+                    }
                 }
             } else {
-                // Next Question
+                // Incorrect Flow
+                _uiState.update { it.copy(answerState = AnswerState.INCORRECT) }
+                
+                delay(FEEDBACK_DELAY) // Wait for shake
+                
                 _uiState.update {
                     it.copy(
-                        feedbackMessage = "Correct!",
+                        answerState = AnswerState.NEUTRAL,
                         currentInput = "",
-                        questionCount = it.questionCount + 1,
-                        targetNumber = Random.nextInt(0, 10) // Directly generating here to avoid double update if I reused generateNewNumber logic blindly
+                        replayTrigger = it.replayTrigger + 1
                     )
                 }
             }
-        } else {
-            // Incorrect
-            _uiState.update { it.copy(feedbackMessage = "Try Again") }
         }
     }
 
-    fun messageShown() {
-        _uiState.update { it.copy(feedbackMessage = null) }
+    companion object {
+        const val FEEDBACK_DELAY = 500L
     }
 }

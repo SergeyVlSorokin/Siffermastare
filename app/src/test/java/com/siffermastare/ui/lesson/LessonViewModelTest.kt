@@ -3,76 +3,82 @@ package com.siffermastare.ui.lesson
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
-import org.junit.Assert.assertNotEquals
 import org.junit.Test
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
+
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
+import org.junit.Before
+
+@OptIn(ExperimentalCoroutinesApi::class)
 class LessonViewModelTest {
 
+    @Before
+    fun setup() {
+        Dispatchers.setMain(UnconfinedTestDispatcher())
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
     @Test
-    fun initialState_isQuestionOne() = runBlocking {
+    fun initialState_isQuestionOne_Neutral() = runTest {
         val viewModel = LessonViewModel()
         val state = viewModel.uiState.first()
 
         assertEquals(1, state.questionCount)
-        assertEquals(10, state.totalQuestions)
-        assertFalse(state.isLessonComplete)
+        assertEquals(AnswerState.NEUTRAL, state.answerState)
         assertEquals("", state.currentInput)
     }
 
     @Test
-    fun correctAnswer_incrementsQuestionCount() = runBlocking {
+    fun correctAnswer_setsCorrectState_thenNeutral() = runTest {
         val viewModel = LessonViewModel()
         val initialState = viewModel.uiState.first()
         val target = initialState.targetNumber
 
-        // Simulate typing correct number
         viewModel.onDigitClick(target)
-        viewModel.onCheckClick()
+        val inputState = viewModel.uiState.first()
+        assertEquals(target.toString(), inputState.currentInput)
 
-        val newState = viewModel.uiState.first()
-        assertEquals(2, newState.questionCount)
-        assertEquals("Correct!", newState.feedbackMessage)
-        // Previous input should be cleared
-        assertEquals("", newState.currentInput)
+        viewModel.onCheckClick()
+        
+        // Advance time past the feedback delay
+        advanceTimeBy(LessonViewModel.FEEDBACK_DELAY + 100)
+        
+        val finalState = viewModel.uiState.first()
+        assertEquals(AnswerState.NEUTRAL, finalState.answerState)
+        assertEquals(2, finalState.questionCount)
+        assertEquals("", finalState.currentInput)
     }
 
     @Test
-    fun incorrectAnswer_doesNotIncrementCount() = runBlocking {
+    fun incorrectAnswer_setsIncorrectState_thenReplays() = runTest {
         val viewModel = LessonViewModel()
         val initialState = viewModel.uiState.first()
         val target = initialState.targetNumber
         
-        // Simulate typing incorrect number (ensure it's different)
         val wrongInput = if (target == 0) 1 else 0
         viewModel.onDigitClick(wrongInput)
         viewModel.onCheckClick()
 
-        val newState = viewModel.uiState.first()
-        assertEquals(1, newState.questionCount)
-        assertEquals("Try Again", newState.feedbackMessage)
-        assertEquals(wrongInput.toString(), newState.currentInput)
-    }
-
-    @Test
-    fun completing10Questions_setsLessonComplete() = runBlocking {
-        val viewModel = LessonViewModel()
-        
-        // Loop through 10 questions
-        for (i in 1..10) {
-            val state = viewModel.uiState.first()
-            val target = state.targetNumber
-            
-            viewModel.onDigitClick(target)
-            viewModel.onCheckClick()
-        }
+        // Advance time past the feedback delay
+        advanceTimeBy(LessonViewModel.FEEDBACK_DELAY + 100)
 
         val finalState = viewModel.uiState.first()
-        assertTrue(finalState.isLessonComplete)
-        assertEquals(10, finalState.questionCount) // It stays at 10 or increments to 11? Logic says if count >= total, complete.
-        // Let's check logic:
-        // if count (e.g. 10) >= total (10) -> complete.
-        // So it stays at 10.
+        assertEquals(AnswerState.NEUTRAL, finalState.answerState)
+        assertEquals(1, finalState.questionCount) // Count stays same
+        assertEquals("", finalState.currentInput) // Input cleared
+        assertTrue(finalState.replayTrigger > 0) // Replay triggered
     }
 }

@@ -13,8 +13,8 @@ development_status:
   epic-1-retrospective: optional
 
   epic-2: in-progress
-  2-1-the-10-question-lesson-structure: ready-for-dev
-  2-2-visual-feedback-states-the-check-flow: ready-for-dev
+  2-1-the-10-question-lesson-structure: done
+  2-2-visual-feedback-states-the-check-flow: done
   2-3-room-database-setup: ready-for-dev
   2-4-metric-calculation-saving: ready-for-dev
   epic-2-retrospective: optional

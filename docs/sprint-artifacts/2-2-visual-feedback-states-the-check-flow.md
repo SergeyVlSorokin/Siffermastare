@@ -1,6 +1,6 @@
 # Story 2.2: Visual Feedback States (The "Check" Flow)
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
