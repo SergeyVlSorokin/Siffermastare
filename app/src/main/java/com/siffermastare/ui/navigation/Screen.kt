@@ -13,6 +13,8 @@ sealed class Screen(val route: String) {
     object Lesson : Screen("lesson")
 
     /** The summary screen destination. */
-    object Summary : Screen("summary")
+    object Summary : Screen("summary/{accuracy}/{avgSpeed}") {
+        fun createRoute(accuracy: Float, avgSpeed: Long) = "summary/$accuracy/$avgSpeed"
+    }
 }
 

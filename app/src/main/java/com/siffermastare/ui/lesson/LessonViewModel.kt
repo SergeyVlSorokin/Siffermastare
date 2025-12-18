@@ -28,10 +28,20 @@ data class LessonUiState(
 )
 
 
+
 class LessonViewModel(private val repository: LessonRepository) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LessonUiState())
     val uiState: StateFlow<LessonUiState> = _uiState.asStateFlow()
+
+    // Metric Tracking
+    private var startTime: Long = 0L
+    private var totalTimeMs: Long = 0L
+    private var totalAttempts: Int = 0
+
+    // Final Stats
+    private var finalAccuracy: Float = 0f
+    private var finalAvgSpeed: Long = 0L
 
     init {
         generateNewNumber()
@@ -39,12 +49,11 @@ class LessonViewModel(private val repository: LessonRepository) : ViewModel() {
 
     private fun generateNewNumber() {
         _uiState.update { it.copy(targetNumber = Random.nextInt(0, 10)) }
+        startTime = System.currentTimeMillis() // Start timer for this question
     }
 
     fun onDigitClick(digit: Int) {
-        // Only allow typing if we are in NEUTRAL state (not currently showing feedback animation)
         if (_uiState.value.answerState != AnswerState.NEUTRAL) return
-
         _uiState.update { it.copy(currentInput = it.currentInput + digit) }
     }
 
@@ -61,30 +70,27 @@ class LessonViewModel(private val repository: LessonRepository) : ViewModel() {
     }
 
     fun onCheckClick() {
-        // Prevent multiple checks
         if (_uiState.value.answerState != AnswerState.NEUTRAL) return
 
         val currentState = _uiState.value
-        if (currentState.currentInput.isEmpty()) {
-            return
-        }
+        if (currentState.currentInput.isEmpty()) return
 
         val userNumber = currentState.currentInput.toIntOrNull()
         
+        // Count attempt
+        totalAttempts++
+        
         viewModelScope.launch {
             if (userNumber == currentState.targetNumber) {
-                // Correct Flow
+                // Correct Logic
+                val endTime = System.currentTimeMillis()
+                totalTimeMs += (endTime - startTime)
+                
                 _uiState.update { it.copy(answerState = AnswerState.CORRECT) }
-                
-                delay(FEEDBACK_DELAY) // Wait for visual cue
-                
+                delay(FEEDBACK_DELAY)
+
                 if (currentState.questionCount >= currentState.totalQuestions) {
-                    _uiState.update {
-                        it.copy(
-                            isLessonComplete = true,
-                            answerState = AnswerState.NEUTRAL // Reset for next time if any
-                        )
-                    }
+                    calculateAndSaveResults()
                 } else {
                     _uiState.update {
                         it.copy(
@@ -94,12 +100,12 @@ class LessonViewModel(private val repository: LessonRepository) : ViewModel() {
                             targetNumber = Random.nextInt(0, 10)
                         )
                     }
+                    startTime = System.currentTimeMillis() // Reset timer for next question
                 }
             } else {
-                // Incorrect Flow
+                // Incorrect Logic
                 _uiState.update { it.copy(answerState = AnswerState.INCORRECT) }
-                
-                delay(FEEDBACK_DELAY) // Wait for shake
+                delay(FEEDBACK_DELAY)
                 
                 _uiState.update {
                     it.copy(
@@ -111,6 +117,43 @@ class LessonViewModel(private val repository: LessonRepository) : ViewModel() {
             }
         }
     }
+
+    private suspend fun calculateAndSaveResults() {
+        val totalQuestions = _uiState.value.totalQuestions
+        
+        // Calculate Metrics
+        finalAccuracy = if (totalAttempts > 0) {
+            (totalQuestions.toFloat() / totalAttempts.toFloat()) * 100f
+        } else {
+            0f
+        }
+        
+        finalAvgSpeed = if (totalQuestions > 0) {
+            totalTimeMs / totalQuestions
+        } else {
+            0L
+        }
+
+        // Save to DB
+        // TODO: Import LessonResult properly. Assuming it's available or need import.
+        val result = com.siffermastare.data.database.LessonResult(
+            accuracy = finalAccuracy,
+            averageSpeed = finalAvgSpeed,
+            lessonType = "0-10"
+        )
+        repository.insertLessonResult(result)
+
+        // Complete Lesson
+        _uiState.update {
+            it.copy(
+                isLessonComplete = true,
+                answerState = AnswerState.NEUTRAL
+            )
+        }
+    }
+    
+    // Expose generated stats for the View
+    fun getFinalStats(): Pair<Float, Long> = Pair(finalAccuracy, finalAvgSpeed)
 
     companion object {
         const val FEEDBACK_DELAY = 500L

@@ -46,7 +46,7 @@ import com.siffermastare.ui.lesson.LessonViewModelFactory
  */
 @Composable
 fun LessonScreen(
-    onLessonComplete: () -> Unit,
+    onLessonComplete: (Float, Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -117,7 +117,8 @@ fun LessonScreen(
     // Handle Lesson Completion
     LaunchedEffect(uiState.isLessonComplete) {
         if (uiState.isLessonComplete) {
-            onLessonComplete()
+            val (accuracy, avgSpeed) = viewModel.getFinalStats()
+            onLessonComplete(accuracy, avgSpeed)
         }
     }
 

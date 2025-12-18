@@ -38,8 +38,8 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(Screen.Lesson.route) {
                             LessonScreen(
-                                onLessonComplete = {
-                                    navController.navigate(Screen.Summary.route) {
+                                onLessonComplete = { accuracy, avgSpeed ->
+                                    navController.navigate(Screen.Summary.createRoute(accuracy, avgSpeed)) {
                                         // Pop up to Home so back button from Summary goes to Home, 
                                         // and Lesson state is cleared (ViewModel cleared)
                                         popUpTo(Screen.Home.route) { inclusive = false }
@@ -47,8 +47,19 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
-                        composable(Screen.Summary.route) {
+                        composable(
+                            route = Screen.Summary.route,
+                            arguments = listOf(
+                                androidx.navigation.navArgument("accuracy") { type = androidx.navigation.NavType.FloatType },
+                                androidx.navigation.navArgument("avgSpeed") { type = androidx.navigation.NavType.LongType }
+                            )
+                        ) { backStackEntry ->
+                            val accuracy = backStackEntry.arguments?.getFloat("accuracy") ?: 0f
+                            val avgSpeed = backStackEntry.arguments?.getLong("avgSpeed") ?: 0L
+                            
                             SummaryScreen(
+                                accuracy = accuracy,
+                                avgSpeed = avgSpeed,
                                 onNavigateHome = {
                                     // Pop back to Home
                                     navController.popBackStack(Screen.Home.route, false)

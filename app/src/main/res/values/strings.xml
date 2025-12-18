@@ -8,7 +8,9 @@
     
     <!-- Summary Screen -->
     <string name="lesson_complete_title">Lesson Complete!</string>
-    <string name="lesson_complete_message">Great job practicing!</string>
+    <string name="lesson_complete_message">Well done! You have finished the lesson.</string>
+    <string name="lesson_accuracy_format">Accuracy: %.0f%%</string>
+    <string name="lesson_speed_format">Avg Speed: %.1fs</string>
     <string name="back_to_home">Back to Home</string>
     <string name="start_debug_lesson">Start Debug Lesson</string>
 </resources>

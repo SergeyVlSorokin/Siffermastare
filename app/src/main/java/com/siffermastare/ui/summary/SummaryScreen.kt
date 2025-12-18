@@ -18,6 +18,8 @@ import com.siffermastare.R
 
 @Composable
 fun SummaryScreen(
+    accuracy: Float,
+    avgSpeed: Long,
     onNavigateHome: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -41,6 +43,20 @@ fun SummaryScreen(
                 style = MaterialTheme.typography.bodyLarge
             )
 
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = stringResource(R.string.lesson_accuracy_format, accuracy),
+                style = MaterialTheme.typography.headlineSmall
+            )
+
+            Space(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = stringResource(R.string.lesson_speed_format, avgSpeed / 1000.0), // Convert ms to s
+                style = MaterialTheme.typography.headlineSmall
+            )
+
             Spacer(modifier = Modifier.height(48.dp))
 
             Button(onClick = onNavigateHome) {
@@ -48,4 +64,9 @@ fun SummaryScreen(
             }
         }
     }
+}
+
+@Composable
+fun Space(modifier: Modifier) {
+    Spacer(modifier = modifier)
 }
