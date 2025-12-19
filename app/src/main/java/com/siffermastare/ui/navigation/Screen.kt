@@ -10,7 +10,9 @@ sealed class Screen(val route: String) {
     object Home : Screen("home")
     
     /** The lesson screen destination. */
-    object Lesson : Screen("lesson")
+    object Lesson : Screen("lesson/{lessonId}") {
+        fun createRoute(lessonId: String) = "lesson/$lessonId"
+    }
 
     /** The summary screen destination. */
     object Summary : Screen("summary/{accuracy}/{avgSpeed}") {

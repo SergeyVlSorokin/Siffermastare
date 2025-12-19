@@ -8,8 +8,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 import com.siffermastare.data.repository.LessonRepository
+import com.siffermastare.domain.LessonSessionManager
+import com.siffermastare.domain.LessonState
+import com.siffermastare.domain.generators.NumberGeneratorFactory
 
 enum class AnswerState {
     NEUTRAL,
@@ -29,8 +31,12 @@ data class LessonUiState(
 
 
 
-class LessonViewModel(private val repository: LessonRepository) : ViewModel() {
+class LessonViewModel(
+    private val repository: LessonRepository,
+    private val sessionManager: LessonSessionManager = LessonSessionManager()
+) : ViewModel() {
 
+    // Helper mapping until we merge LessonUiState with LessonState
     private val _uiState = MutableStateFlow(LessonUiState())
     val uiState: StateFlow<LessonUiState> = _uiState.asStateFlow()
 
@@ -38,18 +44,53 @@ class LessonViewModel(private val repository: LessonRepository) : ViewModel() {
     private var startTime: Long = 0L
     private var totalTimeMs: Long = 0L
     private var totalAttempts: Int = 0
+    private var currentLessonId: String = "0-10" // Default
 
     // Final Stats
     private var finalAccuracy: Float = 0f
     private var finalAvgSpeed: Long = 0L
 
     init {
-        generateNewNumber()
+        // Observe Manager State
+        viewModelScope.launch {
+            sessionManager.lessonState.collect { sessionState ->
+                updateUiState(sessionState)
+            }
+        }
     }
 
-    private fun generateNewNumber() {
-        _uiState.update { it.copy(targetNumber = Random.nextInt(0, 10)) }
-        startTime = System.currentTimeMillis() // Start timer for this question
+    // Called from UI/Navigation to start specific lesson
+    fun loadLesson(lessonId: String) {
+        currentLessonId = lessonId
+        val generator = com.siffermastare.domain.generators.NumberGeneratorFactory.create(lessonId)
+        sessionManager.startLesson(generator)
+        startTime = System.currentTimeMillis()
+        totalAttempts = 0
+        totalTimeMs = 0L
+        finalAccuracy = 0f
+        finalAvgSpeed = 0L
+    }
+
+    private fun updateUiState(sessionState: LessonState) {
+        val wasComplete = _uiState.value.isLessonComplete
+
+        _uiState.update {
+            it.copy(
+                targetNumber = sessionState.currentQuestion?.targetValue?.toIntOrNull() ?: 0,
+                // If question changed, reset input? 
+                // Manager handles nextQuestion, so we just reflect state
+                questionCount = sessionState.questionCount,
+                totalQuestions = sessionState.totalQuestions,
+                isLessonComplete = sessionState.isLessonComplete,
+                // answerState: We still manage UI feedback delay here or in Manager?
+                // For MVP 3.1b Refactor, we'll keep AnswerState local but driven by Manager checks.
+            )
+        }
+        
+        // Handle Lesson Completion Trigger
+        if (sessionState.isLessonComplete && !wasComplete) {
+             viewModelScope.launch { calculateAndSaveResults() }
+        }
     }
 
     fun onDigitClick(digit: Int) {
@@ -59,99 +100,61 @@ class LessonViewModel(private val repository: LessonRepository) : ViewModel() {
 
     fun onBackspaceClick() {
         if (_uiState.value.answerState != AnswerState.NEUTRAL) return
-
         _uiState.update {
             if (it.currentInput.isNotEmpty()) {
                 it.copy(currentInput = it.currentInput.dropLast(1))
-            } else {
-                it
-            }
+            } else { it }
         }
     }
 
     fun onCheckClick() {
         if (_uiState.value.answerState != AnswerState.NEUTRAL) return
+        val currentInput = _uiState.value.currentInput
+        if (currentInput.isEmpty()) return
 
-        val currentState = _uiState.value
-        if (currentState.currentInput.isEmpty()) return
-
-        val userNumber = currentState.currentInput.toIntOrNull()
-        
-        // Count attempt
         totalAttempts++
         
+        // Delegate verification to Manager
+        val isCorrect = sessionManager.submitAnswer(currentInput)
+        
         viewModelScope.launch {
-            if (userNumber == currentState.targetNumber) {
-                // Correct Logic
-                val endTime = System.currentTimeMillis()
-                totalTimeMs += (endTime - startTime)
-                
+            if (isCorrect) {
+                 val endTime = System.currentTimeMillis()
+                 totalTimeMs += (endTime - startTime)
+                 
                 _uiState.update { it.copy(answerState = AnswerState.CORRECT) }
                 delay(FEEDBACK_DELAY)
-
-                if (currentState.questionCount >= currentState.totalQuestions) {
-                    calculateAndSaveResults()
-                } else {
-                    _uiState.update {
-                        it.copy(
-                            answerState = AnswerState.NEUTRAL,
-                            currentInput = "",
-                            questionCount = it.questionCount + 1,
-                            targetNumber = Random.nextInt(0, 10)
-                        )
-                    }
-                    startTime = System.currentTimeMillis() // Reset timer for next question
-                }
+                _uiState.update { it.copy(answerState = AnswerState.NEUTRAL, currentInput = "") }
+                
+                sessionManager.nextQuestion()
+                startTime = System.currentTimeMillis()
             } else {
-                // Incorrect Logic
                 _uiState.update { it.copy(answerState = AnswerState.INCORRECT) }
                 delay(FEEDBACK_DELAY)
-                
-                _uiState.update {
-                    it.copy(
-                        answerState = AnswerState.NEUTRAL,
-                        currentInput = "",
-                        replayTrigger = it.replayTrigger + 1
-                    )
-                }
+                _uiState.update { it.copy(answerState = AnswerState.NEUTRAL, currentInput = "", replayTrigger = it.replayTrigger + 1) }
             }
         }
     }
 
     private suspend fun calculateAndSaveResults() {
-        val totalQuestions = _uiState.value.totalQuestions
+       val totalQuestions = sessionManager.lessonState.value.totalQuestions
         
-        // Calculate Metrics
         finalAccuracy = if (totalAttempts > 0) {
             (totalQuestions.toFloat() / totalAttempts.toFloat()) * 100f
-        } else {
-            0f
-        }
+        } else { 0f }
         
         finalAvgSpeed = if (totalQuestions > 0) {
             totalTimeMs / totalQuestions
-        } else {
-            0L
-        }
+        } else { 0L }
 
-        // Save to DB
-        // TODO: Import LessonResult properly. Assuming it's available or need import.
         val result = com.siffermastare.data.database.LessonResult(
             accuracy = finalAccuracy,
             averageSpeed = finalAvgSpeed,
-            lessonType = "0-10"
+            lessonType = currentLessonId
         )
         repository.insertLessonResult(result)
-
-        // Complete Lesson
-        _uiState.update {
-            it.copy(
-                isLessonComplete = true,
-                answerState = AnswerState.NEUTRAL
-            )
-        }
     }
-    
+
     // Expose generated stats for the View
     fun getFinalStats(): Pair<Float, Long> = Pair(finalAccuracy, finalAvgSpeed)
 

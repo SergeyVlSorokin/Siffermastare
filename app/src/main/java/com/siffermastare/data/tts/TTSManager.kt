@@ -49,6 +49,7 @@ class TTSManager(context: Context) {
      */
     fun speak(text: String) {
         if (isInitialized) {
+            Log.d("TTSManager", "Speaking: '$text'")
             textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
         } else {
             Log.w("TTSManager", "TTS not initialized, queuing text: $text")

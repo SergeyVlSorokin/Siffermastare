@@ -97,3 +97,10 @@ dependencies {
     // For simplicity, let's use ksp.
 
 }
+
+tasks.withType<Test> {
+    testLogging {
+        events("passed", "skipped", "failed", "standardOut", "standardError")
+        showStandardStreams = true
+    }
+}

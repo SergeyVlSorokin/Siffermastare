@@ -46,6 +46,7 @@ import com.siffermastare.ui.lesson.LessonViewModelFactory
  */
 @Composable
 fun LessonScreen(
+    lessonId: String,
     onLessonComplete: (Float, Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -71,23 +72,38 @@ fun LessonScreen(
             ttsManager.shutdown()
         }
     }
+    
+    // Load Lesson ID
+    LaunchedEffect(lessonId) {
+        viewModel.loadLesson(lessonId)
+    }
 
+    // Speak on initial load (or when target changes and is ready)
+    // We observe the state to determine when to speak
     // Speak on initial load/change of targetNumber
-    LaunchedEffect(uiState.targetNumber) {
-        // Only speak if we are NOT in the middle of a replay loop from incorrect answer
-        // Actually, logic says speak whenever targetNumber changes (new question).
-        // Replay handled separately.
+    // We observe the state to determine when to speak
+    LaunchedEffect(uiState.targetNumber, uiState.questionCount) {
+        // Trigger speak if we are in a fresh question state (Neutral)
         if (uiState.currentInput.isEmpty() && uiState.answerState == AnswerState.NEUTRAL) {
-             val swedishText = digitToSwedish(uiState.targetNumber)
-             ttsManager.speak(swedishText)
+             val textToSpeak = uiState.targetNumber.toString()
+             android.util.Log.d("LessonScreen", "Requesting TTS for: '$textToSpeak'")
+             
+             // Check to ensure we don't speak 0 on initial empty state if it defaults to 0
+             // But valid numbers include 0. 
+             // We can check if questionCount > 0 to imply started.
+             // Manager initializes QuestionCount to 1 on start.
+             if (uiState.questionCount > 0) {
+                 ttsManager.speak(textToSpeak)
+             }
         }
     }
     
     // Handle Replay Trigger
     LaunchedEffect(uiState.replayTrigger) {
         if (uiState.replayTrigger > 0) {
-            val swedishText = digitToSwedish(uiState.targetNumber)
-            ttsManager.speak(swedishText)
+            val textToSpeak = uiState.targetNumber.toString()
+            android.util.Log.d("LessonScreen", "Replay TTS for: '$textToSpeak'")
+            ttsManager.speak(textToSpeak)
         }
     }
 
@@ -155,8 +171,9 @@ fun LessonScreen(
                 // Replay Button
                 IconButton(
                     onClick = {
-                        val swedishText = digitToSwedish(uiState.targetNumber)
-                        ttsManager.speak(swedishText)
+                        val textToSpeak = uiState.targetNumber.toString()
+                        android.util.Log.d("LessonScreen", "Refresher TTS for: '$textToSpeak'")
+                        ttsManager.speak(textToSpeak)
                     },
                     modifier = Modifier.padding(16.dp)
                 ) {
@@ -200,21 +217,5 @@ fun LessonScreen(
                 )
             }
         }
-    }
-}
-
-private fun digitToSwedish(digit: Int): String {
-    return when (digit) {
-        0 -> "noll"
-        1 -> "ett"
-        2 -> "två"
-        3 -> "tre"
-        4 -> "fyra"
-        5 -> "fem"
-        6 -> "sex"
-        7 -> "sju"
-        8 -> "åtta"
-        9 -> "nio"
-        else -> "fel"
     }
 }

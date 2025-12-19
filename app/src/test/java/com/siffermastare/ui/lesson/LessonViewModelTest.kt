@@ -32,6 +32,7 @@ class LessonViewModelTest {
     fun setup() {
         Dispatchers.setMain(UnconfinedTestDispatcher())
         viewModel = LessonViewModel(fakeRepository)
+        viewModel.loadLesson("cardinal_0_20")
     }
 
     @After
@@ -89,9 +90,6 @@ class LessonViewModelTest {
     @Test
     fun lessonComplete_savesStatsToRepository() = runTest {
         // Play through 10 questions
-        // Scenario: 9 correct on first try, 1 correct on second try (1 error)
-        // Total attempts = 11.
-        // Accuracy = 10/11 = ~90.9%
         
         repeat(9) {
             val state = viewModel.uiState.first()
@@ -103,7 +101,7 @@ class LessonViewModelTest {
             advanceTimeBy(LessonViewModel.FEEDBACK_DELAY + 100)
         }
         
-        // 10th Question: Make a mistake first
+        // 10th Question
         val state10 = viewModel.uiState.first()
         val target10 = state10.targetNumber
         val wrong = if (target10 == 0) 1 else 0
@@ -114,8 +112,6 @@ class LessonViewModelTest {
         advanceTimeBy(LessonViewModel.FEEDBACK_DELAY + 100)
         
         // Correct attempt
-        val state10Retry = viewModel.uiState.first()
-        // Wait, input is cleared, state is neutral.
         viewModel.onDigitClick(target10)
         viewModel.onCheckClick()
         advanceTimeBy(LessonViewModel.FEEDBACK_DELAY + 100)
@@ -125,15 +121,11 @@ class LessonViewModelTest {
         
         // Assertions
         val finalState = viewModel.uiState.first()
-        assertEquals(true, finalState.isLessonComplete)
+        assertEquals("Lesson should be complete", true, finalState.isLessonComplete)
         
-        // Verify stats in Repository
-        // Accuracy: 10 questions / 11 attempts = 0.909090... -> 90.9%
         val expectedAcc = (10f / 11f) * 100f
         assertEquals(expectedAcc, result?.accuracy ?: 0f, 0.1f)
         
-        // Speed: Hard to assert exact time with runTest and System.currentTimeMillis() dependency.
-        // But we can assert it's sane (>= 0).
         assertTrue((result?.averageSpeed ?: -1L) >= 0)
     }
 }

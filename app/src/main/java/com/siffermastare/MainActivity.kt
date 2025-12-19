@@ -36,8 +36,15 @@ class MainActivity : ComponentActivity() {
                         composable(Screen.Home.route) {
                             HomeScreen(navController = navController)
                         }
-                        composable(Screen.Lesson.route) {
+                        composable(
+                            route = Screen.Lesson.route,
+                            arguments = listOf(
+                                androidx.navigation.navArgument("lessonId") { type = androidx.navigation.NavType.StringType }
+                            )
+                        ) { backStackEntry ->
+                            val lessonId = backStackEntry.arguments?.getString("lessonId") ?: "cardinal_0_20"
                             LessonScreen(
+                                lessonId = lessonId,
                                 onLessonComplete = { accuracy, avgSpeed ->
                                     navController.navigate(Screen.Summary.createRoute(accuracy, avgSpeed)) {
                                         // Pop up to Home so back button from Summary goes to Home, 

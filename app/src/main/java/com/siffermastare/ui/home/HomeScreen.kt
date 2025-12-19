@@ -38,10 +38,29 @@ fun HomeScreen(
     ) {
         Button(
             onClick = {
-                navController.navigate(Screen.Lesson.route)
-            }
+                navController.navigate(Screen.Lesson.createRoute("cardinal_0_20"))
+            },
+            modifier = Modifier.padding(8.dp)
         ) {
-            Text(stringResource(R.string.start_debug_lesson))
+            Text("Cardinal Numbers 0-20")
+        }
+
+        Button(
+            onClick = {
+                navController.navigate(Screen.Lesson.createRoute("cardinal_20_100"))
+            },
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Text("Cardinal Numbers 20-100")
+        }
+
+        Button(
+            onClick = {
+                navController.navigate(Screen.Lesson.createRoute("cardinal_100_1000"))
+            },
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Text("Cardinal Numbers 100-1000")
         }
     }
 }
