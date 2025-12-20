@@ -10,6 +10,7 @@ object NumberGeneratorFactory {
             "cardinal_0_20" -> CardinalGenerator(0, 20)
             "cardinal_20_100" -> CardinalGenerator(20, 100)
             "cardinal_100_1000" -> CardinalGenerator(100, 1000)
+            "ordinal_1_20" -> OrdinalGenerator(1, 20)
             else -> CardinalGenerator(0, 10) // Fallback/Default
         }
     }

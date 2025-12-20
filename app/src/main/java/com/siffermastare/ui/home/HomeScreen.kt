@@ -62,6 +62,15 @@ fun HomeScreen(
         ) {
             Text("Cardinal Numbers 100-1000")
         }
+
+        Button(
+            onClick = {
+                navController.navigate(Screen.Lesson.createRoute("ordinal_1_20"))
+            },
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Text("Ordinals 1-20")
+        }
     }
 }
 

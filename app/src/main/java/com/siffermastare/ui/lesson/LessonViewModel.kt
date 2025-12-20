@@ -21,6 +21,7 @@ enum class AnswerState {
 
 data class LessonUiState(
     val targetNumber: Int = 0,
+    val spokenText: String = "",
     val currentInput: String = "",
     val questionCount: Int = 1,
     val totalQuestions: Int = 10,
@@ -77,6 +78,7 @@ class LessonViewModel(
         _uiState.update {
             it.copy(
                 targetNumber = sessionState.currentQuestion?.targetValue?.toIntOrNull() ?: 0,
+                spokenText = sessionState.currentQuestion?.spokenText ?: "",
                 // If question changed, reset input? 
                 // Manager handles nextQuestion, so we just reflect state
                 questionCount = sessionState.questionCount,

@@ -85,7 +85,7 @@ fun LessonScreen(
     LaunchedEffect(uiState.targetNumber, uiState.questionCount) {
         // Trigger speak if we are in a fresh question state (Neutral)
         if (uiState.currentInput.isEmpty() && uiState.answerState == AnswerState.NEUTRAL) {
-             val textToSpeak = uiState.targetNumber.toString()
+             val textToSpeak = uiState.spokenText.ifEmpty { uiState.targetNumber.toString() }
              android.util.Log.d("LessonScreen", "Requesting TTS for: '$textToSpeak'")
              
              // Check to ensure we don't speak 0 on initial empty state if it defaults to 0
@@ -101,7 +101,7 @@ fun LessonScreen(
     // Handle Replay Trigger
     LaunchedEffect(uiState.replayTrigger) {
         if (uiState.replayTrigger > 0) {
-            val textToSpeak = uiState.targetNumber.toString()
+            val textToSpeak = uiState.spokenText.ifEmpty { uiState.targetNumber.toString() }
             android.util.Log.d("LessonScreen", "Replay TTS for: '$textToSpeak'")
             ttsManager.speak(textToSpeak)
         }
@@ -171,7 +171,7 @@ fun LessonScreen(
                 // Replay Button
                 IconButton(
                     onClick = {
-                        val textToSpeak = uiState.targetNumber.toString()
+                        val textToSpeak = uiState.spokenText.ifEmpty { uiState.targetNumber.toString() }
                         android.util.Log.d("LessonScreen", "Refresher TTS for: '$textToSpeak'")
                         ttsManager.speak(textToSpeak)
                     },
