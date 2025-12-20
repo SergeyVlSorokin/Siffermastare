@@ -71,6 +71,15 @@ fun HomeScreen(
         ) {
             Text("Ordinals 1-20")
         }
+
+        Button(
+            onClick = {
+                navController.navigate(Screen.Lesson.createRoute("time_digital"))
+            },
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Text("Time (Digital)")
+        }
     }
 }
 

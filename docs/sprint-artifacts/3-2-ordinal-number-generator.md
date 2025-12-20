@@ -36,3 +36,5 @@ so that I can learn to recognize spoken ordinal numbers.
 - `app/src/test/java/com/siffermastare/domain/generators/OrdinalGeneratorTest.kt`
 - `app/src/main/java/com/siffermastare/domain/generators/NumberGeneratorFactory.kt`
 - `app/src/main/java/com/siffermastare/ui/home/HomeScreen.kt`
+- `app/src/main/java/com/siffermastare/ui/lesson/LessonViewModel.kt`
+- `app/src/main/java/com/siffermastare/ui/lesson/LessonScreen.kt`
