@@ -87,7 +87,8 @@ fun Numpad(
                 onClick = onBackspaceClick,
                 modifier = Modifier.size(80.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.onSecondary
                 )
             ) {
                 Icon(

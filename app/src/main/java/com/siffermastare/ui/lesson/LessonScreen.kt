@@ -37,6 +37,7 @@ import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.siffermastare.SiffermastareApplication
 import com.siffermastare.ui.lesson.LessonViewModelFactory
+import com.siffermastare.ui.theme.CorrectGreen
 
 /**
  * Lesson screen composable.
@@ -155,7 +156,7 @@ fun LessonScreen(
                 Text(
                     text = stringResource(R.string.lesson_progress_format, uiState.questionCount, uiState.totalQuestions),
                     style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.secondary
+                    color = MaterialTheme.colorScheme.onBackground // Fix: Was secondary(yellow)
                 )
                 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -189,9 +190,9 @@ fun LessonScreen(
 
                 // User Input Display with Color and Shake
                 val textColor = when (uiState.answerState) {
-                    AnswerState.CORRECT -> Color.Green // Or use a defined safe green
-                    AnswerState.INCORRECT -> Color.Red
-                    AnswerState.NEUTRAL -> MaterialTheme.colorScheme.primary
+                    AnswerState.CORRECT -> CorrectGreen // Fix: Was Color.Green
+                    AnswerState.INCORRECT -> MaterialTheme.colorScheme.error
+                    AnswerState.NEUTRAL -> MaterialTheme.colorScheme.onBackground
                 }
                 
                 Text(
