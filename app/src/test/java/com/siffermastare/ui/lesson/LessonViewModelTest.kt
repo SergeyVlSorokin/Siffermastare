@@ -140,4 +140,12 @@ class FakeLessonRepository : LessonRepository {
     override fun getAllLessonResults(): Flow<List<LessonResult>> {
         return flowOf(emptyList())
     }
+
+    override fun getLessonCount(): Flow<Int> {
+        return flowOf(0)
+    }
+
+    override fun getAllTimestamps(): Flow<List<Long>> {
+        return flowOf(emptyList())
+    }
 }

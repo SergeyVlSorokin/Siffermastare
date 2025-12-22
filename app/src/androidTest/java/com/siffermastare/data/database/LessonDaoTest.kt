@@ -48,4 +48,30 @@ class LessonDaoTest {
         assertEquals(allResults[0].averageSpeed, 1500L)
         assertEquals(allResults[0].lessonType, "0-10")
     }
+
+    @Test
+    fun getLessonCount() = runBlocking {
+        val result1 = LessonResult(accuracy = 1.0f, averageSpeed = 1000L, lessonType = "test")
+        val result2 = LessonResult(accuracy = 0.5f, averageSpeed = 2000L, lessonType = "test")
+        lessonDao.insert(result1)
+        lessonDao.insert(result2)
+
+        val count = lessonDao.getLessonCount().first()
+        assertEquals(2, count)
+    }
+
+    @Test
+    fun getAllTimestamps() = runBlocking {
+        // Timestamps: 1000, 2000
+        val result1 = LessonResult(accuracy = 1.0f, averageSpeed = 1000L, timestamp = 1000L, lessonType = "test")
+        val result2 = LessonResult(accuracy = 0.9f, averageSpeed = 1500L, timestamp = 2000L, lessonType = "test")
+        
+        lessonDao.insert(result1)
+        lessonDao.insert(result2)
+
+        val timestamps = lessonDao.getAllTimestamps().first()
+        assertEquals(2, timestamps.size)
+        assertEquals(2000L, timestamps[0]) // DESC order
+        assertEquals(1000L, timestamps[1])
+    }
 }

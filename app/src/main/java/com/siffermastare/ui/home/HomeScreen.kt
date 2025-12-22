@@ -13,10 +13,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.siffermastare.R
+import com.siffermastare.SiffermastareApplication
 import com.siffermastare.ui.navigation.Screen
 import com.siffermastare.ui.theme.SiffermästareTheme
+
 
 /**
  * Home screen composable.
@@ -31,6 +38,16 @@ fun HomeScreen(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val application = context.applicationContext as SiffermastareApplication
+    val repository = application.lessonRepository
+    
+    val viewModel: HomeViewModel = viewModel(
+        factory = HomeViewModelFactory(repository)
+    )
+
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -40,45 +57,94 @@ fun HomeScreen(
     ) {
         // App Header
         Text(
-            text = "Siffermästare",
+            text = stringResource(R.string.home_title),
             style = MaterialTheme.typography.displayMedium,
             color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(bottom = 32.dp)
+            modifier = Modifier.padding(bottom = 16.dp)
         )
+
+        // Dashboard Stats
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 32.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            DashboardStatCard(
+                label = stringResource(R.string.dashboard_lessons_label),
+                value = uiState.totalLessons.toString(),
+                modifier = Modifier.weight(1f)
+            )
+            DashboardStatCard(
+                label = stringResource(R.string.dashboard_streak_label),
+                value = "${uiState.currentStreak} ${stringResource(R.string.dashboard_streak_days_suffix)}", // e.g., "5 Days"
+                modifier = Modifier.weight(1f)
+            )
+        }
 
         Button(
             onClick = { navController.navigate(Screen.Lesson.createRoute("cardinal_0_20")) },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 8.dp)
         ) {
-            Text("Numbers 0-20")
+            Text(stringResource(R.string.menu_numbers_0_20))
         }
 
         Button(
             onClick = { navController.navigate(Screen.Lesson.createRoute("cardinal_20_100")) },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 8.dp)
         ) {
-            Text("Numbers 20-100")
+            Text(stringResource(R.string.menu_numbers_20_100))
         }
 
         Button(
             onClick = { navController.navigate(Screen.Lesson.createRoute("cardinal_100_1000")) },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 8.dp)
         ) {
-            Text("Numbers 100-1000")
+            Text(stringResource(R.string.menu_numbers_100_1000))
         }
 
         Button(
             onClick = { navController.navigate(Screen.Lesson.createRoute("ordinal_1_20")) },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 8.dp)
         ) {
-            Text("Ordinals (1:a - 20:e)")
+            Text(stringResource(R.string.menu_ordinals))
         }
 
         Button(
             onClick = { navController.navigate(Screen.Lesson.createRoute("time_digital")) },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 8.dp)
         ) {
-            Text("Time (Digital)")
+            Text(stringResource(R.string.menu_time))
+        }
+    }
+}
+
+@Composable
+fun DashboardStatCard(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier
+) {
+    androidx.compose.material3.Card(
+        modifier = modifier,
+        colors = androidx.compose.material3.CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = value,
+                style = MaterialTheme.typography.displaySmall, // Big number
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }

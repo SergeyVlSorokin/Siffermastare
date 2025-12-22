@@ -13,4 +13,14 @@
     <string name="lesson_speed_format">Avg Speed: %.1fs</string>
     <string name="back_to_home">Back to Home</string>
     <string name="start_debug_lesson">Start Debug Lesson</string>
+    <!-- Home Screen -->
+    <string name="home_title">Siffermästare</string>
+    <string name="dashboard_lessons_label">Lessons</string>
+    <string name="dashboard_streak_label">Streak</string>
+    <string name="dashboard_streak_days_suffix">Days</string>
+    <string name="menu_numbers_0_20">Numbers 0-20</string>
+    <string name="menu_numbers_20_100">Numbers 20-100</string>
+    <string name="menu_numbers_100_1000">Numbers 100-1000</string>
+    <string name="menu_ordinals">Ordinals (1:a - 20:e)</string>
+    <string name="menu_time">Time (Digital)</string>
 </resources>

@@ -13,4 +13,10 @@ interface LessonDao {
 
     @Query("SELECT * FROM lesson_results ORDER BY timestamp DESC")
     fun getAll(): Flow<List<LessonResult>>
+
+    @Query("SELECT COUNT(*) FROM lesson_results")
+    fun getLessonCount(): Flow<Int>
+
+    @Query("SELECT timestamp FROM lesson_results ORDER BY timestamp DESC")
+    fun getAllTimestamps(): Flow<List<Long>>
 }

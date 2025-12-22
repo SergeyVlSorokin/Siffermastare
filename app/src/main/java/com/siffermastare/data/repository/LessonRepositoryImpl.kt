@@ -12,4 +12,12 @@ class LessonRepositoryImpl(private val lessonDao: LessonDao) : LessonRepository 
     override fun getAllLessonResults(): Flow<List<LessonResult>> {
         return lessonDao.getAll()
     }
+
+    override fun getLessonCount(): Flow<Int> {
+        return lessonDao.getLessonCount()
+    }
+
+    override fun getAllTimestamps(): Flow<List<Long>> {
+        return lessonDao.getAllTimestamps()
+    }
 }

@@ -6,4 +6,6 @@ import kotlinx.coroutines.flow.Flow
 interface LessonRepository {
     suspend fun insertLessonResult(result: LessonResult)
     fun getAllLessonResults(): Flow<List<LessonResult>>
+    fun getLessonCount(): Flow<Int>
+    fun getAllTimestamps(): Flow<List<Long>>
 }
