@@ -18,6 +18,7 @@ class TTSManager(context: Context) {
     private var textToSpeech: TextToSpeech? = null
     private var isInitialized = false
     private var pendingText: String? = null
+    private var pendingRate: Float = 1.0f
 
     init {
         textToSpeech = TextToSpeech(context) { status ->
@@ -25,14 +26,11 @@ class TTSManager(context: Context) {
                 val result = textToSpeech?.setLanguage(Locale("sv", "SE"))
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                     Log.e("TTSManager", "Swedish language not supported or missing data")
-                    // In a real app we might want to callback to UI here,
-                    // but for this MVP spike we just log it.
-                    // The speak function will handle the case where language is not active.
                 } else {
                     isInitialized = true
                     // Check for pending text
                     pendingText?.let {
-                        speak(it)
+                        speak(it, pendingRate)
                         pendingText = null
                     }
                 }
@@ -46,14 +44,17 @@ class TTSManager(context: Context) {
      * Speaks the given text using the initialized TTS engine.
      *
      * @param text The text to speak.
+     * @param rate The speech rate (1.0 is normal, lower is slower). Default 1.0f.
      */
-    fun speak(text: String) {
+    fun speak(text: String, rate: Float = 1.0f) {
         if (isInitialized) {
-            Log.d("TTSManager", "Speaking: '$text'")
+            Log.d("TTSManager", "Speaking: '$text' at rate $rate")
+            textToSpeech?.setSpeechRate(rate)
             textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
         } else {
             Log.w("TTSManager", "TTS not initialized, queuing text: $text")
             pendingText = text
+            pendingRate = rate
         }
     }
 

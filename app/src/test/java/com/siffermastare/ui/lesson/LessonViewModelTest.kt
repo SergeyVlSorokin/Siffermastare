@@ -128,6 +128,32 @@ class LessonViewModelTest {
         
         assertTrue((result?.averageSpeed ?: -1L) >= 0)
     }
+    @Test
+    fun slowReplay_setsSlowRate_andTriggersReplay() = runTest {
+        val initialState = viewModel.uiState.first()
+        
+        viewModel.onSlowReplay()
+        
+        val state = viewModel.uiState.first()
+        assertEquals("Rate should be 0.7f", 0.7f, state.ttsRate, 0.01f)
+        assertTrue("Replay should be triggered", state.replayTrigger > 0)
+    }
+
+    @Test
+    fun nextQuestion_resetsRate_toNormal() = runTest {
+        viewModel.onSlowReplay()
+        val slowState = viewModel.uiState.first()
+        assertEquals(0.7f, slowState.ttsRate, 0.01f)
+        
+        // Complete question
+        val target = slowState.targetNumber
+        viewModel.onDigitClick(target)
+        viewModel.onCheckClick()
+        advanceTimeBy(LessonViewModel.FEEDBACK_DELAY + 100)
+        
+        val nextState = viewModel.uiState.first()
+        assertEquals("Rate should reset to 1.0f", 1.0f, nextState.ttsRate, 0.01f)
+    }
 }
 
 class FakeLessonRepository : LessonRepository {

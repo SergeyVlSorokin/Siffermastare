@@ -4,13 +4,20 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.outlined.PlayCircle
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.SlowMotionVideo
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -103,8 +110,9 @@ fun LessonScreen(
     LaunchedEffect(uiState.replayTrigger) {
         if (uiState.replayTrigger > 0) {
             val textToSpeak = uiState.spokenText.ifEmpty { uiState.targetNumber.toString() }
-            android.util.Log.d("LessonScreen", "Replay TTS for: '$textToSpeak'")
-            ttsManager.speak(textToSpeak)
+            val rate = uiState.ttsRate
+            android.util.Log.d("LessonScreen", "Replay TTS for: '$textToSpeak' at rate $rate")
+            ttsManager.speak(textToSpeak, rate)
         }
     }
 
@@ -169,22 +177,52 @@ fun LessonScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Replay Button
-                IconButton(
-                    onClick = {
-                        val textToSpeak = uiState.spokenText.ifEmpty { uiState.targetNumber.toString() }
-                        android.util.Log.d("LessonScreen", "Refresher TTS for: '$textToSpeak'")
-                        ttsManager.speak(textToSpeak)
-                    },
-                    modifier = Modifier.padding(16.dp)
+                // Replay Controls
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.PlayArrow,
-                        contentDescription = "Replay",
-                        modifier = Modifier.fillMaxSize()
-                    )
+                    // Normal Replay
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        IconButton(
+                            onClick = {
+                                val textToSpeak = uiState.spokenText.ifEmpty { uiState.targetNumber.toString() }
+                                android.util.Log.d("LessonScreen", "Refresher TTS for: '$textToSpeak'")
+                                ttsManager.speak(textToSpeak) // Default rate 1.0
+                            },
+                            modifier = Modifier.size(64.dp) // Large
+                        ) {
+                            Icon(
+                                imageVector = androidx.compose.material.icons.Icons.Outlined.PlayCircle,
+                                contentDescription = "Replay",
+                                modifier = Modifier.fillMaxSize(),
+                                tint = Color.Black
+                            )
+                        }
+                        Text(stringResource(R.string.lesson_replay), style = MaterialTheme.typography.labelSmall)
+                    }
+
+                    Spacer(modifier = Modifier.width(32.dp))
+
+                    // Slow Replay (Turtle/Sakta)
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        IconButton(
+                            onClick = {
+                                viewModel.onSlowReplay()
+                            },
+                            modifier = Modifier.size(64.dp) // Same size as Normal
+                        ) {
+                            // Slow Replay (Turtle/Sakta)
+                            Icon(
+                                imageVector = androidx.compose.material.icons.Icons.Filled.SlowMotionVideo,
+                                contentDescription = "Slow Replay",
+                                modifier = Modifier.fillMaxSize(),
+                                tint = Color.Black
+                            )
+                        }
+                        Text("Sakta", style = MaterialTheme.typography.labelSmall)
+                    }
                 }
-                Text(stringResource(R.string.lesson_replay), style = MaterialTheme.typography.labelSmall)
 
                 Spacer(modifier = Modifier.height(32.dp))
 

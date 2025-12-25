@@ -27,7 +27,8 @@ data class LessonUiState(
     val totalQuestions: Int = 10,
     val isLessonComplete: Boolean = false,
     val answerState: AnswerState = AnswerState.NEUTRAL,
-    val replayTrigger: Int = 0 // Increments to trigger replay
+    val replayTrigger: Int = 0, // Increments to trigger replay
+    val ttsRate: Float = 1.0f // New: Speech Rate
 )
 
 
@@ -84,8 +85,10 @@ class LessonViewModel(
                 questionCount = sessionState.questionCount,
                 totalQuestions = sessionState.totalQuestions,
                 isLessonComplete = sessionState.isLessonComplete,
-                // answerState: We still manage UI feedback delay here or in Manager?
-                // For MVP 3.1b Refactor, we'll keep AnswerState local but driven by Manager checks.
+                // New question? Reset rate to 1.0f if neutral?
+                // Logic: If transitioning to neutral/new question, reset rate.
+                // We'll trust onCheckClick to do it, OR do it here if checking.
+                // Safest: When questionCount changes, reset rate.
             )
         }
         
@@ -109,6 +112,16 @@ class LessonViewModel(
         }
     }
 
+    fun onSlowReplay() {
+        // Trigger replay with slow rate
+        _uiState.update { 
+            it.copy(
+                ttsRate = 0.7f,
+                replayTrigger = it.replayTrigger + 1
+            ) 
+        }
+    }
+
     fun onCheckClick() {
         if (_uiState.value.answerState != AnswerState.NEUTRAL) return
         val currentInput = _uiState.value.currentInput
@@ -126,14 +139,18 @@ class LessonViewModel(
                  
                 _uiState.update { it.copy(answerState = AnswerState.CORRECT) }
                 delay(FEEDBACK_DELAY)
-                _uiState.update { it.copy(answerState = AnswerState.NEUTRAL, currentInput = "") }
+                // RESET RATE HERE
+                _uiState.update { it.copy(answerState = AnswerState.NEUTRAL, currentInput = "", ttsRate = 1.0f) }
                 
                 sessionManager.nextQuestion()
                 startTime = System.currentTimeMillis()
             } else {
                 _uiState.update { it.copy(answerState = AnswerState.INCORRECT) }
                 delay(FEEDBACK_DELAY)
-                _uiState.update { it.copy(answerState = AnswerState.NEUTRAL, currentInput = "", replayTrigger = it.replayTrigger + 1) }
+                // Incorrect answer replay - keep rate? Or reset?
+                // Standard replay usually normal speed. 
+                // Story doesn't specify. Assuming normal speed on auto-replay.
+                _uiState.update { it.copy(answerState = AnswerState.NEUTRAL, currentInput = "", replayTrigger = it.replayTrigger + 1, ttsRate = 1.0f) }
             }
         }
     }

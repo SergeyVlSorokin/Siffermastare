@@ -67,3 +67,7 @@ So that I can distinguish rapid sounds like "tjugo" vs "tio" when I am confused.
 
 #### Change Log
 - **2025-01-27:** Addressed Code Review findings: Fixed race condition in `TTSManager` where pending text replay lost the requested speech rate.
+- **2025-01-27:** UI Refinement: Made "Sakta" and "Repetera" buttons same size (64dp) and black color per user request.
+- **2025-01-27:** UI Refinement: Added `material-icons-extended` dependency and switched Slow Replay icon to `SlowMotionVideo`.
+- **2025-01-27:** UI Refinement: Switched Normal Replay icon to `PlayCircle` to match the circular aesthetic of `SlowMotionVideo`.
+- **2025-01-27:** UI Refinement: Switched `PlayCircle` to `Outlined.PlayCircle` (transparent internals) per user request.
