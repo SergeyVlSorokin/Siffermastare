@@ -26,3 +26,18 @@ development_status:
   4-1-apply-swedish-minimalist-theme: done
   4-2-home-screen-dashboard: done
   epic-4-retrospective: done
+  epic-4-retrospective: done
+
+  epic-5: ready-for-dev
+  5-1-slow-replay: done
+  5-2-give-up-mechanism: ready-for-dev
+  5-3-visual-time-separator: ready-for-dev
+  5-4-safe-exit: ready-for-dev
+  5-5-flexible-time-validation: ready-for-dev
+
+  epic-6: backlog
+  6-1-informal-time-generator: backlog
+  6-2-tricky-pairs-generator: backlog
+  6-3-phone-number-generator: backlog
+  6-4-fractions-generator: backlog
+  6-5-decimals-generator: backlog
