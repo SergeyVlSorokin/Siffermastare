@@ -71,3 +71,4 @@ So that I can distinguish rapid sounds like "tjugo" vs "tio" when I am confused.
 - **2025-01-27:** UI Refinement: Added `material-icons-extended` dependency and switched Slow Replay icon to `SlowMotionVideo`.
 - **2025-01-27:** UI Refinement: Switched Normal Replay icon to `PlayCircle` to match the circular aesthetic of `SlowMotionVideo`.
 - **2025-01-27:** UI Refinement: Switched `PlayCircle` to `Outlined.PlayCircle` (transparent internals) per user request.
+- **2025-01-27:** UI Refinement: Updated Numpad Backspace icon to `AutoMirrored.Filled.Backspace` per user request.
