@@ -30,7 +30,7 @@ development_status:
 
   epic-5: ready-for-dev
   5-1-slow-replay: done
-  5-2-give-up-mechanism: ready-for-dev
+  5-2-give-up-mechanism: done
   5-3-visual-time-separator: ready-for-dev
   5-4-safe-exit: ready-for-dev
   5-5-flexible-time-validation: ready-for-dev

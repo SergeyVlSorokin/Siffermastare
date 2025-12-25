@@ -5,6 +5,8 @@
     <string name="lesson_progress_format">Fråga %1$d av %2$d</string>
     <string name="lesson_instructions">Lyssna och skriv siffran</string>
     <string name="lesson_replay">Repetera</string>
+    <string name="lesson_slow_replay">Sakta</string>
+    <string name="lesson_give_up">Ge Upp</string>
     
     <!-- Summary Screen -->
     <string name="lesson_complete_title">Lesson Complete!</string>

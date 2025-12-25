@@ -15,9 +15,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.filled.SlowMotionVideo
+import androidx.compose.material3.ButtonDefaults // For button colors if needed
+import androidx.compose.material3.OutlinedButton
+
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -182,6 +188,29 @@ fun LessonScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
+                    // Reveal (Give Up) - Order: Reveal -> Normal -> Slow
+                    val isRevealEnabled = uiState.incorrectAttempts >= 3 && uiState.answerState != AnswerState.REVEALED && uiState.answerState != AnswerState.CORRECT
+                    
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        IconButton(
+                            onClick = {
+                                viewModel.onGiveUp()
+                            },
+                            enabled = isRevealEnabled,
+                            modifier = Modifier.size(64.dp)
+                        ) {
+                            Icon(
+                                imageVector = androidx.compose.material.icons.Icons.Outlined.Visibility,
+                                contentDescription = "Give Up",
+                                modifier = Modifier.fillMaxSize(),
+                                tint = if (isRevealEnabled) Color.Black else Color.LightGray
+                            )
+                        }
+                        Text(stringResource(R.string.lesson_give_up), style = MaterialTheme.typography.labelSmall)
+                    }
+
+                    Spacer(modifier = Modifier.width(32.dp))
+
                     // Normal Replay
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         IconButton(
@@ -220,7 +249,7 @@ fun LessonScreen(
                                 tint = Color.Black
                             )
                         }
-                        Text("Sakta", style = MaterialTheme.typography.labelSmall)
+                        Text(stringResource(R.string.lesson_slow_replay), style = MaterialTheme.typography.labelSmall)
                     }
                 }
 
@@ -230,6 +259,7 @@ fun LessonScreen(
                 val textColor = when (uiState.answerState) {
                     AnswerState.CORRECT -> CorrectGreen // Fix: Was Color.Green
                     AnswerState.INCORRECT -> MaterialTheme.colorScheme.error
+                    AnswerState.REVEALED -> Color(0xFFFFA000) // Amber
                     AnswerState.NEUTRAL -> MaterialTheme.colorScheme.onBackground
                 }
                 
@@ -242,7 +272,12 @@ fun LessonScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
+
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 // Custom Numpad
+                val isInputLocked = uiState.answerState == AnswerState.REVEALED
                 Numpad(
                     onDigitClick = { digit ->
                         viewModel.onDigitClick(digit)
@@ -252,7 +287,9 @@ fun LessonScreen(
                     },
                     onCheckClick = {
                         viewModel.onCheckClick()
-                    }
+                    },
+                    enabled = !isInputLocked,
+                    checkIcon = if (isInputLocked) androidx.compose.material.icons.Icons.Default.PlayArrow else androidx.compose.material.icons.Icons.Default.Check
                 )
             }
         }

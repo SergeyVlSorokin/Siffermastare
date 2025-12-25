@@ -39,7 +39,9 @@ fun Numpad(
     onDigitClick: (Int) -> Unit,
     onBackspaceClick: () -> Unit,
     onCheckClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    checkIcon: androidx.compose.ui.graphics.vector.ImageVector = Icons.Default.Check
 ) {
     Column(
         modifier = modifier
@@ -53,9 +55,9 @@ fun Numpad(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            NumpadButton(text = "1", onClick = { onDigitClick(1) })
-            NumpadButton(text = "2", onClick = { onDigitClick(2) })
-            NumpadButton(text = "3", onClick = { onDigitClick(3) })
+            NumpadButton(text = "1", onClick = { onDigitClick(1) }, enabled = enabled)
+            NumpadButton(text = "2", onClick = { onDigitClick(2) }, enabled = enabled)
+            NumpadButton(text = "3", onClick = { onDigitClick(3) }, enabled = enabled)
         }
 
         // Row 2: 4, 5, 6
@@ -63,9 +65,9 @@ fun Numpad(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            NumpadButton(text = "4", onClick = { onDigitClick(4) })
-            NumpadButton(text = "5", onClick = { onDigitClick(5) })
-            NumpadButton(text = "6", onClick = { onDigitClick(6) })
+            NumpadButton(text = "4", onClick = { onDigitClick(4) }, enabled = enabled)
+            NumpadButton(text = "5", onClick = { onDigitClick(5) }, enabled = enabled)
+            NumpadButton(text = "6", onClick = { onDigitClick(6) }, enabled = enabled)
         }
 
         // Row 3: 7, 8, 9
@@ -73,9 +75,9 @@ fun Numpad(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            NumpadButton(text = "7", onClick = { onDigitClick(7) })
-            NumpadButton(text = "8", onClick = { onDigitClick(8) })
-            NumpadButton(text = "9", onClick = { onDigitClick(9) })
+            NumpadButton(text = "7", onClick = { onDigitClick(7) }, enabled = enabled)
+            NumpadButton(text = "8", onClick = { onDigitClick(8) }, enabled = enabled)
+            NumpadButton(text = "9", onClick = { onDigitClick(9) }, enabled = enabled)
         }
 
         // Row 4: Backspace, 0, Check
@@ -86,6 +88,7 @@ fun Numpad(
             // Backspace Button
             Button(
                 onClick = onBackspaceClick,
+                enabled = enabled,
                 modifier = Modifier.size(80.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.secondary,
@@ -99,9 +102,22 @@ fun Numpad(
             }
 
             // 0 Button
-            NumpadButton(text = "0", onClick = { onDigitClick(0) })
+            NumpadButton(text = "0", onClick = { onDigitClick(0) }, enabled = enabled)
 
-            // Check Button
+            // Check Button (Always enabled if Next functionality? Or enabled param controls it?)
+            // If we are in REVEALED state, Numpad is disabled (digits).
+            // But CHECK button becomes NEXT button and MUST BE ENABLED.
+            // So 'enabled' param should apply to digits/backspace.
+            // Check button should probably remain enabled or have its own control?
+            // "Disable Numpad grid" implies digits.
+            // I will update NumpadButton to take enabled.
+            // For Check Button, I will keep it passed through enabled? No, logic requires Next to work.
+            // Solution: Add checkEnabled logic? Or assume Check is always active unless app logic blocks it.
+            // For now, I'll allow Check button to stay enabled even if 'enabled' (digits) is false.
+            // Wait, if I pass enabled=false, typically user expects WHOLE component disabled.
+            // But here I want Input Locked. Meaning Digits/Backspace disabled. Check/Next enabled.
+            // I'll call the param 'inputEnabled' or just apply 'enabled' to digits only.
+            // Let's refine 'enabled' behavior: Applies to DIGITS and BACKSPACE. Check is separate.
             Button(
                 onClick = onCheckClick,
                 modifier = Modifier.size(80.dp), // Check button prominent
@@ -110,7 +126,7 @@ fun Numpad(
                 )
             ) {
                 Icon(
-                    imageVector = Icons.Default.Check,
+                    imageVector = checkIcon,
                     contentDescription = "Check"
                 )
             }
@@ -122,10 +138,12 @@ fun Numpad(
 private fun NumpadButton(
     text: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     Button(
         onClick = onClick,
+        enabled = enabled,
         modifier = modifier.size(80.dp) // Large circular buttons
     ) {
         Text(

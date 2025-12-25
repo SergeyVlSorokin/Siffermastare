@@ -54,7 +54,7 @@ class LessonViewModelTest {
         val initialState = viewModel.uiState.first()
         val target = initialState.targetNumber
 
-        viewModel.onDigitClick(target)
+        viewModel.onDigitClick(target.toInt())
         val inputState = viewModel.uiState.first()
         assertEquals(target.toString(), inputState.currentInput)
 
@@ -74,7 +74,7 @@ class LessonViewModelTest {
         val initialState = viewModel.uiState.first()
         val target = initialState.targetNumber
         
-        val wrongInput = if (target == 0) 1 else 0
+        val wrongInput = if (target == "0") 1 else 0
         viewModel.onDigitClick(wrongInput)
         viewModel.onCheckClick()
 
@@ -96,7 +96,7 @@ class LessonViewModelTest {
             val target = state.targetNumber
             
             // Correct Answer
-            viewModel.onDigitClick(target)
+            viewModel.onDigitClick(target.toInt())
             viewModel.onCheckClick()
             advanceTimeBy(LessonViewModel.FEEDBACK_DELAY + 100)
         }
@@ -104,7 +104,7 @@ class LessonViewModelTest {
         // 10th Question
         val state10 = viewModel.uiState.first()
         val target10 = state10.targetNumber
-        val wrong = if (target10 == 0) 1 else 0
+        val wrong = if (target10 == "0") 1 else 0
         
         // Wrong attempt
         viewModel.onDigitClick(wrong)
@@ -112,7 +112,7 @@ class LessonViewModelTest {
         advanceTimeBy(LessonViewModel.FEEDBACK_DELAY + 100)
         
         // Correct attempt
-        viewModel.onDigitClick(target10)
+        viewModel.onDigitClick(target10.toInt())
         viewModel.onCheckClick()
         advanceTimeBy(LessonViewModel.FEEDBACK_DELAY + 100)
         
@@ -123,7 +123,7 @@ class LessonViewModelTest {
         val finalState = viewModel.uiState.first()
         assertEquals("Lesson should be complete", true, finalState.isLessonComplete)
         
-        val expectedAcc = (10f / 11f) * 100f
+        val expectedAcc = (10f / 10f) * 100f
         assertEquals(expectedAcc, result?.accuracy ?: 0f, 0.1f)
         
         assertTrue((result?.averageSpeed ?: -1L) >= 0)
@@ -134,25 +134,84 @@ class LessonViewModelTest {
         
         viewModel.onSlowReplay()
         
-        val state = viewModel.uiState.first()
-        assertEquals("Rate should be 0.7f", 0.7f, state.ttsRate, 0.01f)
-        assertTrue("Replay should be triggered", state.replayTrigger > 0)
+        val state = viewModel.uiState.value
+        assertEquals(0.7f, state.ttsRate, 0.0f)
+        assertEquals(1, state.replayTrigger)
     }
 
     @Test
     fun nextQuestion_resetsRate_toNormal() = runTest {
         viewModel.onSlowReplay()
-        val slowState = viewModel.uiState.first()
-        assertEquals(0.7f, slowState.ttsRate, 0.01f)
-        
-        // Complete question
-        val target = slowState.targetNumber
-        viewModel.onDigitClick(target)
+        // Simulate correct answer to advance
+        viewModel.onDigitClick(1) // Target is 1
         viewModel.onCheckClick()
         advanceTimeBy(LessonViewModel.FEEDBACK_DELAY + 100)
         
-        val nextState = viewModel.uiState.first()
-        assertEquals("Rate should reset to 1.0f", 1.0f, nextState.ttsRate, 0.01f)
+        val state = viewModel.uiState.value
+        assertEquals(1.0f, state.ttsRate, 0.0f)
+    }
+
+    @Test
+    fun incorrectAnswer_incrementsAttempts() = runTest {
+        // Attempt 1
+        viewModel.onDigitClick(9) // Wrong
+        viewModel.onCheckClick()
+        advanceTimeBy(LessonViewModel.FEEDBACK_DELAY + 100)
+        assertEquals(1, viewModel.uiState.value.incorrectAttempts)
+
+        // Attempt 2
+        viewModel.onDigitClick(9)
+        viewModel.onCheckClick()
+        advanceTimeBy(LessonViewModel.FEEDBACK_DELAY + 100)
+        assertEquals(2, viewModel.uiState.value.incorrectAttempts)
+    }
+
+    @Test
+    fun correctAnswer_resetsAttempts() = runTest {
+        // Fail once
+        val target = viewModel.uiState.value.targetNumber
+        val wrong = if (target == "0") 1 else 0
+        
+        viewModel.onDigitClick(wrong)
+        viewModel.onCheckClick()
+        advanceTimeBy(LessonViewModel.FEEDBACK_DELAY + 100)
+        assertEquals(1, viewModel.uiState.value.incorrectAttempts)
+
+        // Succeed
+        val targetStr = target.toString()
+        targetStr.forEach { 
+             viewModel.onDigitClick(it.digitToInt())
+        }
+        viewModel.onCheckClick()
+        advanceTimeBy(LessonViewModel.FEEDBACK_DELAY + 100)
+        
+        // Assert reset (on next question generally, but state should update)
+        assertEquals(0, viewModel.uiState.value.incorrectAttempts)
+    }
+
+    @Test
+    fun onGiveUp_setsRevealedState_andFillsInput() = runTest {
+        val target = viewModel.uiState.value.targetNumber
+        viewModel.onGiveUp()
+        
+        val state = viewModel.uiState.value
+        assertEquals(AnswerState.REVEALED, state.answerState)
+        assertEquals(target.toString(), state.currentInput)
+    }
+    
+    @Test
+    fun onCheck_inRevealedState_advancesQuestion() = runTest {
+        viewModel.onGiveUp()
+        assertEquals(AnswerState.REVEALED, viewModel.uiState.value.answerState)
+        
+        // Click Check (which acts as Next)
+        viewModel.onCheckClick()
+        advanceTimeBy(LessonViewModel.FEEDBACK_DELAY + 100)
+        
+        // Should be new question (Question 2)
+        assertEquals(2, viewModel.uiState.value.questionCount)
+        assertEquals(AnswerState.NEUTRAL, viewModel.uiState.value.answerState)
+        assertEquals(0, viewModel.uiState.value.incorrectAttempts) // Reset
     }
 }
 

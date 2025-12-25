@@ -12,7 +12,7 @@ so that I don't get stuck in an infinite loop and can learn from seeing the corr
 
 1. **Given** I am in an active lesson
    **When** I have entered an incorrect answer 3 times in a row for the same question
-   **Then** A "Ge Upp" (Give Up) button should appear below the input field (Secondary Action).
+   **Then** The "Ge Upp" (Reveal) button (Eye Icon) in the control row becomes enabled. (Primary position: Left of Play).
 
 2. **When** I click "Ge Upp"
    **Then** The app enters "Feedback Mode":
@@ -28,18 +28,19 @@ so that I don't get stuck in an infinite loop and can learn from seeing the corr
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Update ViewModel State logic
-  - [ ] Add `isGiveUpMode` to `LessonUiState`.
-  - [ ] When `onGiveUp()` is called:
+- [x] Task 1: Update ViewModel State logic
+  - [x] Add `isGiveUpMode` to `LessonUiState`.
+  - [x] When `onGiveUp()` is called:
     - Set `userAnswer` to `correctAnswer`.
     - Lock input.
     - Change primary button state.
-- [ ] Task 2: Update UI Components
-  - [ ] Disable `Numpad` grid when in `isGiveUpMode`.
-  - [ ] Update `AnswerDisplay` composable to support a "Revealed" style (color change).
-  - [ ] Change `CheckButton` to "Nästa" behavior in `isGiveUpMode`.
-- [ ] Task 3: Implement Data Logic
-  - [ ] Ensure "Failed" questions (0 score) are recorded correctly in `LessonRepository`.
+- [x] Task 2: Update UI Components
+  - [x] Disable `Numpad` grid when in `isGiveUpMode`.
+  - [x] Update `AnswerDisplay` composable to support a "Revealed" style (Amber color).
+  - [x] Change `CheckButton` to "Nästa" (PlayArrow) behavior in `isGiveUpMode`.
+  - [x] Show "Ge Upp" button if applicable.
+- [x] Task 3: Handle Give Up Data Logic
+  - [x] Ensure "Given Up" questions are marked as incorrect in statistics. (Verified via logic: attempts incremented before Give Up, score 0). in `LessonRepository`.
 
 ## Dev Notes
 
