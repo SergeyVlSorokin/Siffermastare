@@ -46,6 +46,8 @@ import androidx.compose.runtime.collectAsState
 import com.siffermastare.R
 import com.siffermastare.data.tts.TTSManager
 import com.siffermastare.ui.components.Numpad
+import com.siffermastare.ui.components.AnswerDisplay
+import com.siffermastare.ui.util.TimeFormatter
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.siffermastare.SiffermastareApplication
@@ -263,10 +265,10 @@ fun LessonScreen(
                     AnswerState.NEUTRAL -> MaterialTheme.colorScheme.onBackground
                 }
                 
-                Text(
-                    text = if (uiState.currentInput.isEmpty()) "_" else uiState.currentInput,
-                    style = MaterialTheme.typography.displayLarge,
-                    color = textColor,
+                AnswerDisplay(
+                    text = uiState.currentInput,
+                    textColor = textColor,
+                    isTimeFormat = uiState.lessonId.contains("time", ignoreCase = true),
                     modifier = Modifier.offset(x = shakeOffset.value.dp)
                 )
 

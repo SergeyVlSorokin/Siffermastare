@@ -30,7 +30,8 @@ data class LessonUiState(
     val answerState: AnswerState = AnswerState.NEUTRAL,
     val replayTrigger: Int = 0, // Increments to trigger replay
     val ttsRate: Float = 1.0f, // New: Speech Rate
-    val incorrectAttempts: Int = 0
+    val incorrectAttempts: Int = 0,
+    val lessonId: String = ""
 )
 
 
@@ -93,6 +94,7 @@ class LessonViewModel(
                 // Logic: If transitioning to neutral/new question, reset rate.
                 // We'll trust onCheckClick to do it, OR do it here if checking.
                 // Safest: When questionCount changes, reset rate.
+                lessonId = currentLessonId
             )
         }
         
@@ -104,6 +106,7 @@ class LessonViewModel(
 
     fun onDigitClick(digit: Int) {
         if (_uiState.value.answerState != AnswerState.NEUTRAL) return
+        if (_uiState.value.currentInput.length >= 8) return 
         _uiState.update { it.copy(currentInput = it.currentInput + digit) }
     }
 
