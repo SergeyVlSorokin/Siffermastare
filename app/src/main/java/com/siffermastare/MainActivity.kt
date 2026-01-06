@@ -51,6 +51,9 @@ class MainActivity : ComponentActivity() {
                                         // and Lesson state is cleared (ViewModel cleared)
                                         popUpTo(Screen.Home.route) { inclusive = false }
                                     }
+                                },
+                                onNavigateBack = {
+                                    navController.popBackStack()
                                 }
                             )
                         }

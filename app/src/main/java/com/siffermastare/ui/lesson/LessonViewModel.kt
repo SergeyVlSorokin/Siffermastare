@@ -31,7 +31,8 @@ data class LessonUiState(
     val replayTrigger: Int = 0, // Increments to trigger replay
     val ttsRate: Float = 1.0f, // New: Speech Rate
     val incorrectAttempts: Int = 0,
-    val lessonId: String = ""
+    val lessonId: String = "",
+    val isExitDialogVisible: Boolean = false
 )
 
 
@@ -162,7 +163,10 @@ class LessonViewModel(
         totalAttempts++
         
         // Delegate verification to Manager
-        val isCorrect = sessionManager.submitAnswer(currentInput)
+        val isTimeLesson = com.siffermastare.domain.validation.AnswerValidator.isTimeLesson(currentLessonId)
+        val validator = if (isTimeLesson) com.siffermastare.domain.validation.AnswerValidator::validateTime else null
+
+        val isCorrect = sessionManager.submitAnswer(currentInput, validator)
         
         viewModelScope.launch {
             if (isCorrect) {
@@ -227,5 +231,12 @@ class LessonViewModel(
 
     companion object {
         const val FEEDBACK_DELAY = 500L
+    }
+    fun onBackPress() {
+        _uiState.update { it.copy(isExitDialogVisible = true) }
+    }
+
+    fun onDismissExitDialog() {
+        _uiState.update { it.copy(isExitDialogVisible = false) }
     }
 }

@@ -38,9 +38,11 @@ class LessonSessionManager {
         }
     }
 
-    fun submitAnswer(input: String): Boolean {
+    fun submitAnswer(input: String, validator: ((String, String) -> Boolean)? = null): Boolean {
         val currentQ = _lessonState.value.currentQuestion ?: return false
-        val isCorrect = input == currentQ.targetValue
+        
+        val isCorrect = validator?.invoke(input, currentQ.targetValue) 
+            ?: (input == currentQ.targetValue)
 
         if (!isCorrect) {
             _lessonState.update { it.copy(mistakeCount = it.mistakeCount + 1) }

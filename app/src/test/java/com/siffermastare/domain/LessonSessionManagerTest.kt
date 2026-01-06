@@ -52,4 +52,18 @@ class LessonSessionManagerTest {
         val state = manager.lessonState.first()
         assertEquals(1, state.mistakeCount)
     }
+    @Test
+    fun `submitAnswer uses custom validator when provided`() = runTest {
+        val manager = LessonSessionManager()
+        // Override generator to produce known target "5"
+        manager.startLesson(fakeGenerator)
+        
+        // Validator that always returns true
+        val alwaysTrueValidator: (String, String) -> Boolean = { _, _ -> true }
+        
+        // Submit wrong answer "9", but with alwaysTrueValidator
+        val result = manager.submitAnswer("9", alwaysTrueValidator)
+        
+        assertTrue("Validator should override equality check", result)
+    }
 }

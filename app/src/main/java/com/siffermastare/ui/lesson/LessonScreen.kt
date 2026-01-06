@@ -48,6 +48,8 @@ import com.siffermastare.data.tts.TTSManager
 import com.siffermastare.ui.components.Numpad
 import com.siffermastare.ui.components.AnswerDisplay
 import com.siffermastare.ui.util.TimeFormatter
+import androidx.activity.compose.BackHandler
+import com.siffermastare.ui.components.ExitConfirmationDialog
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.siffermastare.SiffermastareApplication
@@ -64,6 +66,7 @@ import com.siffermastare.ui.theme.CorrectGreen
 fun LessonScreen(
     lessonId: String,
     onLessonComplete: (Float, Long) -> Unit,
+    onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -295,5 +298,22 @@ fun LessonScreen(
                 )
             }
         }
+    }
+
+    // Back Handler Logic
+    BackHandler(enabled = !uiState.isExitDialogVisible) {
+        viewModel.onBackPress()
+    }
+
+    if (uiState.isExitDialogVisible) {
+        ExitConfirmationDialog(
+            onConfirm = {
+                viewModel.onDismissExitDialog()
+                onNavigateBack()
+            },
+            onDismiss = {
+                viewModel.onDismissExitDialog()
+            }
+        )
     }
 }

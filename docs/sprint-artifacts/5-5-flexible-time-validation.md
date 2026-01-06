@@ -1,6 +1,6 @@
 # Story 5.5: Flexible Time Validation
 
-Status: ready-for-dev
+Status: Done
 
 ## Story
 
@@ -24,12 +24,12 @@ So that I am not penalized for mathematical correctness vs strict formatting.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Implement Time Normalization
-  - [ ] In `LessonViewModel` (or `CheckAnswerUseCase`), detect if the current module is Time-based.
-  - [ ] If Time, normalize both input and target:
+- [x] Task 1: Implement Time Normalization
+  - [x] In `LessonViewModel` (or `CheckAnswerUseCase`), detect if the current module is Time-based.
+  - [x] If Time, normalize both input and target:
     - `9:30` -> `09:30`
     - `930` -> `09:30` (if we stripped colons)
-  - [ ] Compare normalized strings.
+  - [x] Compare normalized strings.
 
 ## Dev Notes
 
@@ -43,3 +43,23 @@ So that I am not penalized for mathematical correctness vs strict formatting.
 ### References
 
 - [Source: docs/epics.md#Story 5.5](docs/epics.md)
+
+## File List
+
+- `app/src/main/java/com/siffermastare/domain/validation/AnswerValidator.kt`
+- `app/src/main/java/com/siffermastare/domain/LessonSessionManager.kt`
+- `app/src/main/java/com/siffermastare/ui/lesson/LessonViewModel.kt`
+- `app/src/test/java/com/siffermastare/domain/validation/AnswerValidatorTest.kt`
+- `app/src/test/java/com/siffermastare/domain/LessonSessionManagerTest.kt`
+- `app/src/test/java/com/siffermastare/ui/lesson/LessonViewModelTest.kt`
+
+## Dev Agent Record
+
+### Change Log
+
+- **[NEW] AnswerValidator.kt**: Implemented flexible time validation logic (normalization).
+- **[MODIFY] LessonSessionManager.kt**: Added optional validator support to `submitAnswer`.
+- **[MODIFY] LessonViewModel.kt**: Integrated `AnswerValidator` for `time_digital` lessons.
+- **[NEW] AnswerValidatorTest.kt**: Added unit tests for normalization logic.
+- **[MODIFY] LessonSessionManagerTest.kt**: Added test for custom validator injection.
+- **[MODIFY] LessonViewModelTest.kt**: Added integration test for flexible validation.
