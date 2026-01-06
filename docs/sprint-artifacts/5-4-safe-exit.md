@@ -1,6 +1,6 @@
 # Story 5.4: Safe Exit
 
-Status: ready-for-review
+Status: Done
 
 ## Story
 
@@ -71,3 +71,7 @@ So that I don't get stuck losing my progress for the current session.
 - Dialog appears/dismisses correctly.
 - "Avsluta" properly pops back stack without saving stats.
 - Tests passing.
+
+### Code Review Fixes
+- Extracted hardcoded strings to `strings.xml`.
+- Cleaned up unused imports and comments in `LessonScreen.kt`.

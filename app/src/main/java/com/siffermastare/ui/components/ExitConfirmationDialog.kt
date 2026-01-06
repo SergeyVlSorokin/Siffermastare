@@ -15,16 +15,16 @@ fun ExitConfirmationDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = "Avsluta lektionen?") },
-        text = { Text(text = "Dina framsteg sparas inte.") },
+        title = { Text(text = stringResource(R.string.dialog_exit_title)) },
+        text = { Text(text = stringResource(R.string.dialog_exit_message)) },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text("Avsluta", color = MaterialTheme.colorScheme.error)
+                Text(stringResource(R.string.dialog_exit_confirm), color = MaterialTheme.colorScheme.error)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Avbryt")
+                Text(stringResource(R.string.dialog_exit_cancel))
             }
         }
     )

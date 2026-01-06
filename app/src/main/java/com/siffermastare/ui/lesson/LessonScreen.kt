@@ -18,8 +18,6 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.filled.SlowMotionVideo
 import androidx.compose.material3.ButtonDefaults // For button colors if needed
 import androidx.compose.material3.OutlinedButton
@@ -51,7 +49,7 @@ import com.siffermastare.ui.util.TimeFormatter
 import androidx.activity.compose.BackHandler
 import com.siffermastare.ui.components.ExitConfirmationDialog
 import kotlinx.coroutines.launch
-import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
 import com.siffermastare.SiffermastareApplication
 import com.siffermastare.ui.lesson.LessonViewModelFactory
 import com.siffermastare.ui.theme.CorrectGreen
@@ -175,7 +173,8 @@ fun LessonScreen(
                 Text(
                     text = stringResource(R.string.lesson_progress_format, uiState.questionCount, uiState.totalQuestions),
                     style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onBackground // Fix: Was secondary(yellow)
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -262,7 +261,7 @@ fun LessonScreen(
 
                 // User Input Display with Color and Shake
                 val textColor = when (uiState.answerState) {
-                    AnswerState.CORRECT -> CorrectGreen // Fix: Was Color.Green
+                    AnswerState.CORRECT -> CorrectGreen
                     AnswerState.INCORRECT -> MaterialTheme.colorScheme.error
                     AnswerState.REVEALED -> Color(0xFFFFA000) // Amber
                     AnswerState.NEUTRAL -> MaterialTheme.colorScheme.onBackground

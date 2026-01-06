@@ -8,6 +8,12 @@
     <string name="lesson_slow_replay">Sakta</string>
     <string name="lesson_give_up">Ge Upp</string>
     
+    <!-- Exit Dialog -->
+    <string name="dialog_exit_title">Avsluta lektionen?</string>
+    <string name="dialog_exit_message">Dina framsteg sparas inte.</string>
+    <string name="dialog_exit_confirm">Avsluta</string>
+    <string name="dialog_exit_cancel">Avbryt</string>
+    
     <!-- Summary Screen -->
     <string name="lesson_complete_title">Lesson Complete!</string>
     <string name="lesson_complete_message">Well done! You have finished the lesson.</string>
