@@ -108,3 +108,43 @@
     * **Acceptance Criteria:**
         1.  Query Room DB for last 5 sessions.
         2.  Display simple list on `HomeScreen` showing recent Accuracy/Speed.
+
+### Epic 6: Advanced Content (Nuances & Real World)
+**Goal:** Move beyond basic mechanics to difficult/common Swedish specific number patterns.
+
+* **Story 6.1: Informal Time Generator (Analogue)**
+    * **As a** User, **I want** to practice "analogue" time speaking (e.g., "kvart i tre"), **so that** I can understand how Swedes actually tell time.
+    * **Acceptance Criteria:**
+        1.  New `InformalTimeGenerator` implementing existing interface.
+        2.  Logic for: "över", "i", "halv", "kvart över", "kvart i", "fem i halv", "fem över halv".
+        3.  TTS speaks informal string (e.g., "fem i halv tre").
+        4.  User must enter digital format (e.g., 0225 or 1425).
+
+* **Story 6.2: Tricky Pairs Generator**
+    * **As a** User, **I want** a dedicated mode for easily confused numbers, **so that** I can fine-tune my listening.
+    * **Acceptance Criteria:**
+        1.  Generator that exclusively produces pairs like: 7/20 (sju/tjugo), 6/60 (sex/sextio), 13/30 (tretton/trettio).
+        2.  Higher frequency of these problematic numbers compared to random noise.
+
+* **Story 6.3: Phone Number Generator**
+    * **As a** User, **I want** to practice listening to long sequences of digits, **so that** I can write down phone numbers.
+    * **Acceptance Criteria:**
+        1.  Generate standard Swedish mobile format (07x-xxx xx xx).
+        2.  TTS speaks them in natural rhythm (groups).
+        3.  Input field adapts to allow longer input (10 digits).
+        4.  Validation checks the full sequence.
+
+* **Story 6.4: Fractions Generator**
+    * **As a** User, **I want** to understand spoken fractions, **so that** I can follow recipes or measurements.
+    * **Acceptance Criteria:**
+        1.  Update Numpad to include a "/" button (or reuse an empty slot).
+        2.  Generate common fractions: 1/2, 1/3, 1/4, 3/4.
+        3.  Speak: "en halv", "en tredjedel", "en fjärdedel", "tre fjärdedelar".
+        4.  User types "1", "/", "2".
+
+* **Story 6.5: Decimals Generator**
+    * **As a** User, **I want** to practice numbers with decimal points, **so that** I can handle prices and precise measurements.
+    * **Acceptance Criteria:**
+        1.  Update Numpad to include a "," button.
+        2.  Speak: "tre komma fem" (3,5) or prices "tre och femtio" (3,50).
+        3.  User types "3", ",", "5".
