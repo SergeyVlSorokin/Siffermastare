@@ -55,7 +55,10 @@ so that I can fine-tune my listening and distinguish between similar sounding nu
 
 ### Project Structure Notes
 
-- `domain/generators/TrickyPairsGenerator.kt`
+- `domain/generators/TrickyPairsGenerator.kt` [NEW]
+- `domain/generators/NumberGeneratorFactory.kt` [MODIFIED]
+- `ui/home/HomeScreen.kt` [MODIFIED]
+- `res/values/strings.xml` [MODIFIED]
 
 ### References
 

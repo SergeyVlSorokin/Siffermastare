@@ -90,6 +90,13 @@ fun HomeScreen(
         }
 
         Button(
+            onClick = { navController.navigate(Screen.Lesson.createRoute("tricky_pairs")) },
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 8.dp)
+        ) {
+            Text(stringResource(R.string.menu_tricky_pairs))
+        }
+
+        Button(
             onClick = { navController.navigate(Screen.Lesson.createRoute("cardinal_20_100")) },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 8.dp)
         ) {
@@ -123,6 +130,8 @@ fun HomeScreen(
         ) {
             Text(stringResource(R.string.menu_time_informal))
         }
+
+
     }
 }
 
