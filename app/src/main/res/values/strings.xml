@@ -31,4 +31,5 @@
     <string name="menu_numbers_100_1000">Numbers 100-1000</string>
     <string name="menu_ordinals">Ordinals (1:a - 20:e)</string>
     <string name="menu_time">Time (Digital)</string>
+    <string name="menu_time_informal">Time (Analogue)</string>
 </resources>

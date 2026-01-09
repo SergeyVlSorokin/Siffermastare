@@ -48,4 +48,18 @@ class AnswerValidatorTest {
         assertTrue(AnswerValidator.validateTime("0930", "0930"))
         assertTrue(AnswerValidator.validateTime("09:30", "0930"))
     }
+
+    @Test
+    fun validateTime_handlesMultipleTargets() {
+        // "1430|0230" should accept "1430" OR "0230"
+        val target = "1430|0230"
+        assertTrue(AnswerValidator.validateTime("1430", target))
+        assertTrue(AnswerValidator.validateTime("0230", target))
+        assertTrue(AnswerValidator.validateTime("14:30", target))
+        assertTrue(AnswerValidator.validateTime("2:30", target))
+        
+        // Should rely on "0230" -> "02:30" == "02:30"
+        
+        assertFalse(AnswerValidator.validateTime("1230", target))
+    }
 }

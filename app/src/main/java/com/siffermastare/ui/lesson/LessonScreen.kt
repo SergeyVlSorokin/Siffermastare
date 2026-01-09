@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.SlowMotionVideo
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.ButtonDefaults // For button colors if needed
 import androidx.compose.material3.OutlinedButton
 
@@ -173,7 +174,6 @@ fun LessonScreen(
                 Text(
                     text = stringResource(R.string.lesson_progress_format, uiState.questionCount, uiState.totalQuestions),
                     style = MaterialTheme.typography.labelLarge,
-                    style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 
@@ -204,7 +204,7 @@ fun LessonScreen(
                             modifier = Modifier.size(64.dp)
                         ) {
                             Icon(
-                                imageVector = androidx.compose.material.icons.Icons.Outlined.Visibility,
+                                imageVector = androidx.compose.material.icons.Icons.Filled.Visibility,
                                 contentDescription = "Give Up",
                                 modifier = Modifier.fillMaxSize(),
                                 tint = if (isRevealEnabled) Color.Black else Color.LightGray

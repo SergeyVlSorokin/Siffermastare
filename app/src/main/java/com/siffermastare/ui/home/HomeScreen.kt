@@ -116,6 +116,13 @@ fun HomeScreen(
         ) {
             Text(stringResource(R.string.menu_time))
         }
+
+        Button(
+            onClick = { navController.navigate(Screen.Lesson.createRoute("time_informal")) },
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 8.dp)
+        ) {
+            Text(stringResource(R.string.menu_time_informal))
+        }
     }
 }
 

@@ -12,6 +12,7 @@ object NumberGeneratorFactory {
             "cardinal_100_1000" -> CardinalGenerator(100, 1000)
             "ordinal_1_20" -> OrdinalGenerator(1, 20)
             "time_digital" -> TimeGenerator()
+            "time_informal" -> InformalTimeGenerator()
             else -> CardinalGenerator(0, 10) // Fallback/Default
         }
     }

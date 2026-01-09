@@ -37,7 +37,7 @@ development_status:
   epic-5-retrospective: done
 
   epic-6: in-progress
-  6-1-informal-time-generator: ready-for-dev
+  6-1-informal-time-generator: done
   6-2-tricky-pairs-generator: ready-for-dev
   6-3-phone-number-generator: ready-for-dev
   6-4-fractions-generator: ready-for-dev

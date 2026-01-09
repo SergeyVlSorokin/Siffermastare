@@ -3,16 +3,21 @@ package com.siffermastare.domain.validation
 object AnswerValidator {
     
     fun isTimeLesson(lessonId: String): Boolean {
-        return lessonId == "time_digital"
+        return lessonId == "time_digital" || lessonId == "time_informal"
     }
 
     fun validateTime(input: String, target: String): Boolean {
         if (input.isEmpty()) return false
         
         val normalizedInput = normalizeTimeInput(input) ?: return false
-        val normalizedTarget = normalizeTimeInput(target) ?: return false
         
-        return normalizedInput == normalizedTarget
+        // Handle multiple correct answers separated by pipe "|"
+        val targets = target.split("|")
+        
+        return targets.any { t ->
+            val normalizedTarget = normalizeTimeInput(t)
+            normalizedTarget != null && normalizedInput == normalizedTarget
+        }
     }
     
     private fun normalizeTimeInput(input: String): String? {

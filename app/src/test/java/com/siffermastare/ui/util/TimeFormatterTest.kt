@@ -28,6 +28,16 @@ class TimeFormatterTest {
         assertEquals("09:30", TimeFormatter.format("0930"))
         assertEquals("14:45", TimeFormatter.format("1445"))
     }
+
+    @Test
+    fun format_handlesPipeDelimitedValues() {
+        // "1846|0646" -> "18:46|06:46"
+        assertEquals("18:46|06:46", TimeFormatter.format("1846|0646"))
+        
+        // Mixed lengths
+        // "930|2130" -> "9:30|21:30"
+        assertEquals("9:30|21:30", TimeFormatter.format("930|2130"))
+    }
     
 
 }
