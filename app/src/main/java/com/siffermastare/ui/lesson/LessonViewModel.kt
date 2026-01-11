@@ -32,7 +32,8 @@ data class LessonUiState(
     val ttsRate: Float = 1.0f, // New: Speech Rate
     val incorrectAttempts: Int = 0,
     val lessonId: String = "",
-    val isExitDialogVisible: Boolean = false
+    val isExitDialogVisible: Boolean = false,
+    val maxInputLength: Int = 8
 )
 
 
@@ -77,6 +78,9 @@ class LessonViewModel(
         totalTimeMs = 0L
         finalAccuracy = 0f
         finalAvgSpeed = 0L
+        
+        val newMaxLength = if (lessonId == "phone_number") 12 else 8
+        _uiState.update { it.copy(maxInputLength = newMaxLength) }
     }
 
     private fun updateUiState(sessionState: LessonState) {
@@ -107,7 +111,7 @@ class LessonViewModel(
 
     fun onDigitClick(digit: Int) {
         if (_uiState.value.answerState != AnswerState.NEUTRAL) return
-        if (_uiState.value.currentInput.length >= 8) return 
+        if (_uiState.value.currentInput.length >= _uiState.value.maxInputLength) return 
         _uiState.update { it.copy(currentInput = it.currentInput + digit) }
     }
 

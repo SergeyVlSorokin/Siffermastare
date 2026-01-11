@@ -62,4 +62,26 @@ class AnswerValidatorTest {
         
         assertFalse(AnswerValidator.validateTime("1230", target))
     }
+    @Test
+    fun isTimeLesson_returnsTrueForPhoneNumber() {
+        assertTrue(AnswerValidator.isTimeLesson("phone_number"))
+    }
+
+    @Test
+    fun validateTime_validatesPhoneNumberIgnoreSeparators() {
+        // Phone numbers (length > 5, no colon) should strip spaces/hyphens
+        val target = "0701234567"
+        
+        // Exact match
+        assertTrue(AnswerValidator.validateTime("0701234567", target))
+        
+        // With spaces (Hybrid style)
+        assertTrue(AnswerValidator.validateTime("070 123 45 67", target))
+        
+        // With hyphens
+        assertTrue(AnswerValidator.validateTime("070-123 45 67", target))
+        
+        // Incorrect
+        assertFalse(AnswerValidator.validateTime("070 123 45 68", target))
+    }
 }

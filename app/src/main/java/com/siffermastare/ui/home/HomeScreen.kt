@@ -131,6 +131,13 @@ fun HomeScreen(
             Text(stringResource(R.string.menu_time_informal))
         }
 
+        Button(
+            onClick = { navController.navigate(Screen.Lesson.createRoute("phone_number")) },
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 8.dp)
+        ) {
+            Text(stringResource(R.string.menu_phone_numbers))
+        }
+
 
     }
 }

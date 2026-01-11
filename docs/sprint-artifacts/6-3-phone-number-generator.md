@@ -21,10 +21,12 @@ so that I can improve my ability to write down phone numbers in real life.
 
 3. **Given** TTS requirements
    **When** speaking the phone number
-   **Then** it should speak in natural rhythmic groups: "Noll sju tre... etthundratjugotre... fyrtiofem... sextiosju".
-   **Or** simply digit groups "073 - 123 45 67" spoken as "Noll sju tre... ett två tre... fyra fem... sex sju".
-   *Dev Note: Standard Swedish practice varies. Let's aim for group-based speaking if possible, or simple digit-by-digit with pauses if grouping logic is too complex for TTS.*
-   *Refinement: "Noll sju X" (prefix) ... "XXX" (group 1) ... "XX" (group 2) ... "XX" (group 3) is the standard.*
+   **Then** it should speak in a "Hybrid" format for clarity and naturalness:
+    - **Prefix (07x):** Digits ("noll sju noll")
+    - **Group 1 (xxx):** Digits ("ett två tre")
+    - **Group 2 (xx):** Whole number ("fyrtiofem")
+    - **Group 3 (xx):** Whole number ("sextiosju")
+    - *Example Spoken Text:* "0 7 0, 1 2 3, 45, 67"
 
 4. **When** answering
    **Then** the user types 10 digits.
@@ -32,20 +34,20 @@ so that I can improve my ability to write down phone numbers in real life.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Create Generator Logic
-  - [ ] Create `PhoneNumberGenerator` class.
-  - [ ] Implement `generate()` to produce:
+- [x] Task 1: Create Generator Logic
+  - [x] Create `PhoneNumberGenerator` class.
+  - [x] Implement `generate()` to produce:
     - Target: "0701234567" (raw digits).
     - Spoken Text: "070, 123, 45, 67" (with pauses/commas to hint TTS).
     - Visual Hint (Optional): "07x-xxx xx xx".
 
-- [ ] Task 2: Update UI for Long Input
-  - [ ] Update `LessonScreen` to handle `maxLength` dynamically.
-  - [ ] If current limit is 4, increase to 10 for this module.
-  - [ ] Ensure Numpad interactions work smoothly with 10 digits.
+- [x] Task 2: Update UI for Long Input
+  - [x] Update `LessonScreen` to handle `maxLength` dynamically.
+  - [x] If current limit is 4, increase to 10 for this module.
+  - [x] Ensure Numpad interactions work smoothly with 10 digits.
 
-- [ ] Task 3: Validation
-  - [ ] Ensure `AnswerValidator` checks the raw digit sequence.
+- [x] Task 3: Validation
+  - [x] Ensure `AnswerValidator` checks the raw digit sequence.
 
 ## Dev Notes
 
@@ -57,8 +59,12 @@ so that I can improve my ability to write down phone numbers in real life.
   - *Keep it simple: Focus on mobile (10 digits) for MVP.*
 
 ### Project Structure Notes
-
-- `domain/generators/PhoneNumberGenerator.kt`
+- `domain/generators/PhoneNumberGenerator.kt` [NEW]
+- `domain/generators/NumberGeneratorFactory.kt` [MODIFIED]
+- `domain/validation/AnswerValidator.kt` [MODIFIED]
+- `ui/lesson/LessonViewModel.kt` [MODIFIED]
+- `ui/home/HomeScreen.kt` [MODIFIED]
+- `res/values/strings.xml` [MODIFIED]
 
 ### References
 
