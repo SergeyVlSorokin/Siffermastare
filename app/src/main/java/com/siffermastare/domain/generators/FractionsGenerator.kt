@@ -1,6 +1,7 @@
 package com.siffermastare.domain.generators
 
 import com.siffermastare.domain.models.Question
+import com.siffermastare.domain.utils.SwedishNumberFormatter
 
 class FractionsGenerator : NumberGenerator {
     
@@ -19,22 +20,6 @@ class FractionsGenerator : NumberGenerator {
             9 to "niondel",
             10 to "tiondel"
         )
-        
-        private fun numberToText(n: Int): String {
-            return when (n) {
-                1 -> "ett" 
-                2 -> "två"
-                3 -> "tre"
-                4 -> "fyra"
-                5 -> "fem"
-                6 -> "sex"
-                7 -> "sju"
-                8 -> "åtta"
-                9 -> "nio"
-                10 -> "tio"
-                else -> n.toString()
-            }
-        }
     }
     
     override fun generateLesson(count: Int): List<Question> {
@@ -54,7 +39,7 @@ class FractionsGenerator : NumberGenerator {
     }
 
     private fun formatSpokenText(numerator: Int, denominator: Int): String {
-        val numStr = if (numerator == 1) "en" else numberToText(numerator)
+        val numStr = if (numerator == 1) "en" else SwedishNumberFormatter.toText(numerator)
         
         val baseDenom = DENOMINATOR_NAMES[denominator] ?: "${denominator}:del"
         val denStr = if (denominator == 2 && numerator > 1) "halvor" else baseDenom

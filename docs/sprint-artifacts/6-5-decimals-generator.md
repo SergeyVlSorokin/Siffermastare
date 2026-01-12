@@ -1,6 +1,6 @@
 # Story 6.5: Decimals Generator
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -29,19 +29,19 @@ so that I can handle prices ("3,50") and precise measurements ("3,5") in real Sw
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Create Generator Logic
-  - [ ] Create `DecimalsGenerator` class.
-  - [ ] Generate numbers with 1 or 2 decimal places.
-  - [ ] Convert string to Swedish spoken format (use "komma").
-  - [ ] *Optional/Stretch:* specialized "Price" logic "kronor och öre" (Start simple with "komma").
+- [x] Task 1: Create Generator Logic
+  - [x] Create `DecimalsGenerator` class.
+  - [x] Generate numbers with 1 or 2 decimal places.
+  - [x] Convert string to Swedish spoken format (use "komma").
+  - [x] *Optional/Stretch:* specialized "Price" logic "kronor och öre" (Start simple with "komma").
 
-- [ ] Task 2: UI integration
-  - [ ] Reuse the Numpad refactor from Story 6.4.
-  - [ ] set `specialKeyChar = ','` when this module is active.
+- [x] Task 2: UI integration
+  - [x] Reuse the Numpad refactor from Story 6.4.
+  - [x] set `specialKeyChar = ','` when this module is active.
 
-- [ ] Task 3: Input Logic
-  - [ ] Ensure "," is handled in state.
-  - [ ] Validator compares "3,5" vs "3,5".
+- [x] Task 3: Input Logic
+  - [x] Ensure "," is handled in state.
+  - [x] Validator compares "3,5" vs "3,5".
 
 ## Dev Notes
 
@@ -59,3 +59,14 @@ so that I can handle prices ("3,50") and precise measurements ("3,5") in real Sw
 ### References
 
 - [Source: docs/prd/epic-details.md#Story 6.5](docs/prd/epic-details.md)
+
+## File List
+- app/src/main/java/com/siffermastare/domain/generators/DecimalsGenerator.kt
+- app/src/main/java/com/siffermastare/domain/generators/FractionsGenerator.kt
+- app/src/main/java/com/siffermastare/domain/utils/SwedishNumberFormatter.kt
+- app/src/main/java/com/siffermastare/domain/generators/NumberGeneratorFactory.kt
+- app/src/main/java/com/siffermastare/ui/lesson/LessonScreen.kt
+- app/src/main/java/com/siffermastare/ui/home/HomeScreen.kt
+- app/src/main/res/values/strings.xml
+- app/src/test/java/com/siffermastare/domain/generators/DecimalsGeneratorTest.kt
+- app/src/test/java/com/siffermastare/domain/utils/SwedishNumberFormatterTest.kt

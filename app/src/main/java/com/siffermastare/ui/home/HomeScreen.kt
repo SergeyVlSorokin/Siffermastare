@@ -146,6 +146,13 @@ fun HomeScreen(
             Text(stringResource(R.string.menu_fractions))
         }
 
+        Button(
+            onClick = { navController.navigate(Screen.Lesson.createRoute(com.siffermastare.domain.generators.NumberGeneratorFactory.ID_DECIMALS)) },
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 8.dp)
+        ) {
+            Text(stringResource(R.string.menu_decimals))
+        }
+
 
     }
 }

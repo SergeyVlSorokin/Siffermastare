@@ -306,7 +306,11 @@ fun LessonScreen(
                 // Custom Numpad
                 val isInputLocked = uiState.answerState == AnswerState.REVEALED
                 // Determine special key based on lesson
-                val specialKeyChar = if (uiState.lessonId.contains(com.siffermastare.domain.generators.NumberGeneratorFactory.ID_FRACTIONS, ignoreCase = true)) '/' else null
+                val specialKeyChar = when {
+                    uiState.lessonId.contains(com.siffermastare.domain.generators.NumberGeneratorFactory.ID_FRACTIONS, ignoreCase = true) -> '/'
+                    uiState.lessonId.contains(com.siffermastare.domain.generators.NumberGeneratorFactory.ID_DECIMALS, ignoreCase = true) -> ','
+                    else -> null
+                }
                 
                 Numpad(
                     onDigitClick = { digit ->

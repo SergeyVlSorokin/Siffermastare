@@ -15,6 +15,7 @@ object NumberGeneratorFactory {
     const val ID_TRICKY_PAIRS = "tricky_pairs"
     const val ID_PHONE_NUMBER = "phone_number"
     const val ID_FRACTIONS = "fractions"
+    const val ID_DECIMALS = "decimals"
 
     fun create(id: String): NumberGenerator {
         return when (id) {
@@ -27,6 +28,7 @@ object NumberGeneratorFactory {
             ID_TRICKY_PAIRS -> TrickyPairsGenerator()
             ID_PHONE_NUMBER -> PhoneNumberGenerator()
             ID_FRACTIONS -> FractionsGenerator()
+            ID_DECIMALS -> DecimalsGenerator()
             else -> CardinalGenerator(0, 10) // Fallback/Default
         }
     }
