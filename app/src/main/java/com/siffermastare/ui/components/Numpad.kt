@@ -38,10 +38,10 @@ import androidx.compose.ui.unit.dp
 fun Numpad(
     onDigitClick: (Int) -> Unit,
     onBackspaceClick: () -> Unit,
-    onCheckClick: () -> Unit,
+    onSpecialKeyClick: () -> Unit = {},
+    specialKeyChar: Char? = null,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    checkIcon: androidx.compose.ui.graphics.vector.ImageVector = Icons.Default.Check
+    enabled: Boolean = true
 ) {
     Column(
         modifier = modifier
@@ -80,7 +80,7 @@ fun Numpad(
             NumpadButton(text = "9", onClick = { onDigitClick(9) }, enabled = enabled)
         }
 
-        // Row 4: Backspace, 0, Check
+        // Row 4: Backspace, 0, Special Key
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
@@ -104,31 +104,15 @@ fun Numpad(
             // 0 Button
             NumpadButton(text = "0", onClick = { onDigitClick(0) }, enabled = enabled)
 
-            // Check Button (Always enabled if Next functionality? Or enabled param controls it?)
-            // If we are in REVEALED state, Numpad is disabled (digits).
-            // But CHECK button becomes NEXT button and MUST BE ENABLED.
-            // So 'enabled' param should apply to digits/backspace.
-            // Check button should probably remain enabled or have its own control?
-            // "Disable Numpad grid" implies digits.
-            // I will update NumpadButton to take enabled.
-            // For Check Button, I will keep it passed through enabled? No, logic requires Next to work.
-            // Solution: Add checkEnabled logic? Or assume Check is always active unless app logic blocks it.
-            // For now, I'll allow Check button to stay enabled even if 'enabled' (digits) is false.
-            // Wait, if I pass enabled=false, typically user expects WHOLE component disabled.
-            // But here I want Input Locked. Meaning Digits/Backspace disabled. Check/Next enabled.
-            // I'll call the param 'inputEnabled' or just apply 'enabled' to digits only.
-            // Let's refine 'enabled' behavior: Applies to DIGITS and BACKSPACE. Check is separate.
-            Button(
-                onClick = onCheckClick,
-                modifier = Modifier.size(80.dp), // Check button prominent
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+            // Special Key or Spacer
+            if (specialKeyChar != null) {
+                NumpadButton(
+                    text = specialKeyChar.toString(),
+                    onClick = onSpecialKeyClick,
+                    enabled = enabled
                 )
-            ) {
-                Icon(
-                    imageVector = checkIcon,
-                    contentDescription = "Check"
-                )
+            } else {
+                Spacer(modifier = Modifier.size(80.dp))
             }
         }
     }

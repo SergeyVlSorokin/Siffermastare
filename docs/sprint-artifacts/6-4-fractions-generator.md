@@ -1,6 +1,6 @@
 # Story 6.4: Fractions Generator
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -37,20 +37,26 @@ so that I can understand recipes, measurements, and other contexts where "parts 
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Create Generator Logic
-  - [ ] Create `FractionsGenerator` class.
-  - [ ] Implement robust logic for "halv", "tredjedel", "fjärdedel" vs "femtedel/sjättedel".
-  - [ ] Handle plural form ("två tredjedelar").
+- [x] Task 1: Create Generator Logic
+  - [x] Create `FractionsGenerator` class.
+  - [x] Implement robust logic for "halv", "tredjedel", "fjärdedel" vs "femtedel/sjättedel".
+  - [x] Handle plural form ("två tredjedelar").
 
-- [ ] Task 2: UI Refactoring (Global Change)
-  - [ ] Move "Check" button out of the Numpad grid (place between Input and Numpad).
-  - [ ] Update `Numpad` composable to accept a `specialKeyChar: Char?` argument.
-  - [ ] If `specialKeyChar` is provided (e.g. '/'), render it in the bottom-right slot.
-  - [ ] If null, render an empty/invisible slot.
+- [x] Task 2: UI Refactoring (Global Change)
+  - [x] Move "Check" button out of the Numpad grid (place between Input and Numpad).
+  - [x] Update `Numpad` composable to accept a `specialKeyChar: Char?` argument.
+  - [x] If `specialKeyChar` is provided (e.g. '/'), render it in the bottom-right slot.
+  - [x] If null, render an empty/invisible slot.
 
-- [ ] Task 3: Input Logic
-  - [ ] Ensure "/" character is handled in `currentInput` state.
-  - [ ] Validator should handle the string comparison "1/2" == "1/2".
+- [x] Task 3: Input Logic
+  - [x] Ensure "/" character is handled in `currentInput` state.
+  - [x] Validator should handle the string comparison "1/2" == "1/2".
+
+- [x] Task 4: Code Review & Refactoring
+  - [x] Refactor `FractionsGenerator` to use constants and maps.
+  - [x] Clean up `LessonScreen` (unused code).
+  - [x] Standardize Lesson IDs with `NumberGeneratorFactory` constants.
+
 
 ## Dev Notes
 
@@ -71,3 +77,13 @@ so that I can understand recipes, measurements, and other contexts where "parts 
 ### References
 
 - [Source: docs/prd/epic-details.md#Story 6.4](docs/prd/epic-details.md)
+
+## File List
+- `app/src/main/java/com/siffermastare/domain/generators/FractionsGenerator.kt` [NEW]
+- `app/src/test/java/com/siffermastare/domain/generators/FractionsGeneratorTest.kt` [NEW]
+- `app/src/main/java/com/siffermastare/ui/components/Numpad.kt` [MODIFIED]
+- `app/src/main/java/com/siffermastare/ui/lesson/LessonScreen.kt` [MODIFIED]
+- `app/src/main/java/com/siffermastare/ui/lesson/LessonViewModel.kt` [MODIFIED]
+- `app/src/main/java/com/siffermastare/domain/generators/NumberGeneratorFactory.kt` [MODIFIED]
+- `app/src/main/res/values/strings.xml` [MODIFIED]
+- `app/src/main/java/com/siffermastare/ui/home/HomeScreen.kt` [MODIFIED]

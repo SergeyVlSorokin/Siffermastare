@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -20,8 +21,8 @@ import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.SlowMotionVideo
 import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults // For button colors if needed
-import androidx.compose.material3.OutlinedButton
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -54,6 +55,7 @@ import kotlinx.coroutines.launch
 import com.siffermastare.SiffermastareApplication
 import com.siffermastare.ui.lesson.LessonViewModelFactory
 import com.siffermastare.ui.theme.CorrectGreen
+import com.siffermastare.domain.generators.NumberGeneratorFactory
 
 /**
  * Lesson screen composable.
@@ -274,14 +276,38 @@ fun LessonScreen(
                     modifier = Modifier.offset(x = shakeOffset.value.dp)
                 )
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-
+                // Check / Next Button
+                val checkIcon = if (uiState.answerState == AnswerState.REVEALED) {
+                    androidx.compose.material.icons.Icons.Default.PlayArrow 
+                } else {
+                    androidx.compose.material.icons.Icons.Default.Check
+                }
+                
+                Button(
+                    onClick = { viewModel.onCheckClick() },
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f) // 80% width for prominence
+                        .height(56.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Icon(
+                        imageVector = checkIcon,
+                        contentDescription = "Check",
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Custom Numpad
                 val isInputLocked = uiState.answerState == AnswerState.REVEALED
+                // Determine special key based on lesson
+                val specialKeyChar = if (uiState.lessonId.contains(com.siffermastare.domain.generators.NumberGeneratorFactory.ID_FRACTIONS, ignoreCase = true)) '/' else null
+                
                 Numpad(
                     onDigitClick = { digit ->
                         viewModel.onDigitClick(digit)
@@ -289,11 +315,13 @@ fun LessonScreen(
                     onBackspaceClick = {
                         viewModel.onBackspaceClick()
                     },
-                    onCheckClick = {
-                        viewModel.onCheckClick()
+                    onSpecialKeyClick = {
+                         if (specialKeyChar != null) {
+                             viewModel.onSpecialKeyClick(specialKeyChar)
+                         }
                     },
-                    enabled = !isInputLocked,
-                    checkIcon = if (isInputLocked) androidx.compose.material.icons.Icons.Default.PlayArrow else androidx.compose.material.icons.Icons.Default.Check
+                    specialKeyChar = specialKeyChar,
+                    enabled = !isInputLocked
                 )
             }
         }

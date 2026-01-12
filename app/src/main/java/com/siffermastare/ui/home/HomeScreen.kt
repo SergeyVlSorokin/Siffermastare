@@ -23,6 +23,7 @@ import com.siffermastare.R
 import com.siffermastare.SiffermastareApplication
 import com.siffermastare.ui.navigation.Screen
 import com.siffermastare.ui.theme.SiffermästareTheme
+import com.siffermastare.domain.generators.NumberGeneratorFactory
 
 
 /**
@@ -132,10 +133,17 @@ fun HomeScreen(
         }
 
         Button(
-            onClick = { navController.navigate(Screen.Lesson.createRoute("phone_number")) },
+            onClick = { navController.navigate(Screen.Lesson.createRoute(com.siffermastare.domain.generators.NumberGeneratorFactory.ID_PHONE_NUMBER)) },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 8.dp)
         ) {
             Text(stringResource(R.string.menu_phone_numbers))
+        }
+
+        Button(
+            onClick = { navController.navigate(Screen.Lesson.createRoute(com.siffermastare.domain.generators.NumberGeneratorFactory.ID_FRACTIONS)) },
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 8.dp)
+        ) {
+            Text(stringResource(R.string.menu_fractions))
         }
 
 

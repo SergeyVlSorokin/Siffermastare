@@ -79,7 +79,7 @@ class LessonViewModel(
         finalAccuracy = 0f
         finalAvgSpeed = 0L
         
-        val newMaxLength = if (lessonId == "phone_number") 12 else 8
+        val newMaxLength = if (lessonId == com.siffermastare.domain.generators.NumberGeneratorFactory.ID_PHONE_NUMBER) 12 else 8
         _uiState.update { it.copy(maxInputLength = newMaxLength) }
     }
 
@@ -113,6 +113,12 @@ class LessonViewModel(
         if (_uiState.value.answerState != AnswerState.NEUTRAL) return
         if (_uiState.value.currentInput.length >= _uiState.value.maxInputLength) return 
         _uiState.update { it.copy(currentInput = it.currentInput + digit) }
+    }
+
+    fun onSpecialKeyClick(char: Char) {
+        if (_uiState.value.answerState != AnswerState.NEUTRAL) return
+        if (_uiState.value.currentInput.length >= _uiState.value.maxInputLength) return 
+        _uiState.update { it.copy(currentInput = it.currentInput + char) }
     }
 
     fun onBackspaceClick() {
