@@ -1,6 +1,6 @@
 # Story 6.6: Swedish Main Menu Localization
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -27,11 +27,14 @@ so that the entire app experience feels immersive and consistent with the learni
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Update String Resources
-  - [ ] Modify `res/values/strings.xml` to update `menu_*` values to Swedish.
-  - [ ] Ensure `home_title` or other labels are also appropriate (Siffermästare is already good).
+- [x] Task 1: Update String Resources
+  - [x] Modify `res/values/strings.xml` to update `menu_*` values to Swedish.
+  - [x] Ensure `home_title` or other labels are also appropriate (Siffermästare is already good).
 
 ## Dev Notes
 
 - This is a simple resource update.
 - Verify no other screens (like Summary) have hardcoded English that needs obvious quick fixing, though this story focuses on Main Menu.
+
+## File List
+- app/src/main/res/values/strings.xml

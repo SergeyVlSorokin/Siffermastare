@@ -15,25 +15,25 @@
     <string name="dialog_exit_cancel">Avbryt</string>
     
     <!-- Summary Screen -->
-    <string name="lesson_complete_title">Lesson Complete!</string>
-    <string name="lesson_complete_message">Well done! You have finished the lesson.</string>
-    <string name="lesson_accuracy_format">Accuracy: %.0f%%</string>
-    <string name="lesson_speed_format">Avg Speed: %.1fs</string>
-    <string name="back_to_home">Back to Home</string>
-    <string name="start_debug_lesson">Start Debug Lesson</string>
+    <string name="lesson_complete_title">Lektionen klar!</string>
+    <string name="lesson_complete_message">Bra jobbat! Du är klar med lektionen.</string>
+    <string name="lesson_accuracy_format">Träffsäkerhet: %.0f%%</string>
+    <string name="lesson_speed_format">Snitthastighet: %.1fs</string>
+    <string name="back_to_home">Tillbaka till Hem</string>
+    <string name="start_debug_lesson">Starta Debug Lektion</string>
     <!-- Home Screen -->
     <string name="home_title">Siffermästare</string>
-    <string name="dashboard_lessons_label">Lessons</string>
-    <string name="dashboard_streak_label">Streak</string>
-    <string name="dashboard_streak_days_suffix">Days</string>
-    <string name="menu_numbers_0_20">Numbers 0-20</string>
-    <string name="menu_numbers_20_100">Numbers 20-100</string>
-    <string name="menu_numbers_100_1000">Numbers 100-1000</string>
-    <string name="menu_ordinals">Ordinals (1:a - 20:e)</string>
-    <string name="menu_time">Time (Digital)</string>
-    <string name="menu_time_informal">Time (Analogue)</string>
-    <string name="menu_tricky_pairs">Tricky Pairs</string>
-    <string name="menu_phone_numbers">Phone Numbers</string>
-    <string name="menu_fractions">Fractions</string>
-    <string name="menu_decimals">Decimals</string>
+    <string name="dashboard_lessons_label">Lektioner</string>
+    <string name="dashboard_streak_label">Svit</string>
+    <string name="dashboard_streak_days_suffix">Dagar</string>
+    <string name="menu_numbers_0_20">Siffror 0-20</string>
+    <string name="menu_numbers_20_100">Siffror 20-100</string>
+    <string name="menu_numbers_100_1000">Siffror 100-1000</string>
+    <string name="menu_ordinals">Ordningstal (1:a - 20:e)</string>
+    <string name="menu_time">Tid (Digital)</string>
+    <string name="menu_time_informal">Tid (Analog)</string>
+    <string name="menu_tricky_pairs">Kluriga Par</string>
+    <string name="menu_phone_numbers">Telefonnummer</string>
+    <string name="menu_fractions">Bråk</string>
+    <string name="menu_decimals">Decimaltal</string>
 </resources>
