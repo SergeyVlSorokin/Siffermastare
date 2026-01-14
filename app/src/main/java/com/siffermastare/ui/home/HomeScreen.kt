@@ -26,6 +26,13 @@ import com.siffermastare.ui.theme.SiffermästareTheme
 import com.siffermastare.domain.generators.NumberGeneratorFactory
 
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.safeDrawing
+
 /**
  * Home screen composable.
  *
@@ -48,10 +55,13 @@ fun HomeScreen(
     )
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val scrollState = rememberScrollState()
 
     Column(
         modifier = modifier
             .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.safeDrawing) // Handle system bars (status + nav)
+            .verticalScroll(scrollState)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
