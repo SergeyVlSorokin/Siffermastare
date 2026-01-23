@@ -223,4 +223,145 @@ So that I can handle prices and measurements (e.g., "2,5").
 
 <!-- Repeat for each epic in epics_list (N = 1, 2, 3...) -->
 
+### Epic 7: Adaptive Learning Engine
+**Goal:** Implement the "brain" of the application to track user proficiency at a granular level using Bayesian statistics.
+**FRs covered:** FR16, FR17, FR18.
+
+### Story 7.1: Knowledge Data Model
+As a system,
+I need to persist the probability state for each "Atomic Number",
+So that I can remember what the user knows between sessions.
+
+**Acceptance Criteria:**
+**Given** The app starts up
+**Then** A Room database table `atom_states` should exist
+**And** It should store `atom_id` (string), `alpha` (float), `beta` (float), and `last_updated` (timestamp)
+**Given** A fresh install
+**When** I query the state for Atom "5"
+**Then** It should return the default prior ($\alpha=1.0, \beta=1.0$)
+
+### Story 7.2: Evaluation Strategy Framework
+As a developer,
+I need a flexible way to evaluate user answers against complex rules (e.g. "14:00" == "2:00"),
+So that the system can accurately attribute knowledge even when there are multiple correct ways to answer.
+
+**Acceptance Criteria:**
+**Given** A `NumberGenerator`
+**Then** It should define an `EvaluationStrategy`
+**And** The Strategy should accept `UserInput` and `Question`
+**And** It should return an `EvaluationResult` containing `isCorrect` (boolean) and `atomUpdates` (Map of AtomID to Success/Failure)
+
+### Story 7.3: Standard Number Strategy
+As a learner,
+I want the system to understand that "25" is composed of "20" and "5",
+So that I can get partial credit if I mistype one part.
+
+**Acceptance Criteria:**
+**Given** A "Cardinal" or "Ordinal" Lesson
+**When** Target is "25" and I type "24"
+**Then** It generates `EqualityResult`
+**And** Atom `20` is **Success** (Correct stem)
+**And** Atom `5` is **Failure** (Missed the digit)
+**And** The Strategy handles standard integers (0-1000)
+
+### Story 7.4: Time Evaluation Strategy
+As a learner,
+I want the system to accept "14:00" and "02:00" as the same answer for "Klockan två",
+So that I am not penalized for 12h/24h ambiguity.
+
+**Acceptance Criteria:**
+**Given** A "Time" Lesson (Informal or Digital)
+**When** Target is "14:00" (Spoken: "Klockan två")
+**And** I type "02:00"
+**Then** It is marked **Correct**
+**And** Atom "2" is marked as **Success**
+**When** I type "14:00"
+**Then** It is marked **Correct**
+**And** Atom "2" is marked as **Success**
+
+### Story 7.5: Phone Number Strategy
+As a learner,
+I want to practice digit sequences where "070" means "0, 7, 0" and not "Seventy",
+So that my practice reflects how phone numbers are actually spoken.
+
+**Acceptance Criteria:**
+**Given** A "Phone Number" Lesson
+**When** Target is "070..."
+**Then** The Strategy treats every digit as a separate Atom (or groups of digits)
+**And** It does NOT decompose into Tens/Teens (e.g. "12" in a phone number is "1, 2" not "12")
+**When** I type the correct digits
+**Then** All constituent digit atoms are marked **Success**
+
+### Story 7.6: Fractions Strategy
+As a learner,
+I want to practice fractions like "1/2",
+So that the system grades the numerator and denominator independently.
+
+**Acceptance Criteria:**
+**Given** A "Fractions" Lesson (Target: "1/2")
+**When** I type "1/2"
+**Then** It is marked **Correct**
+**And** Atoms "1" and "2" are marked **Success**
+**When** I type "1/4"
+**Then** Atom "1" is **Success**, Atom "4" is **Failure**
+
+### Story 7.7: Decimals Strategy
+As a learner,
+I want to practice decimals using either comma or dot,
+So that I don't get marked wrong for using my keyboard's default separator.
+
+**Acceptance Criteria:**
+**Given** A "Decimals" Lesson (Target: "2,5")
+**When** I type "2,5"
+**Then** It is marked **Correct**
+**And** Atoms "2" and "5" are marked **Success**
+
+### Story 7.8: Bayesian Math Engine
+As a system,
+I need to continually update knowledge estimates based on the results from the Evaluation Strategy,
+So that the user's proficiency model tracks their real-time performance.
+
+**Acceptance Criteria:**
+**Given** An `EvaluationResult` with updates (Atom `X`: Success)
+**When** The update is processed
+**Then** The DB state for Atom `X` updates: $\alpha_{new} = \lambda \cdot \alpha_{old} + 1.0$
+**Given** An `EvaluationResult` with updates (Atom `Y`: Failure)
+**When** The update is processed
+**Then** The DB state for Atom `Y` updates: $\beta_{new} = \lambda \cdot \beta_{old} + 1.0$
+
+### Story 7.9: Lesson Loop Integration
+As a user,
+I want my lesson results to actually save to my profile,
+So that the app learns what I know.
+
+**Acceptance Criteria:**
+**Given** I complete a question in a Lesson
+**When** I hit Submit
+**Then** The `LessonSessionManager` uses the `EvaluationStrategy` to grade the input
+**And** The result is passed to the `KnowledgeEngine` to update the database asynchronously
+**And** UI feedback ("Rätt" / "Fel") is distinct from the internal atomic updates
+
+### Story 7.10: Detailed Lesson Summary
+As a learner,
+I want to see exactly which numbers I struggled with after a lesson,
+So that I know what to focus on next time.
+
+**Acceptance Criteria:**
+**Given** I finish a lesson
+**Then** The summary screen should show "Improved Knowledge" and "Needs Practice" lists
+**And** It should list specific Atoms (e.g. "You mastered '7' but struggled with '20'")
+**And** It should derive this from the session's `EvaluationResult`s
+
+### Story 7.11: Knowledge Dashboard
+As a learner,
+I want to see my overall mastery of Swedish numbers on the home screen,
+So that I feel motivated by my progress.
+
+**Acceptance Criteria:**
+**Given** I am on the Home Screen
+**Then** The old "Total Lessons / Streak" text stats are REMOVED
+**And** A visual "Mastery Map" is displayed
+**And** It shows proficiency (Alpha/Beta levels) for key groups: Digits (0-9), Teens (10-19), Tens (20-90)
+**And** It aggregates the atomic data from `atom_states` table
+
 

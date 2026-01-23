@@ -150,9 +150,10 @@ Siffermästare is a **Native Android** application designed for **100% Offline**
 *   **Time input flexibility:** Allow "9:30" and "09:30" formats.
 *   **Safety:** Exit confirmation dialog during active lessons.
 
-### Phase 3: Adaptive Intelligence (Future)
-*   **Error-Based Generation:** System tracks specific error patterns (e.g., getting "7" wrong often) and generates more tasks targeting those digits.
-*   Gamification & Privacy-First Cloud Sync.
+### Phase 3: Adaptive Intelligence (Current Focus)
+*   **Bayesian Knowledge Tracing:** Implement a Beta-Distribution based engine to model user probability of knowing specific numbers (Atoms).
+*   **Granular Decomposition:** Decompose complex answers (e.g., "25") into atomic components ("20", "5") for precise error tracking.
+*   *See [Technical Spec: Learning Model](learning-model-spec.md) for algorithmic details.*
 
 ### MVP Strategy & Philosophy
 **Approach:** Problem-Solving MVP - Focusing strictly on the specialized utility of auditory training.
@@ -187,6 +188,9 @@ Siffermästare is a **Native Android** application designed for **100% Offline**
 ### System & Architecture
 *   **FR14:** System functions with **100% Offline Availability** for all core features.
 *   **FR15:** System dynamically loads content generators via a plugin/factory pattern.
+*   **FR16:** System tracks user knowledge of **Atomic Numbers** (0-9, 10-19, Tens) using a persistent Bayesian model.
+*   **FR17:** System **decomposes** user answers to attribute Success/Failure to specific atomic components.
+*   **FR18:** System applies a **Forgetting Factor** to knowledge estimates to account for user learning/rustiness over time.
 
 ## Non-Functional Requirements
 
