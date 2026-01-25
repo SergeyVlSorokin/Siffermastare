@@ -323,11 +323,11 @@ So that the user's proficiency model tracks their real-time performance.
 
 **Acceptance Criteria:**
 **Given** An `EvaluationResult` with updates (Atom `X`: Success)
-**When** The update is processed
-**Then** The DB state for Atom `X` updates: $\alpha_{new} = \lambda \cdot \alpha_{old} + 1.0$
+**And** A calculated `MPE` (Mean Time Per Event) based on interaction time and input length
+**Then** Calculate Weight $W = \text{clamp}(800 / MPE, 0.2, 1.3)$
+**And** The DB state for Atom `X` updates: $\alpha_{new} = \lambda \cdot \alpha_{old} + W$
 **Given** An `EvaluationResult` with updates (Atom `Y`: Failure)
-**When** The update is processed
-**Then** The DB state for Atom `Y` updates: $\beta_{new} = \lambda \cdot \beta_{old} + 1.0$
+**Then** The DB state for Atom `Y` updates: $\beta_{new} = \lambda \cdot \beta_{old} + 1.0$ (Failures use standard weight)
 
 ### Story 7.9: Lesson Loop Integration
 As a user,

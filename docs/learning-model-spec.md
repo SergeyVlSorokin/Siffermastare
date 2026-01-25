@@ -41,12 +41,17 @@ We use a **Forgetting Factor (Decay) $\lambda$**:
 *   Suggested $\lambda = 0.9$ (Configurable parameter)
 
 **Update Rule:**
-When an event occurs (success or failure) for a specific Atom at time $t$:
-$$ \alpha_t = \lambda \cdot \alpha_{t-1} + \text{Success} $$
-$$ \beta_t = \lambda \cdot \beta_{t-1} + \text{Failure} $$
+When an event occurs for a specific Atom at time $t$, we apply the decay $\lambda$ and update based on the outcome.
 
-*   If **Correct**: $\text{Success} = 1, \text{Failure} = 0$
-*   If **Incorrect**: $\text{Success} = 0, \text{Failure} = 1$
+**Case 1: Correct Answer (Success)**
+We use the **Confidence Weight ($W$)** calculated from speed (see 3.3).
+$$ \alpha_t = \lambda \cdot \alpha_{t-1} + W $$
+$$ \beta_t = \lambda \cdot \beta_{t-1} $$
+
+**Case 2: Incorrect Answer (Failure)**
+We always use a standard weight of 1.0 for failures (speed does not mitigate a mistake).
+$$ \alpha_t = \lambda \cdot \alpha_{t-1} $$
+$$ \beta_t = \lambda \cdot \beta_{t-1} + 1.0 $$
 
 *Effect:* The "effective sample size" tends towards $\frac{1}{1-\lambda}$. For $\lambda=0.9$, the system "remembers" roughly the last 10 interactions. This allows the model to "forget" early struggles as recent performance improves.
 
@@ -54,6 +59,24 @@ $$ \beta_t = \lambda \cdot \beta_{t-1} + \text{Failure} $$
 All Atoms start with a **Flat Prior**:
 *   $\alpha_0 = 1.0$
 *   $\beta_0 = 1.0$
+
+### 3.3 Time-Weighted Updates (Fluency)
+We distinguish between "Computation" (slow, hesitant) and "Fluency" (fast, automated) by tracking the **Mean Time Per Event (MPE)**.
+
+**Metric:**
+$$ \text{MPE} = \frac{\text{Time(TTS Finish) to Time(Submit)}}{\text{Character Count of Standard Answer}} $$
+
+**Confidence Weight Function:**
+We use a **Clamped Inverse** model to scale the update weight ($W$). Fast answers count *more* towards mastery; slow answers count *less*.
+
+$$ W = \text{clamp}\left( \frac{800ms}{\text{MPE}}, \ 0.2, \ 1.3 \right) $$
+
+**Fluency Tiers:**
+*   **Fast (< 615ms/char):** $W = 1.3$ (Bonus! High confidence)
+*   **Standard (800ms/char):** $W = 1.0$ (Normal update)
+*   **Slow (> 4000ms/char):** $W = 0.2$ (Minimal progress)
+
+*Rationale:* A user who answers "7" in 5 seconds ($MPE=5000$) is likely counting on fingers. They calculated it correctly, but they have not *mastered* it. The low weight (0.2) means their $\alpha$ barely moves, keeping their variance high and ensuring the system tests them again soon.
 
 ## 4. Assessment Logic
 
@@ -112,7 +135,7 @@ data class AtomState(
 
 ### 5.2 Algorithm Summary (Pseudocode)
 
-The grading logic is delegated to an `EvaluationStrategy` provided by the Generator. This allows different lessons to handle ambiguity (e.g., "14:00" vs "2:00") and decomposition rules differently.
+The grading logic is delegated to an `EvaluationStrategy` provided by the Generator. This allows different lessons to handle ambiguity (e.g., "14:00" vs "2:00") and decomposition rules differently. Code here is just an example to demonstate idea of an interface and should not be treated as valid solution for Informal time lesson, the real one should have better algorithm.
 
 ```kotlin
 interface EvaluationStrategy {
