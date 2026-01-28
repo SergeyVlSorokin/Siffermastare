@@ -1,8 +1,11 @@
 package com.siffermastare.domain.generators
 
 import com.siffermastare.domain.models.Question
+import com.siffermastare.domain.evaluation.ExactMatchEvaluationStrategy
 
 class TrickyPairsGenerator : NumberGenerator {
+
+    override val evaluationStrategy = ExactMatchEvaluationStrategy()
     private val trickyNumbers = listOf(
         "7", "20", "70",
         "6", "60",

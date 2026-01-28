@@ -1,8 +1,12 @@
 package com.siffermastare.domain.generators
 
 import com.siffermastare.domain.models.Question
+import com.siffermastare.domain.evaluation.ExactMatchEvaluationStrategy
 
 class PhoneNumberGenerator : NumberGenerator {
+
+    override val evaluationStrategy = ExactMatchEvaluationStrategy()
+
     override fun generateLesson(count: Int): List<Question> {
         return List(count) {
             val prefixDigit = (0..9).random() // 07x

@@ -1,6 +1,7 @@
 package com.siffermastare.domain.generators
 
 import com.siffermastare.domain.models.Question
+import com.siffermastare.domain.evaluation.ExactMatchEvaluationStrategy
 import kotlin.random.Random
 
 /**
@@ -8,6 +9,8 @@ import kotlin.random.Random
  * Target value (input) is 4 digits (HHMM).
  */
 class TimeGenerator : NumberGenerator {
+
+    override val evaluationStrategy = ExactMatchEvaluationStrategy()
 
     override fun generateLesson(count: Int): List<Question> {
         return List(count) {

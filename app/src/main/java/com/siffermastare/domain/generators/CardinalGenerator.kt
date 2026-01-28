@@ -1,6 +1,7 @@
 package com.siffermastare.domain.generators
 
 import com.siffermastare.domain.models.Question
+import com.siffermastare.domain.evaluation.ExactMatchEvaluationStrategy
 import kotlin.random.Random
 
 /**
@@ -14,6 +15,8 @@ class CardinalGenerator(
     private val min: Int,
     private val max: Int
 ) : NumberGenerator {
+
+    override val evaluationStrategy = ExactMatchEvaluationStrategy()
 
     override fun generateLesson(count: Int): List<Question> {
         return List(count) {

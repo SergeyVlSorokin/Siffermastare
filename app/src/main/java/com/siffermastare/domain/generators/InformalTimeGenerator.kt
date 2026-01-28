@@ -1,9 +1,12 @@
 package com.siffermastare.domain.generators
 
 import com.siffermastare.domain.models.Question
+import com.siffermastare.domain.evaluation.ExactMatchEvaluationStrategy
 import kotlin.random.Random
 
 class InformalTimeGenerator : NumberGenerator {
+
+    override val evaluationStrategy = ExactMatchEvaluationStrategy()
     
     private val numbers = arrayOf(
         "noll", "ett", "två", "tre", "fyra", "fem", "sex", "sju", "åtta", "nio",

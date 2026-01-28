@@ -22,8 +22,10 @@ class LessonSessionManager {
 
     private var questions: List<Question> = emptyList()
     private var currentIndex = 0
+    private var currentGenerator: NumberGenerator? = null
 
     fun startLesson(generator: NumberGenerator) {
+        currentGenerator = generator
         questions = generator.generateLesson()
         currentIndex = 0
         
@@ -41,14 +43,29 @@ class LessonSessionManager {
     fun submitAnswer(input: String, validator: ((String, String) -> Boolean)? = null): Boolean {
         val currentQ = _lessonState.value.currentQuestion ?: return false
         
-        val isCorrect = validator?.invoke(input, currentQ.targetValue) 
-            ?: (input == currentQ.targetValue)
-
-        if (!isCorrect) {
-            _lessonState.update { it.copy(mistakeCount = it.mistakeCount + 1) }
+        // Priority 1: Legacy Validator (if provided)
+        if (validator != null) {
+            val isCorrect = validator(input, currentQ.targetValue)
+            if (!isCorrect) incrementMistake()
+            return isCorrect
         }
 
+        // Priority 2: Generator Strategy
+        val strategy = currentGenerator?.evaluationStrategy
+        if (strategy != null) {
+            val result = strategy.evaluate(input, currentQ)
+            if (!result.isCorrect) incrementMistake()
+            return result.isCorrect
+        }
+
+        // Priority 3: Fallback (Strict Equality)
+        val isCorrect = input == currentQ.targetValue
+        if (!isCorrect) incrementMistake()
         return isCorrect
+    }
+
+    private fun incrementMistake() {
+        _lessonState.update { it.copy(mistakeCount = it.mistakeCount + 1) }
     }
 
     fun nextQuestion() {

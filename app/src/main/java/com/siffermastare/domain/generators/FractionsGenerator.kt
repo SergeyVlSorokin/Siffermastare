@@ -1,9 +1,12 @@
 package com.siffermastare.domain.generators
 
 import com.siffermastare.domain.models.Question
+import com.siffermastare.domain.evaluation.ExactMatchEvaluationStrategy
 import com.siffermastare.domain.utils.SwedishNumberFormatter
 
 class FractionsGenerator : NumberGenerator {
+    
+    override val evaluationStrategy = ExactMatchEvaluationStrategy()
     
     companion object {
         private const val MIN_DENOMINATOR = 2

@@ -1,10 +1,13 @@
 package com.siffermastare.domain.generators
 
 import com.siffermastare.domain.models.Question
+import com.siffermastare.domain.evaluation.ExactMatchEvaluationStrategy
 import com.siffermastare.domain.utils.SwedishNumberFormatter
 import kotlin.random.Random
 
 class DecimalsGenerator : NumberGenerator {
+
+    override val evaluationStrategy = ExactMatchEvaluationStrategy()
 
     override fun generateLesson(count: Int): List<Question> {
         return List(count) {

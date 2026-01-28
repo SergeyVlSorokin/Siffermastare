@@ -2,6 +2,7 @@ package com.siffermastare.domain
 
 import com.siffermastare.domain.generators.NumberGenerator
 import com.siffermastare.domain.models.Question
+import com.siffermastare.domain.evaluation.ExactMatchEvaluationStrategy
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -12,6 +13,8 @@ import org.junit.Test
 class LessonSessionManagerTest {
 
     private val fakeGenerator = object : NumberGenerator {
+        override val evaluationStrategy = ExactMatchEvaluationStrategy()
+
         override fun generateLesson(count: Int): List<Question> {
             return List(count) { 
                 Question(targetValue = "5", spokenText = "5", visualHint = null) 
