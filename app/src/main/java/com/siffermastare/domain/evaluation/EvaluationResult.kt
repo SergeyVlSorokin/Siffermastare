@@ -9,5 +9,5 @@ package com.siffermastare.domain.evaluation
  */
 data class EvaluationResult(
     val isCorrect: Boolean,
-    val atomUpdates: Map<String, Boolean> = emptyMap()
+    val atomUpdates: Map<String, List<Boolean>> = emptyMap()
 )

@@ -142,32 +142,41 @@ interface EvaluationStrategy {
     fun evaluate(userInput: String, question: Question): EvaluationResult
 }
 
+// Example: Handling Informal Time Ambiguity
 data class EvaluationResult(
     val isCorrect: Boolean,
-    val atomUpdates: Map<String, Boolean> // AtomID -> Success(true)/Failure(false)
+    val atomUpdates: Map<String, List<Boolean>> // AtomID -> List of [Success, Failure...]
 )
 
-// Example: Handling Informal Time Ambiguity
 class InformalTimeStrategy : EvaluationStrategy {
     override fun evaluate(userInput: String, question: Question): EvaluationResult {
-        // Normalize: "14:00" -> "2:00"
-        val normalizedInput = normalizeTime(userInput) 
+        // ... (normalization)
         
-        // Target is typically the SPOKEN concept (e.g. "Två" -> Atom "2")
-        // Question.atoms contains ["2"]
+        val targetAtoms = question.atoms // e.g., ["5", "5"] for "55"
+        val inputAtoms = decompose(normalizedInput) // e.g., ["5"]
         
-        val targetAtoms = question.atoms
-        val inputAtoms = decompose(normalizedInput)
+        // Grade using Bag Logic (Multi-set difference)
+        val updates = mutableMapOf<String, MutableList<Boolean>>()
         
-        // Grade
-        val updates = mutableMapOf<String, Boolean>()
-        targetAtoms.forEach { atom ->
-             // If the user's input (normalized) contains the target atom, Success.
-             updates[atom] = inputAtoms.contains(atom)
+        // Count frequencies in Target
+        val targetCounts = targetAtoms.groupBy { it }.mapValues { it.value.size }
+        // Count frequencies in Input
+        val inputCounts = inputAtoms.groupBy { it }.mapValues { it.value.size }
+        
+        targetCounts.forEach { (atomId, requiredCount) ->
+            val providedCount = inputCounts[atomId] ?: 0
+            val matches = minOf(requiredCount, providedCount)
+            val misses = requiredCount - matches
+            
+            val atomResults = ArrayList<Boolean>()
+            repeat(matches) { atomResults.add(true) }
+            repeat(misses) { atomResults.add(false) }
+            
+            updates[atomId] = atomResults
         }
         
         return EvaluationResult(
-            isCorrect = updates.values.all { it == true },
+            isCorrect = updates.values.flatten().all { it },
             atomUpdates = updates
         )
     }
