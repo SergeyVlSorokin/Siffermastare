@@ -25,6 +25,10 @@ Any number outside these atoms is treated as a **Composite**.
 *   **Example: "123"**
     *   Decomposed into: `{1, 20, 3}`
 
+### 2.3 Decomposition Rule (Spoken Logic)
+Decomposition MUST strictly follow the **spoken structure** of the number in Swedish.
+*   **Principle:** If you say it, it is an Atom (or composite of Atoms).
+
 ## 3. Statistical Model
 We model the probability $\theta$ that a user knows a specific Atom using a **Beta Distribution**:
 $$ P(\theta) \sim Beta(\alpha, \beta) $$
@@ -82,6 +86,10 @@ $$ W = \text{clamp}\left( \frac{800ms}{\text{MPE}}, \ 0.2, \ 1.3 \right) $$
 
 ### 4.1 Decomposition & Grading
 When a user answers a question, we decompose the *Target Number* into its Atoms and grade them based on the *User's Input*.
+
+**Rule: No Penalty for Extra Input**
+We strictly grade the presence/absence of *Target* atoms. Any **Extra Atoms** provided by the user (that are not part of the Target) are **ignored** for grading purposes and do NOT result in a Failure update for those extra atoms.
+**However**, the presence of extra/incorrect atoms means the Answer is **Incorrect** (`isCorrect = False`). We only track atom mastery based on recognition, but we judge answer correctness based on precision.
 
 **Scenario A: Correct Answer**
 *   **Target:** 25 (Atoms: `20`, `5`)

@@ -264,22 +264,35 @@ So that I can get partial credit if I mistype one part.
 **And** Atom `5` is **Failure** (Missed the digit)
 **And** The Strategy handles standard integers (0-1000)
 
-### Story 7.4: Time Evaluation Strategy
+### Story 7.4: Digital Time Evaluation Strategy
 As a learner,
-I want the system to accept "14:00" and "02:00" as the same answer for "Klockan två",
-So that I am not penalized for 12h/24h ambiguity.
+I want the system to strict evaluation for Digital Time questions (e.g. "14:00"),
+So that I can practice exact 24-hour time notation without ambiguity.
 
 **Acceptance Criteria:**
-**Given** A "Time" Lesson (Informal or Digital)
-**When** Target is "14:00" (Spoken: "Klockan två")
-**And** I type "02:00"
-**Then** It is marked **Correct**
-**And** Atom "2" is marked as **Success**
+**Given** A "Digital Time" Lesson (Target: "14:00")
 **When** I type "14:00"
 **Then** It is marked **Correct**
-**And** Atom "2" is marked as **Success**
+**And** Atoms `14` (Teen) and `0` (Digit) are marked **Success**
+**Given** A "Digital Time" Lesson (Target: "14:00")
+**When** I type "02:00"
+**Then** It is marked **Incorrect** (Strict matching for digital mode)
 
-### Story 7.5: Phone Number Strategy
+### Story 7.5: Informal Time Evaluation Strategy
+As a learner,
+I want the system to understand that "Kvart över tre" can be written as "15:15" or "03:15",
+So that I can practice informal time telling with flexible numeric input.
+
+**Acceptance Criteria:**
+**Given** An "Informal Time" Lesson (Target prompts: "Kvart över tre")
+**When** I type "15:15"
+**Then** It is marked **Correct**
+**And** Concept Atoms `kvart` and `over` and `3` are marked **Success**
+**When** I type "03:15"
+**Then** It is marked **Correct** (12h/24h equivalence)
+**And** Concept Atoms `kvart` and `over` and `3` are marked **Success**
+
+### Story 7.6: Phone Number Strategy
 As a learner,
 I want to practice digit sequences where "070" means "0, 7, 0" and not "Seventy",
 So that my practice reflects how phone numbers are actually spoken.
@@ -292,7 +305,7 @@ So that my practice reflects how phone numbers are actually spoken.
 **When** I type the correct digits
 **Then** All constituent digit atoms are marked **Success**
 
-### Story 7.6: Fractions Strategy
+### Story 7.7: Fractions Strategy
 As a learner,
 I want to practice fractions like "1/2",
 So that the system grades the numerator and denominator independently.
@@ -305,7 +318,7 @@ So that the system grades the numerator and denominator independently.
 **When** I type "1/4"
 **Then** Atom "1" is **Success**, Atom "4" is **Failure**
 
-### Story 7.7: Decimals Strategy
+### Story 7.8: Decimals Strategy
 As a learner,
 I want to practice decimals using either comma or dot,
 So that I don't get marked wrong for using my keyboard's default separator.
@@ -316,7 +329,7 @@ So that I don't get marked wrong for using my keyboard's default separator.
 **Then** It is marked **Correct**
 **And** Atoms "2" and "5" are marked **Success**
 
-### Story 7.8: Bayesian Math Engine
+### Story 7.9: Bayesian Math Engine
 As a system,
 I need to continually update knowledge estimates based on the results from the Evaluation Strategy,
 So that the user's proficiency model tracks their real-time performance.
@@ -329,7 +342,7 @@ So that the user's proficiency model tracks their real-time performance.
 **Given** An `EvaluationResult` with updates (Atom `Y`: Failure)
 **Then** The DB state for Atom `Y` updates: $\beta_{new} = \lambda \cdot \beta_{old} + 1.0$ (Failures use standard weight)
 
-### Story 7.9: Lesson Loop Integration
+### Story 7.10: Lesson Loop Integration
 As a user,
 I want my lesson results to actually save to my profile,
 So that the app learns what I know.
@@ -341,7 +354,7 @@ So that the app learns what I know.
 **And** The result is passed to the `KnowledgeEngine` to update the database asynchronously
 **And** UI feedback ("Rätt" / "Fel") is distinct from the internal atomic updates
 
-### Story 7.10: Detailed Lesson Summary
+### Story 7.11: Detailed Lesson Summary
 As a learner,
 I want to see exactly which numbers I struggled with after a lesson,
 So that I know what to focus on next time.
@@ -352,7 +365,7 @@ So that I know what to focus on next time.
 **And** It should list specific Atoms (e.g. "You mastered '7' but struggled with '20'")
 **And** It should derive this from the session's `EvaluationResult`s
 
-### Story 7.11: Knowledge Dashboard
+### Story 7.12: Knowledge Dashboard
 As a learner,
 I want to see my overall mastery of Swedish numbers on the home screen,
 So that I feel motivated by my progress.

@@ -79,7 +79,7 @@ so that I can get partial credit if I mistype one part.
 - **Domain Logic:** This logic belongs in `domain/validation` or similar package.
 - **Decomposition:** Need a helper or logic to decompose Swedish numbers into "Atoms" (e.g., "tjugofem" -> "tjugo", "fem"). This might overlap with `NumberGenerator` logic or be a reverse operation.
 - **EvaluationResult:** Must update to `Map<String, List<Boolean>>` (or similar) to support per-instance grading (e.g. `5` -> `[true, false]`).
-- **Atomic IDs:** Must define a consistent ID scheme for atoms (e.g., "atom_20", "atom_5") to match what is stored in the DB.
+- **Atomic IDs:** Must define a consistent ID scheme for atoms (e.g., "20", "5") to match what is stored in the DB.
 
 ### Project Structure Notes
 
