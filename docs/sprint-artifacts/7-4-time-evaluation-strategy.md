@@ -1,6 +1,6 @@
 # Story 7.4: Digital Time Evaluation Strategy
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -16,6 +16,12 @@ So that I can practice exact 24-hour time notation without ambiguity.
 3. **Then** It is marked **Correct**
 4. **And** Atoms `14` (Teen) and `30` (Ten) are marked **Success**
 
+### Teens Boundary (10 and 19)
+1. **Given** A "Digital Time" Lesson (Target: "1019")
+2. **When** I type "1019"
+3. **Then** It is marked **Correct**
+4. **And** Atoms `10` and `19` are marked **Success**
+
 ### 24h Mismatch
 1. **Given** A "Digital Time" Lesson (Target: "0230")
 2. **When** I type "1430"
@@ -29,13 +35,13 @@ So that I can practice exact 24-hour time notation without ambiguity.
 2. **When** I type "1430"
 3. **Then** It is marked **Incorrect**
 4. **And** Atom `14` is **Success**
-5. **And** Atom `10` and `5` are **Failure** (Target 15)
+5. **And** Atom `15` is **Failure** (Target 15)
 
 ### Complex Minute
 1. **Given** A "Digital Time" Lesson (Target: "0515")
 2. **When** I type "0515"
 3. **Then** It is marked **Correct**
-4. **And** Atoms `5` and `15` are marked **Success**
+4. **And** Atoms `0`, `5`, and `15` are marked **Success**
 
 ### Midnight (Double Zero)
 1. **Given** A "Digital Time" Lesson (Target: "0030")
@@ -107,14 +113,15 @@ Leading zero is optional for hours. Skipping leading zero is not a failure and w
   - [ ] Implement atom decomposition for Hours and Minutes treating them as standard numbers
 - [ ] Unit Tests
   - [ ] Test exact match (1430 vs 1430) -> 14 OK, 30 OK, isCorrect=True
+  - [ ] Test Teens Boundary (1019 vs 1019) -> 10 OK, 19 OK, isCorrect=True
   - [ ] Test 24h Mismatch (0230 vs 1430) 
     - [ ] Target Atoms: 0, 2, 30
     - [ ] Input Atoms: 14, 30
     - [ ] Result: 30 OK, 0 Fail, 2 Fail, isCorrect=False
   - [ ] Test Minute Mismatch (1415 vs 1430)
-    - [ ] Target Atoms: 14, 10, 5
+    - [ ] Target Atoms: 14, 15
     - [ ] Input Atoms: 14, 30
-    - [ ] Result: 14 OK, 10 Fail, 5 Fail, isCorrect=False
+    - [ ] Result: 14 OK, 15 Fail, isCorrect=False
   - [ ] Test complex minute (0515 vs 0515) -> 5 OK, 15 OK, isCorrect=True
   - [ ] Test Midnight (0030 vs 0030) -> 0 [OK, OK], 30 OK, isCorrect=True
   - [ ] Test Triple Zero (0003 vs 0003) -> 0 [OK, OK, OK], 3 OK, isCorrect=True

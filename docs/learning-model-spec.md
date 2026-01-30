@@ -87,14 +87,19 @@ $$ W = \text{clamp}\left( \frac{800ms}{\text{MPE}}, \ 0.2, \ 1.3 \right) $$
 ### 4.1 Decomposition & Grading
 When a user answers a question, we decompose the *Target Number* into its Atoms and grade them based on the *User's Input*.
 
-**Rule: No Penalty for Extra Input**
-We strictly grade the presence/absence of *Target* atoms. Any **Extra Atoms** provided by the user (that are not part of the Target) are **ignored** for grading purposes and do NOT result in a Failure update for those extra atoms.
-**However**, the presence of extra/incorrect atoms means the Answer is **Incorrect** (`isCorrect = False`). We only track atom mastery based on recognition, but we judge answer correctness based on precision.
+**Rule: No Penalty for Extra Input (Knowledge Tracking ONLY)**
+We strictly grade the presence/absence of *Target* atoms for the purpose of updating the BKT model. Any **Extra Atoms** provided by the user (that are not part of the Target) are **ignored** for *atom updates* and do NOT result in a Failure update for those extra atoms.
+
+**Rule: Answer Correctness**
+For the purpose of grading the answer as Correct/Incorrect (`isCorrect`), we require a valid answer.
+*   **Presence of Extra/Incorrect Atoms**: results in `isCorrect = False`.
+*   **Invalid Order**: If the specific lesson strategy requires strict order (e.g., Digital Time), an invalid order results in `isCorrect = False` (and potentially atom failures if positionally mismatched).
 
 **Scenario A: Correct Answer**
 *   **Target:** 25 (Atoms: `20`, `5`)
 *   **Input:** 25
 *   **Result:**
+    *   `isCorrect = True`
     *   Atom `20`: Update with **Success** (1)
     *   Atom `5`: Update with **Success** (1)
 
@@ -103,6 +108,7 @@ We strictly grade the presence/absence of *Target* atoms. Any **Extra Atoms** pr
 *   **Input:** 24 (Decomposed: `20`, `4`)
 *   **Logic:** The user correctly identified the "Tens" part but missed the "Digit" part.
 *   **Result:**
+    *   `isCorrect = False`
     *   Atom `20`: Update with **Success** (1)
     *   Atom `5`: Update with **Failure** (0)
     *   *Note:* The extra input computation (`4`) is ignored for grading the *Target's* atoms. We strictly track: "Did the user recognize the atoms present in the stimulus?"
@@ -112,6 +118,7 @@ We strictly grade the presence/absence of *Target* atoms. Any **Extra Atoms** pr
 *   **Input:** 99 (Decomposed: `90`, `9`)
 *   **Logic:** The answer does not align structurally or is completely wrong. We cannot assume partial credit.
 *   **Result:**
+    *   `isCorrect = False`
     *   Atom `20`: Update with **Failure** (0)
     *   Atom `5`: Update with **Failure** (0)
     *   *Rationale:* The user failed to identify *any* part of the stimulus correctly.
@@ -121,10 +128,20 @@ We strictly grade the presence/absence of *Target* atoms. Any **Extra Atoms** pr
 *   **Input:** 732 (Mismatched length)
 *   **Logic:** The answer does not align structurally.
 *   **Result:**
+    *   `isCorrect = False`
     *   Atom `20`: Update with **Failure** (0)
     *   Atom `5`: Update with **Failure** (0)
     *   *Rationale:* The user failed to identify *any* part of the stimulus correctly.
 
+**Scenario E: Swapped Digits (Digital Time)**
+*   **Target:** 1415 (Atoms: `14`, `15`)
+*   **Input:** 1514 (Decomposed: `15`, `14`)
+*   **Logic:** The user provided the correct atoms but in the wrong order. For time-based lessons, order is critical.
+*   **Result:**
+    *   `isCorrect = False`
+    *   Atom `14`: Update with **Failure** (0)
+    *   Atom `15`: Update with **Failure** (0)
+    *   *Rationale:* The user failed to identify the atoms in the correct structural positions.
 
 ## 5. Usage & Storage
 

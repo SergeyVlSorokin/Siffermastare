@@ -1,7 +1,7 @@
 package com.siffermastare.domain.generators
 
 import com.siffermastare.domain.models.Question
-import com.siffermastare.domain.evaluation.ExactMatchEvaluationStrategy
+import com.siffermastare.domain.evaluation.DigitalTimeEvaluationStrategy
 import kotlin.random.Random
 
 /**
@@ -10,7 +10,7 @@ import kotlin.random.Random
  */
 class TimeGenerator : NumberGenerator {
 
-    override val evaluationStrategy = ExactMatchEvaluationStrategy()
+    override val evaluationStrategy = com.siffermastare.domain.evaluation.DigitalTimeEvaluationStrategy()
 
     override fun generateLesson(count: Int): List<Question> {
         return List(count) {
