@@ -292,7 +292,27 @@ So that I can practice informal time telling with flexible numeric input.
 **Then** It is marked **Correct** (12h/24h equivalence)
 **And** Concept Atoms `kvart` and `over` and `3` are marked **Success**
 
-### Story 7.6: Phone Number Strategy
+### Story 7.6: Adapt Strategies & Generators to Atoms-in-Question Architecture
+As a developer,
+I want to refactor existing evaluation strategies and their corresponding generators to consume `question.atoms` instead of deriving atoms internally,
+So that the system follows the single-source-of-truth rule ("Generator Owns Atoms") from `learning-model-spec.md` §4.1.
+
+**Acceptance Criteria:**
+**Given** `CardinalGenerator` or `TrickyPairsGenerator`
+**When** A question is generated
+**Then** `question.atoms` contains the correct cardinal decomposition (e.g., "25" → `["20", "5"]`)
+**And** The generator uses `StandardNumberEvaluationStrategy` (not `ExactMatchEvaluationStrategy`)
+**Given** `OrdinalGenerator`
+**When** A question is generated for target "25"
+**Then** `question.atoms` == `["ord:20", "ord:5"]` (ordinal-prefixed atoms for separate mastery tracking)
+**Given** `TimeGenerator`
+**When** A question is generated for "0515"
+**Then** `question.atoms` == `["0", "5", "15"]`
+**Given** `StandardNumberEvaluationStrategy` or `DigitalTimeEvaluationStrategy`
+**When** Evaluating user input
+**Then** The strategy uses `question.atoms` as target ground truth and does NOT derive atoms internally
+
+### Story 7.7: Phone Number Strategy
 As a learner,
 I want to practice digit sequences where "070" means "0, 7, 0" and not "Seventy",
 So that my practice reflects how phone numbers are actually spoken.
@@ -305,7 +325,7 @@ So that my practice reflects how phone numbers are actually spoken.
 **When** I type the correct digits
 **Then** All constituent digit atoms are marked **Success**
 
-### Story 7.7: Fractions Strategy
+### Story 7.8: Fractions Strategy
 As a learner,
 I want to practice fractions like "1/2",
 So that the system grades the numerator and denominator independently.
@@ -318,7 +338,20 @@ So that the system grades the numerator and denominator independently.
 **When** I type "1/4"
 **Then** Atom "1" is **Success**, Atom "4" is **Failure**
 
-### Story 7.8: Decimals Strategy
+### Story 7.9: Ordinal Number Evaluation Strategy
+As a learner,
+I want the system to understand that ordinal "25:e" is composed of ordinal atoms `ord:20` and `ord:5`,
+So that my mastery of ordinal numbers is tracked separately from cardinal numbers.
+
+**Acceptance Criteria:**
+**Given** An "Ordinal" Lesson (Target: "25", Atoms: `[ord:20, ord:5]`)
+**When** I type "24"
+**Then** `isCorrect = false`
+**And** Atom `ord:20` is **Success** (correct tens)
+**And** Atom `ord:5` is **Failure** (wrong unit)
+**And** The Strategy uses the same bag-logic as `StandardNumberEvaluationStrategy` but with `ord:` prefixed atoms
+
+### Story 7.10: Decimals Strategy
 As a learner,
 I want to practice decimals using either comma or dot,
 So that I don't get marked wrong for using my keyboard's default separator.
@@ -329,7 +362,7 @@ So that I don't get marked wrong for using my keyboard's default separator.
 **Then** It is marked **Correct**
 **And** Atoms "2" and "5" are marked **Success**
 
-### Story 7.9: Bayesian Math Engine
+### Story 7.11: Bayesian Math Engine
 As a system,
 I need to continually update knowledge estimates based on the results from the Evaluation Strategy,
 So that the user's proficiency model tracks their real-time performance.
@@ -342,7 +375,7 @@ So that the user's proficiency model tracks their real-time performance.
 **Given** An `EvaluationResult` with updates (Atom `Y`: Failure)
 **Then** The DB state for Atom `Y` updates: $\beta_{new} = \lambda \cdot \beta_{old} + 1.0$ (Failures use standard weight)
 
-### Story 7.10: Lesson Loop Integration
+### Story 7.12: Lesson Loop Integration
 As a user,
 I want my lesson results to actually save to my profile,
 So that the app learns what I know.
@@ -354,7 +387,7 @@ So that the app learns what I know.
 **And** The result is passed to the `KnowledgeEngine` to update the database asynchronously
 **And** UI feedback ("Rätt" / "Fel") is distinct from the internal atomic updates
 
-### Story 7.11: Detailed Lesson Summary
+### Story 7.13: Detailed Lesson Summary
 As a learner,
 I want to see exactly which numbers I struggled with after a lesson,
 So that I know what to focus on next time.
@@ -365,7 +398,7 @@ So that I know what to focus on next time.
 **And** It should list specific Atoms (e.g. "You mastered '7' but struggled with '20'")
 **And** It should derive this from the session's `EvaluationResult`s
 
-### Story 7.12: Knowledge Dashboard
+### Story 7.14: Knowledge Dashboard
 As a learner,
 I want to see my overall mastery of Swedish numbers on the home screen,
 So that I feel motivated by my progress.
@@ -376,5 +409,6 @@ So that I feel motivated by my progress.
 **And** A visual "Mastery Map" is displayed
 **And** It shows proficiency (Alpha/Beta levels) for key groups: Digits (0-9), Teens (10-19), Tens (20-90)
 **And** It aggregates the atomic data from `atom_states` table
+
 
 

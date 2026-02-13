@@ -10,14 +10,20 @@ This document defines the **Adaptive Learning Engine** for Siffermästare. The s
 Swedish numbers are constructed from fundamental building blocks. We track mastery for each block ("Atom") independently.
 
 ### 2.1 Atomic Units
-The system tracks probability distributions for the following **30 Atoms**:
+The system tracks probability distributions for the following **64 Atoms**:
 1.  **Digits (0-9):** `0, 1, 2, ..., 9`
     *   *Note:* `0` is rarely used in compound numbers but is a valid target itself.
 2.  **Teens (10-19):** `10, 11, 12, ..., 19`
     *   *Reason:* These are irregular in Swedish (e.g., *elva*, *tolv*, *tretton*) and cannot be reliably constructed from digits.
 3.  **Tens (20-90):** `20, 30, 40, ..., 90`
     *   *Reason:* These are distinct stems (e.g., *tjugo*, *trettio*).
-4.  **Concept Atoms (Informal Time):** `#kvart`, `#halv`, `#over`, `#i`.
+4.  **Ordinal Digits (ord:0–ord:9):** `ord:0, ord:1, ..., ord:9`
+    *   *Reason:* Swedish ordinals sound fundamentally different from cardinals (e.g., *femte* vs *fem*, *första* vs *ett*). Mastery of one does not imply mastery of the other.
+5.  **Ordinal Teens (ord:10–ord:19):** `ord:10, ord:11, ..., ord:19`
+    *   *Reason:* Ordinal teens have distinct forms (e.g., *elfte* vs *elva*, *tolfte* vs *tolv*).
+6.  **Ordinal Tens (ord:20–ord:90):** `ord:20, ord:30, ..., ord:90`
+    *   *Reason:* Ordinal tens have distinct endings (e.g., *tjugonde* vs *tjugo*).
+7.  **Concept Atoms (Informal Time):** `#kvart`, `#halv`, `#over`, `#i`.
     *   *Reason:* These represent semantic concepts rather than just numbers.
 
 ### 2.2 Composite Numbers
