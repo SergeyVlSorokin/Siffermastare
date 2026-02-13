@@ -17,6 +17,8 @@ The system tracks probability distributions for the following **30 Atoms**:
     *   *Reason:* These are irregular in Swedish (e.g., *elva*, *tolv*, *tretton*) and cannot be reliably constructed from digits.
 3.  **Tens (20-90):** `20, 30, 40, ..., 90`
     *   *Reason:* These are distinct stems (e.g., *tjugo*, *trettio*).
+4.  **Concept Atoms (Informal Time):** `#kvart`, `#halv`, `#over`, `#i`.
+    *   *Reason:* These represent semantic concepts rather than just numbers.
 
 ### 2.2 Composite Numbers
 Any number outside these atoms is treated as a **Composite**.
@@ -87,13 +89,33 @@ $$ W = \text{clamp}\left( \frac{800ms}{\text{MPE}}, \ 0.2, \ 1.3 \right) $$
 ### 4.1 Decomposition & Grading
 When a user answers a question, we decompose the *Target Number* into its Atoms and grade them based on the *User's Input*.
 
-**Rule: No Penalty for Extra Input (Knowledge Tracking ONLY)**
-We strictly grade the presence/absence of *Target* atoms for the purpose of updating the BKT model. Any **Extra Atoms** provided by the user (that are not part of the Target) are **ignored** for *atom updates* and do NOT result in a Failure update for those extra atoms.
+**Rule: Atom Source (Generator Owns Atoms)**
+Target atoms are produced by the `NumberGenerator` and attached to the `Question` object. The `EvaluationStrategy` uses `question.atoms` as ground truth and never derives its own target atom list. This prevents logic duplication and ensures a single source of truth.
 
-**Rule: Answer Correctness**
-For the purpose of grading the answer as Correct/Incorrect (`isCorrect`), we require a valid answer.
-*   **Presence of Extra/Incorrect Atoms**: results in `isCorrect = False`.
-*   **Invalid Order**: If the specific lesson strategy requires strict order (e.g., Digital Time), an invalid order results in `isCorrect = False` (and potentially atom failures if positionally mismatched).
+**Rule: No Extra Atoms in Output**
+Only atoms from the **Target** appear in `atomUpdates`. Any atoms the user produces that are not in the target are **ignored** — we do not add them to the output map, and they do not receive Success or Failure updates. We track: *"Did the user demonstrate knowledge of what was in the stimulus?"* — not *"Does the user also not know other things?"*
+
+**Rule: Answer Correctness (`isCorrect`)**
+`isCorrect` is a simple boolean: `True` if the answer is correct, `False` otherwise. It is independent of atom grading. Specific conditions that cause `isCorrect = False`:
+*   **Wrong value**: Input does not match the target (accounting for lesson-specific equivalences like 12h/24h).
+*   **Extra/missing content**: Input contains components not in the target, or is missing required components.
+*   **Invalid order**: If the strategy requires strict order (e.g., Digital Time), wrong order → `isCorrect = False`.
+
+**Rule: Literal vs Semantic Value**
+Each atom has two values:
+*   **Literal Value**: The number the word directly represents (e.g., "fem" → 5, "kvart" → 15).
+*   **Semantic Value**: The atom's contextual contribution to the final answer (e.g., "fem" in "fem **i** tre" → minute 55, because 60−5=55).
+
+An atom is graded **Success** if the user's input matches **either** the literal or semantic value for that atom. This allows credit for recognizing the spoken word even when the user applies incorrect contextual logic.
+
+**Rule: No Observation (SKIP)**
+When the evidence for an atom is **ambiguous** — neither clearly correct nor clearly wrong — the atom is **omitted** from `atomUpdates` entirely. The BKT engine treats absent atoms as "no observation": no α/β update occurs. This is fundamentally different from both Success (which increases α) and Failure (which increases β). Each `EvaluationStrategy` defines when SKIP applies for its atom types.
+
+**Rule: Evidence Precondition**
+Some atoms can only be graded when a related atom they depend on has been successfully identified. If the prerequisite atom fails, the dependent atom is **SKIPPED** (see above). Example: a directional concept (`#over`/`#i`) cannot be assessed if the user got the minute number wrong — we can't distinguish "wrong direction" from "wrong number that coincidentally looks like a different direction."
+
+**Rule: Leading Zero Tolerance**
+When input represents a zero-padded format (e.g., time), a missing leading zero is not a failure. The system normalizes the input (e.g., `"300"` → `"0300"`) and infers that the user understood the leading zero. The corresponding `0` atom (if present in the target) receives a **Success** update.
 
 **Scenario A: Correct Answer**
 *   **Target:** 25 (Atoms: `20`, `5`)
@@ -142,6 +164,21 @@ For the purpose of grading the answer as Correct/Incorrect (`isCorrect`), we req
     *   Atom `14`: Update with **Failure** (0)
     *   Atom `15`: Update with **Failure** (0)
     *   *Rationale:* The user failed to identify the atoms in the correct structural positions.
+
+**Scenario F: Informal Time (Evidence-Based Grading)**
+*   **Target:** "Tio i sex" (05:50)
+*   **Atoms:** `10`, `#i`, `6`
+*   **Input:** "0610" (Literal match, Semantic mismatch)
+*   **Logic:**
+    *   Atom `10`: InputMinute=10 matches literal value 10 → **Success** (cross-direction match).
+    *   Atom `6`: InputHour=06 matches literal value 6 → **Success**.
+    *   Atom `#i`: Precondition met (minute atom `10` is Success). InputMinute=10 → inferred direction `#over` ≠ target `#i` → **Failure**.
+*   **Result:**
+    *   `isCorrect = False`
+    *   Atom `10`: **Success** (Literal match)
+    *   Atom `6`: **Success** (Literal match)
+    *   Atom `#i`: **Failure** (Direction mismatch)
+    *   *Rationale:* We credit Number Mastery even if Time Logic is flawed. See [Story 7.5](sprint-artifacts/7-5-informal-time-evaluation-strategy.md) for complete grading rules.
 
 ## 5. Usage & Storage
 
