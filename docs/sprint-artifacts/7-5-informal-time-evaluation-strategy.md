@@ -1,6 +1,6 @@
 # Story 7.5: Informal Time Evaluation Strategy
 
-Status: ready-for-dev
+Status: Ready for Review
 
 ## Story
 
@@ -256,31 +256,31 @@ Only target atoms appear in atomUpdates. User-produced atoms not in the target a
 
 ## Tasks / Subtasks
 
-- [ ] Core Model Update
-  - [ ] Add `val atoms: List<String> = emptyList()` to `Question` class
+- [x] Core Model Update
+  - [x] Add `val atoms: List<String> = emptyList()` to `Question` class
 
-- [ ] Update `InformalTimeGenerator`
-  - [ ] Populate `atoms` in `Question` according to Test Specification
-  - [ ] Implement derived atom logic (e.g. minute 21–29 → `[num, #i, #halv, nextHour]`)
+- [x] Update `InformalTimeGenerator`
+  - [x] Populate `atoms` in `Question` according to Test Specification
+  - [x] Implement derived atom logic (e.g. minute 21–29 → `[num, #i, #halv, nextHour]`)
 
-- [ ] Update `InformalTimeGeneratorTest`
-  - [ ] Extend existing tests to verify atoms list
-  - [ ] Verify ALL patterns from Test Specification
+- [x] Update `InformalTimeGeneratorTest`
+  - [x] Extend existing tests to verify atoms list
+  - [x] Verify ALL patterns from Test Specification
 
-- [ ] Implement `InformalTimeEvaluationStrategy`
-  - [ ] Implement `evaluate` using `question.atoms` as ground truth
-  - [ ] Input parsing (Rule 1)
-  - [ ] `isCorrect` via 12h/24h equivalence (Rule 2)
-  - [ ] Hour atom grading: literal/(−1) matching (Rule 3)
-  - [ ] Minute number atom grading: semantic/cross-direction (Rule 4)
-  - [ ] Structural concept atoms: `#kvart`, `#halv` from minute zone (Rule 5)
-  - [ ] Directional concept atoms: `#over`, `#i` with precondition + SKIP (Rule 6)
-  - [ ] Duplicate atom handling (Rule 7)
-  - [ ] No extra atoms (Rule 8)
+- [x] Implement `InformalTimeEvaluationStrategy`
+  - [x] Implement `evaluate` using `question.atoms` as ground truth
+  - [x] Input parsing (Rule 1)
+  - [x] `isCorrect` via 12h/24h equivalence (Rule 2)
+  - [x] Hour atom grading: literal/(−1) matching (Rule 3)
+  - [x] Minute number atom grading: semantic/cross-direction (Rule 4)
+  - [x] Structural concept atoms: `#kvart`, `#halv` from minute zone (Rule 5)
+  - [x] Directional concept atoms: `#over`, `#i` with precondition + SKIP (Rule 6)
+  - [x] Duplicate atom handling (Rule 7)
+  - [x] No extra atoms (Rule 8)
 
-- [ ] Strategy Unit Tests
-  - [ ] Create `InformalTimeEvaluationStrategyTest`
-  - [ ] Implement ALL test cases from Test Specification (40+ cases)
+- [x] Strategy Unit Tests
+  - [x] Create `InformalTimeEvaluationStrategyTest`
+  - [x] Implement ALL test cases from Test Specification (55 cases)
 
 ## Dev Notes
 
@@ -297,3 +297,38 @@ Only target atoms appear in atomUpdates. User-produced atoms not in the target a
 
 - [Source: docs/epics.md](file:///c:/Users/Serge/source/repos/Siffermastare/docs/epics.md)
 - [Source: docs/learning-model-spec.md](file:///c:/Users/Serge/source/repos/Siffermastare/docs/learning-model-spec.md)
+
+## Dev Agent Record
+
+### Implementation Plan
+
+1. Added `atoms: List<String> = emptyList()` to `Question` data class (backward-compatible default)
+2. Added `buildAtoms(hour, minute)` to `InformalTimeGenerator` — derives atom list based on the time pattern
+3. Swapped `evaluationStrategy` from `ExactMatchEvaluationStrategy` to `InformalTimeEvaluationStrategy`
+4. Implemented `InformalTimeEvaluationStrategy` with all 8 rules using index-based atom processing
+5. Key design decision: Use `indexOfLast` for number atoms to distinguish minute vs hour role in duplicates (e.g., "Tio över tio")
+
+### Debug Log
+
+- Initial implementation had a bug in duplicate atom handling (tests 11.2 and 11.3 failed)
+- Root cause: `isHourAtom()` used `indexOf` which always returned first occurrence for duplicates
+- Fix: Switched to index-based position tracking — pre-compute `lastNumberIndex` and pass `isHourPosition` flag per atom
+
+### Completion Notes
+
+- All 55 `InformalTimeEvaluationStrategyTest` cases pass (0 failures)
+- All `InformalTimeGeneratorTest` cases pass (atom generation verified for all 8 patterns)
+- No regressions from our changes (1 pre-existing flaky test in `LessonViewModelTest.incorrectAnswer_incrementsAttempts` — `cardinal_0_20` generator unrelated to this story)
+
+## File List
+
+- `app/src/main/java/com/siffermastare/domain/models/Question.kt` (modified — added `atoms` field)
+- `app/src/main/java/com/siffermastare/domain/generators/InformalTimeGenerator.kt` (modified — added `buildAtoms()`, swapped strategy)
+- `app/src/main/java/com/siffermastare/domain/evaluation/InformalTimeEvaluationStrategy.kt` (new)
+- `app/src/test/java/com/siffermastare/domain/evaluation/InformalTimeEvaluationStrategyTest.kt` (new — 55 test cases)
+- `app/src/test/java/com/siffermastare/domain/generators/InformalTimeGeneratorTest.kt` (modified — added atom verification tests)
+- `docs/sprint-artifacts/sprint-status.yaml` (modified — status updates)
+
+## Change Log
+
+- 2026-02-13: Implemented Story 7.5 — Informal Time Evaluation Strategy with full atom-level grading (Rules 1-8), 55 test cases, and generator atom population

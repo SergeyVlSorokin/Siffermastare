@@ -1,12 +1,12 @@
 package com.siffermastare.domain.generators
 
 import com.siffermastare.domain.models.Question
-import com.siffermastare.domain.evaluation.ExactMatchEvaluationStrategy
+import com.siffermastare.domain.evaluation.InformalTimeEvaluationStrategy
 import kotlin.random.Random
 
 class InformalTimeGenerator : NumberGenerator {
 
-    override val evaluationStrategy = ExactMatchEvaluationStrategy()
+    override val evaluationStrategy = InformalTimeEvaluationStrategy()
     
     private val numbers = arrayOf(
         "noll", "ett", "två", "tre", "fyra", "fem", "sex", "sju", "åtta", "nio",
@@ -23,7 +23,6 @@ class InformalTimeGenerator : NumberGenerator {
             val minuteStr = minute.toString().padStart(2, '0')
             
             // Calculate alternative 12h/24h counterpart
-            // e.g. if 14:30, alt is 02:30. If 02:30, alt is 14:30.
             val altHour = (hour + 12) % 24
             val altHourStr = altHour.toString().padStart(2, '0')
             
@@ -31,24 +30,19 @@ class InformalTimeGenerator : NumberGenerator {
             val targetValue = "$hourStr$minuteStr|$altHourStr$minuteStr"
             
             val spokenText = formatInformalTime(hour, minute)
+            val atoms = buildAtoms(hour, minute)
             
             Question(
                 targetValue = targetValue,
                 spokenText = spokenText,
-                visualHint = null
+                visualHint = null,
+                atoms = atoms
             )
         }
     }
 
     fun formatInformalTime(hour: Int, minute: Int): String {
-        // Convert to 12-hour basis for the base hour
-        // If hour is 0 or 12 -> 12. 13 -> 1.
         val currentHour12 = if (hour % 12 == 0) 12 else hour % 12
-        
-        // Define next hour (also 12-hour basis)
-        // If hour is 12 (noon), next is 1. If 23, next is 12 (midnight).
-        // (hour + 1) logic:
-        // hour 14 -> next 15 -> 3
         val nextHourVal = (hour + 1)
         val nextHour12 = if (nextHourVal % 12 == 0) 12 else nextHourVal % 12
 
@@ -76,6 +70,42 @@ class InformalTimeGenerator : NumberGenerator {
                     val diff = 60 - minute
                     "${numbers[diff]} i $nextHourName"
                 }
+            }
+        }
+    }
+
+    /**
+     * Builds the list of concept atoms for the given informal time.
+     * Atom ordering matches the spoken Swedish phrase.
+     */
+    fun buildAtoms(hour: Int, minute: Int): List<String> {
+        val currentHour12 = if (hour % 12 == 0) 12 else hour % 12
+        val nextHourVal = (hour + 1)
+        val nextHour12 = if (nextHourVal % 12 == 0) 12 else nextHourVal % 12
+
+        return when (minute) {
+            0 -> listOf(currentHour12.toString())
+            15 -> listOf("#kvart", "#over", currentHour12.toString())
+            45 -> listOf("#kvart", "#i", nextHour12.toString())
+            30 -> listOf("#halv", nextHour12.toString())
+            in 1..14, in 16..20 -> {
+                // "X över CurrentHour"
+                listOf(minute.toString(), "#over", currentHour12.toString())
+            }
+            in 21..29 -> {
+                // "X i halv NextHour"
+                val diff = 30 - minute
+                listOf(diff.toString(), "#i", "#halv", nextHour12.toString())
+            }
+            in 31..39 -> {
+                // "X över halv NextHour"
+                val diff = minute - 30
+                listOf(diff.toString(), "#over", "#halv", nextHour12.toString())
+            }
+            else -> { // 40..44, 46..59
+                // "X i NextHour"
+                val diff = 60 - minute
+                listOf(diff.toString(), "#i", nextHour12.toString())
             }
         }
     }
