@@ -210,6 +210,24 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - **Build configuration:** All build settings in `app/build.gradle.kts`
 - **Settings:** Project-wide settings in `settings.gradle.kts` and `gradle.properties`
 
+#### Running Tests (Windows / PowerShell)
+- **Working directory:** Always run from project root (`c:\Users\Serge\source\repos\Siffermastare`)
+- **Correct Gradle task:** Use `:app:testDebugUnitTest`, NOT `test` (bare `test` fails to resolve the app module)
+- **PowerShell `&&` not supported:** Do NOT use `cd app && gradlew.bat ...` — PowerShell rejects `&&`. Use `cmd /c` wrapper or run from project root with `:app:` prefix
+- **Run specific test classes:**
+  ```
+  cmd /c "gradlew.bat :app:testDebugUnitTest --tests com.siffermastare.domain.evaluation.InformalTimeEvaluationStrategyTest --console=plain 2>&1"
+  ```
+- **Run multiple test classes:** Add multiple `--tests` flags:
+  ```
+  cmd /c "gradlew.bat :app:testDebugUnitTest --tests com.siffermastare.domain.evaluation.InformalTimeEvaluationStrategyTest --tests com.siffermastare.domain.generators.InformalTimeGeneratorTest --console=plain 2>&1"
+  ```
+- **Run all unit tests:**
+  ```
+  cmd /c "gradlew.bat :app:testDebugUnitTest --console=plain 2>&1"
+  ```
+- **Debug failures:** Add `--stacktrace` flag for full error output
+
 #### Deployment Considerations
 - **No backend required:** MVP is completely offline - no cloud services needed
 - **Local storage only:** All user data persisted via Room database on device

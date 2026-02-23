@@ -80,15 +80,10 @@ class InformalTimeEvaluationStrategy : EvaluationStrategy {
     private fun gradeMinuteNumberAtom(atom: String, inputMinute: Int): Boolean {
         val atomValue = atom.toInt()
 
-        // Semantic match: does the derived minute number equal the atom value?
-        val semanticMinute = computeSemanticMinuteValue(inputMinute)
-        val semanticMatch = semanticMinute == atomValue
+        // Semantic + cross-direction match: both derive from the same minute→number mapping
+        val derivedMinuteNumber = computeSemanticMinuteValue(inputMinute)
 
-        // Cross-direction match
-        val derivedMinuteNumber = deriveMinuteNumber(inputMinute)
-        val crossDirectionMatch = derivedMinuteNumber != null && derivedMinuteNumber == atomValue
-
-        return semanticMatch || crossDirectionMatch
+        return derivedMinuteNumber == atomValue
     }
 
     /**
@@ -107,12 +102,7 @@ class InformalTimeEvaluationStrategy : EvaluationStrategy {
         }
     }
 
-    /**
-     * Derives the minute number from InputMinute per Rule 4 Step 1.
-     */
-    private fun deriveMinuteNumber(inputMinute: Int): Int? {
-        return computeSemanticMinuteValue(inputMinute)
-    }
+
 
     // Rule 5: Structural Concept Atoms
     private fun gradeKvart(inputMinute: Int): Boolean {
@@ -143,20 +133,23 @@ class InformalTimeEvaluationStrategy : EvaluationStrategy {
 
     /**
      * Checks if the minute-side atom (minute number atom, or #kvart if no number atom) is successful.
+     * Uses positional index: the first number atom before any directional atom is the minute atom.
+     * Falls back to #kvart if no minute number atom precedes the directional atom.
      */
     private fun minuteSideAtomIsSuccess(targetAtoms: List<String>, inputMinute: Int): Boolean {
-        val hasKvart = targetAtoms.contains("#kvart")
-        val numberAtoms = targetAtoms.filter { !it.startsWith("#") }
+        // Find first directional atom index to determine what comes before it
+        val dirIndex = targetAtoms.indexOfFirst { it == "#over" || it == "#i" }
+        if (dirIndex < 0) return false
 
-        if (numberAtoms.size <= 1 && hasKvart) {
-            // Minute-side is #kvart
-            return gradeKvart(inputMinute)
+        // Look for a number atom before the directional atom (minute-side)
+        val minuteNumberAtom = targetAtoms.take(dirIndex).firstOrNull { !it.startsWith("#") }
+        if (minuteNumberAtom != null) {
+            return gradeMinuteNumberAtom(minuteNumberAtom, inputMinute)
         }
 
-        if (numberAtoms.size >= 2) {
-            // First number atom is the minute number
-            val minuteAtom = numberAtoms.first()
-            return gradeMinuteNumberAtom(minuteAtom, inputMinute)
+        // No number atom before direction → check #kvart as minute-side
+        if (targetAtoms.contains("#kvart")) {
+            return gradeKvart(inputMinute)
         }
 
         return false
@@ -189,6 +182,7 @@ class InformalTimeEvaluationStrategy : EvaluationStrategy {
         val hour = hourStr.toIntOrNull() ?: return null
         val minute = minuteStr.toIntOrNull() ?: return null
 
+        if (hour > 24) return null
         if (minute > 59) return null
 
         return Pair(hour, minute)

@@ -475,4 +475,55 @@ class InformalTimeEvaluationStrategyTest {
         // derive(05)=5≠10 → minute false, SKIP #over, hr: 10=literal → true
         assertEquals(mapOf("10" to listOf(false, true)), result.atomUpdates)
     }
+
+    // ===== Section 12: parseInput Edge Cases =====
+
+    @Test
+    fun `12_1 empty string returns incorrect with no atoms`() {
+        val result = strategy.evaluate("", q("0200|1400", listOf("2")))
+        assertFalse(result.isCorrect)
+        assertEquals(emptyMap<String, List<Boolean>>(), result.atomUpdates)
+    }
+
+    @Test
+    fun `12_2 non-digit input returns incorrect`() {
+        val result = strategy.evaluate("abc", q("0200|1400", listOf("2")))
+        assertFalse(result.isCorrect)
+        assertEquals(emptyMap<String, List<Boolean>>(), result.atomUpdates)
+    }
+
+    @Test
+    fun `12_3 too short input 2 digits`() {
+        val result = strategy.evaluate("12", q("0200|1400", listOf("2")))
+        assertFalse(result.isCorrect)
+        assertEquals(emptyMap<String, List<Boolean>>(), result.atomUpdates)
+    }
+
+    @Test
+    fun `12_4 too long input 5 digits`() {
+        val result = strategy.evaluate("12345", q("0200|1400", listOf("2")))
+        assertFalse(result.isCorrect)
+        assertEquals(emptyMap<String, List<Boolean>>(), result.atomUpdates)
+    }
+
+    @Test
+    fun `12_5 hour exceeds 24 rejected`() {
+        val result = strategy.evaluate("2500", q("0200|1400", listOf("2")))
+        assertFalse(result.isCorrect)
+        assertEquals(emptyMap<String, List<Boolean>>(), result.atomUpdates)
+    }
+
+    @Test
+    fun `12_6 minute exceeds 59 rejected`() {
+        val result = strategy.evaluate("0260", q("0200|1400", listOf("2")))
+        assertFalse(result.isCorrect)
+        assertEquals(emptyMap<String, List<Boolean>>(), result.atomUpdates)
+    }
+
+    @Test
+    fun `12_7 valid boundary 2400 accepted`() {
+        val result = strategy.evaluate("2400", q("1200|0000", listOf("12")))
+        assertTrue(result.isCorrect)
+        assertEquals(mapOf("12" to listOf(true)), result.atomUpdates)
+    }
 }

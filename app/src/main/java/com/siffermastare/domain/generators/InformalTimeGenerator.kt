@@ -41,7 +41,7 @@ class InformalTimeGenerator : NumberGenerator {
         }
     }
 
-    fun formatInformalTime(hour: Int, minute: Int): String {
+    internal fun formatInformalTime(hour: Int, minute: Int): String {
         val currentHour12 = if (hour % 12 == 0) 12 else hour % 12
         val nextHourVal = (hour + 1)
         val nextHour12 = if (nextHourVal % 12 == 0) 12 else nextHourVal % 12
@@ -78,7 +78,7 @@ class InformalTimeGenerator : NumberGenerator {
      * Builds the list of concept atoms for the given informal time.
      * Atom ordering matches the spoken Swedish phrase.
      */
-    fun buildAtoms(hour: Int, minute: Int): List<String> {
+    internal fun buildAtoms(hour: Int, minute: Int): List<String> {
         val currentHour12 = if (hour % 12 == 0) 12 else hour % 12
         val nextHourVal = (hour + 1)
         val nextHour12 = if (nextHourVal % 12 == 0) 12 else nextHourVal % 12

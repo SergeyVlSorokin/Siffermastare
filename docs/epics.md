@@ -285,12 +285,12 @@ So that I can practice informal time telling with flexible numeric input.
 
 **Acceptance Criteria:**
 **Given** An "Informal Time" Lesson (Target prompts: "Kvart över tre")
-**When** I type "15:15"
+**When** I type "0315"
 **Then** It is marked **Correct**
-**And** Concept Atoms `kvart` and `over` and `3` are marked **Success**
-**When** I type "03:15"
+**And** Concept Atoms `#kvart` and `#over` and `3` are marked **Success**
+**When** I type "1515"
 **Then** It is marked **Correct** (12h/24h equivalence)
-**And** Concept Atoms `kvart` and `over` and `3` are marked **Success**
+**And** Concept Atoms `#kvart` and `#over` and `3` are marked **Success**
 
 ### Story 7.6: Adapt Strategies & Generators to Atoms-in-Question Architecture
 As a developer,

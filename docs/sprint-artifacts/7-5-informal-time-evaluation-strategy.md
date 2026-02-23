@@ -1,6 +1,6 @@
 # Story 7.5: Informal Time Evaluation Strategy
 
-Status: Ready for Review
+Status: done
 
 ## Story
 
@@ -282,6 +282,9 @@ Only target atoms appear in atomUpdates. User-produced atoms not in the target a
   - [x] Create `InformalTimeEvaluationStrategyTest`
   - [x] Implement ALL test cases from Test Specification (55 cases)
 
+- [ ] Review Follow-ups
+  - [ ] [AI-Review][MEDIUM] Investigate pre-existing flaky test `LessonViewModelTest.incorrectAnswer_incrementsAttempts` (`cardinal_0_20` generator)
+
 ## Dev Notes
 
 - **Atom IDs:** `#kvart`, `#halv`, `#over`, `#i` (with `#` prefix). Number atoms without prefix: `1`, `2`, ..., `20`.
@@ -316,19 +319,45 @@ Only target atoms appear in atomUpdates. User-produced atoms not in the target a
 
 ### Completion Notes
 
-- All 55 `InformalTimeEvaluationStrategyTest` cases pass (0 failures)
+- All 62 `InformalTimeEvaluationStrategyTest` cases pass (55 grading + 7 parseInput edge cases)
 - All `InformalTimeGeneratorTest` cases pass (atom generation verified for all 8 patterns)
 - No regressions from our changes (1 pre-existing flaky test in `LessonViewModelTest.incorrectAnswer_incrementsAttempts` — `cardinal_0_20` generator unrelated to this story)
+
+## Senior Developer Review (AI)
+
+**Reviewer:** Sergei | **Date:** 2026-02-23
+
+### Findings Fixed (7/7)
+
+| ID | Severity | Description | Resolution |
+|----|----------|-------------|------------|
+| H1 | HIGH | `parseInput` accepted hour > 24 | Added `if (hour > 24) return null` guard |
+| H2 | HIGH | `deriveMinuteNumber` was dead wrapper over `computeSemanticMinuteValue` | Removed dead function, inlined call |
+| H3 | HIGH | `minuteSideAtomIsSuccess` used fragile `numberAtoms.size` heuristic | Refactored to positional index check using `targetAtoms.take(dirIndex)` |
+| M1 | MEDIUM | No tests for parseInput edge cases | Added 7 tests: empty, non-digit, short, long, hour>24, minute>59, boundary 2400 |
+| M2 | MEDIUM | `buildAtoms()` / `formatInformalTime()` were public | Changed to `internal` |
+| M3 | MEDIUM | epics.md AC used wrong format ("15:15" instead of "0315") | Fixed AC to digit-string format with `#` prefixed atoms |
+| M4 | MEDIUM | Flaky test documented but no action item | Added Review Follow-up task |
+
+### LOW Issues (Accepted)
+
+- L1: Concept atom string constants — not blocking, future cleanup
+- L2: Magic range numbers — not blocking, future cleanup
+- L3: `2400` valid — confirmed by user
 
 ## File List
 
 - `app/src/main/java/com/siffermastare/domain/models/Question.kt` (modified — added `atoms` field)
-- `app/src/main/java/com/siffermastare/domain/generators/InformalTimeGenerator.kt` (modified — added `buildAtoms()`, swapped strategy)
-- `app/src/main/java/com/siffermastare/domain/evaluation/InformalTimeEvaluationStrategy.kt` (new)
-- `app/src/test/java/com/siffermastare/domain/evaluation/InformalTimeEvaluationStrategyTest.kt` (new — 55 test cases)
+- `app/src/main/java/com/siffermastare/domain/generators/InformalTimeGenerator.kt` (modified — added `buildAtoms()`, swapped strategy, `internal` visibility)
+- `app/src/main/java/com/siffermastare/domain/evaluation/InformalTimeEvaluationStrategy.kt` (new — reviewed: removed dead code, refactored minuteSideAtomIsSuccess, added hour guard)
+- `app/src/test/java/com/siffermastare/domain/evaluation/InformalTimeEvaluationStrategyTest.kt` (new — 62 test cases: 55 grading + 7 parseInput)
+- `app/src/test/java/com/siffermastare/domain/evaluation/InformalTimeIntegrationTest.kt` (new — 16 generator↔strategy integration tests)
 - `app/src/test/java/com/siffermastare/domain/generators/InformalTimeGeneratorTest.kt` (modified — added atom verification tests)
+- `docs/epics.md` (modified — fixed Story 7.5 AC)
 - `docs/sprint-artifacts/sprint-status.yaml` (modified — status updates)
 
 ## Change Log
 
 - 2026-02-13: Implemented Story 7.5 — Informal Time Evaluation Strategy with full atom-level grading (Rules 1-8), 55 test cases, and generator atom population
+- 2026-02-23: Code Review — Fixed 3 HIGH + 4 MEDIUM issues: input validation, dead code, fragile heuristic, edge-case tests, visibility, stale AC, flaky test tracking
+- 2026-02-23: Added 16 generator↔strategy integration tests verifying end-to-end Question production and evaluation
