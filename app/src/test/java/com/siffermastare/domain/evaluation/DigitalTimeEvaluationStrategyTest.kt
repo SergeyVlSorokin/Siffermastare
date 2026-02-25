@@ -1,5 +1,6 @@
 package com.siffermastare.domain.evaluation
 
+import com.siffermastare.domain.generators.TimeGenerator
 import com.siffermastare.domain.models.Question
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -10,9 +11,12 @@ class DigitalTimeEvaluationStrategyTest {
 
     private val strategy = DigitalTimeEvaluationStrategy()
 
-    // Helper to create a question with just the target value (others ignored by strategy)
+    // Helper to create a question with atoms populated by TimeGenerator.decomposeTime()
     private fun createQuestion(target: String): Question {
-        return Question(targetValue = target, spokenText = "", visualHint = null)
+        val hourStr = target.substring(0, 2)
+        val minuteStr = target.substring(2, 4)
+        val atoms = TimeGenerator.decomposeTime(hourStr, minuteStr)
+        return Question(targetValue = target, spokenText = "", visualHint = null, atoms = atoms)
     }
 
     // 1. Exact Match
@@ -142,14 +146,6 @@ class DigitalTimeEvaluationStrategyTest {
 
     // 7. Triple Zero Error
     // Target: "0003", Input: "0103"
-    // Matches: 3 OK. 0 matches: Target has 3 zeros. Input has 2 zeros ("0103" -> 0,1,0,3).
-    // Result: Two 0s OK, One 0 Fail. 1 Extra?
-    // Wait, target 0003 -> 0,0,0,3.
-    // Input 0103 -> H=01 (0,1), M=03 (0,3) -> 0,1,0,3.
-    // Atom 0: Target count 3. Input count 2.
-    // Matches = min(3, 2) = 2.
-    // Misses = 3 - 2 = 1.
-    // Updates for 0: [true, true, false].
     @Test
     fun testTripleZeroError() {
         val question = createQuestion("0003")
@@ -168,17 +164,11 @@ class DigitalTimeEvaluationStrategyTest {
         // Check 3
         assertTrue(updates["3"]?.all { it } == true)
         
-        // Input had extra "1".
-        // Extra input doesn't show in updates (only target atoms track updates),
-        // but it causes isCorrect=False due to "Answer is Incorrect" rule for extra atoms.
         assertEquals(2, updates.size)
     }
 
     // 8. Leading Zero Optional
     // Target: "0513", Input: "513"
-    // Target: 0, 5, 13.
-    // Input "513" -> normalized to "0513" -> 0, 5, 13
-    // Result: Correct.
     @Test
     fun testLeadingZeroOptional() {
         val question = createQuestion("0513")
@@ -195,19 +185,13 @@ class DigitalTimeEvaluationStrategyTest {
     
     // 9. Swapped Digits
     // Target: "1415", Input: "1514"
-    // H=14, M=15 vs H=15, M=14.
-    // Result: Incorrect due to order mismatch. Both atoms fail.
     @Test
     fun testSwappedDigits() {
         val question = createQuestion("1415")
-        // User Input: "1514"
         val result = strategy.evaluate("1514", question)
 
         assertFalse("Should be incorrect due to swap", result.isCorrect)
         val updates = result.atomUpdates
-        
-        // Position 0: Target 14. Input 15. -> 14 Missing (Fail).
-        // Position 1: Target 15. Input 14. -> 15 Missing (Fail).
         
         assertTrue("Atom 14 Fail", updates["14"]?.all { !it } == true)
         assertTrue("Atom 15 Fail", updates["15"]?.all { !it } == true)
@@ -215,8 +199,6 @@ class DigitalTimeEvaluationStrategyTest {
     }
     // 10. Teens Boundary
     // Target: "1019", Input: "1019"
-    // H=10 (Teen), M=19 (Teen).
-    // Result: 10 OK, 19 OK.
     @Test
     fun testTeensBoundary() {
         val question = createQuestion("1019")

@@ -12,7 +12,8 @@ class StandardNumberEvaluationStrategyTest {
     private val strategy = StandardNumberEvaluationStrategy()
 
     private fun createQuestion(target: String): Question {
-        return Question(targetValue = target, spokenText = "dummy", visualHint = null)
+        val atoms = StandardNumberEvaluationStrategy.decompose(target.toInt())
+        return Question(targetValue = target, spokenText = "dummy", visualHint = null, atoms = atoms)
     }
 
     @Test
@@ -126,5 +127,37 @@ class StandardNumberEvaluationStrategyTest {
         assertEquals(2, result.atomUpdates.size)
         assertEquals(listOf(false), result.atomUpdates["20"])
         assertEquals(listOf(false), result.atomUpdates["5"])
+    }
+
+    // --- Companion decompose tests ---
+
+    @Test
+    fun `decompose 25 returns 20 and 5`() {
+        assertEquals(listOf("20", "5"), StandardNumberEvaluationStrategy.decompose(25))
+    }
+
+    @Test
+    fun `decompose 0 returns 0`() {
+        assertEquals(listOf("0"), StandardNumberEvaluationStrategy.decompose(0))
+    }
+
+    @Test
+    fun `decompose 1000 returns 1`() {
+        assertEquals(listOf("1"), StandardNumberEvaluationStrategy.decompose(1000))
+    }
+
+    @Test
+    fun `decompose 13 returns 13 (teen)`() {
+        assertEquals(listOf("13"), StandardNumberEvaluationStrategy.decompose(13))
+    }
+
+    @Test
+    fun `decompose 505 returns 5 and 5`() {
+        assertEquals(listOf("5", "5"), StandardNumberEvaluationStrategy.decompose(505))
+    }
+
+    @Test
+    fun `decompose with ordinal prefix`() {
+        assertEquals(listOf("ord:20", "ord:5"), StandardNumberEvaluationStrategy.decompose(25, "ord:"))
     }
 }

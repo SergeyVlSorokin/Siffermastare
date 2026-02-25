@@ -7,7 +7,8 @@ import kotlin.math.min
 
 /**
  * Strategy for standard integer numbers (0-1000).
- * Decomposes numbers into "speaking parts" (Atoms) to provide granular feedback.
+ * Uses question.atoms as the target atom list (Generator Owns Atoms rule).
+ * Decomposes user INPUT into atoms for bag-logic comparison.
  */
 class StandardNumberEvaluationStrategy : EvaluationStrategy {
 
@@ -16,7 +17,7 @@ class StandardNumberEvaluationStrategy : EvaluationStrategy {
         val target = targetStr.toIntOrNull() ?: return EvaluationResult(false) // Should be valid integer
         val inputInt = input.trim().toIntOrNull()
 
-        val targetAtoms = decompose(target)
+        val targetAtoms = question.atoms
 
         // If input is non-numeric, fail all target atoms
         if (inputInt == null) {
@@ -50,50 +51,56 @@ class StandardNumberEvaluationStrategy : EvaluationStrategy {
         return EvaluationResult(isCorrect, updates)
     }
 
-    /**
-     * Decomposes a number into its atomic "speaking parts".
-     * Ranges:
-     * - 0-19: Atomic
-     * - 20-99: Tens + Digit
-     * - 100-999: HundredsDigit + Remainder (Tens/Digits)
-     * - 1000: "1" (ett tusen)
-     */
-    private fun decompose(number: Int): List<String> {
-        if (number !in 0..1000) return emptyList()
+    companion object {
+        /**
+         * Decomposes a number into its atomic "speaking parts".
+         * Ranges:
+         * - 0-19: Atomic
+         * - 20-99: Tens + Digit
+         * - 100-999: HundredsDigit + Remainder (Tens/Digits)
+         * - 1000: "1" (ett tusen)
+         *
+         * @param number The integer to decompose (0-1000).
+         * @param prefix Optional prefix for atom IDs (e.g., "ord:" for ordinals).
+         * @return List of atom ID strings.
+         */
+        fun decompose(number: Int, prefix: String = ""): List<String> {
+            if (number !in 0..1000) return emptyList()
 
-        val atoms = mutableListOf<String>()
+            val atoms = mutableListOf<String>()
 
-        if (number == 1000) {
-            atoms.add("1")
-            return atoms
-        }
-        
-        if (number == 0) {
-            atoms.add("0")
-            return atoms
-        }
+            if (number == 1000) {
+                atoms.add("${prefix}1")
+                return atoms
+            }
+            
+            if (number == 0) {
+                atoms.add("${prefix}0")
+                return atoms
+            }
 
-        var remaining = number
-        val hundreds = remaining / 100
-        if (hundreds > 0) {
-            atoms.add(hundreds.toString())
-            remaining %= 100
-        }
+            var remaining = number
+            val hundreds = remaining / 100
+            if (hundreds > 0) {
+                atoms.add("${prefix}$hundreds")
+                remaining %= 100
+            }
 
-        if (remaining > 0) {
-            if (remaining < 20) {
-                atoms.add(remaining.toString())
-            } else {
-                val tens = (remaining / 10) * 10
-                atoms.add(tens.toString())
-                
-                val ones = remaining % 10
-                if (ones > 0) {
-                    atoms.add(ones.toString())
+            if (remaining > 0) {
+                if (remaining < 20) {
+                    atoms.add("${prefix}$remaining")
+                } else {
+                    val tens = (remaining / 10) * 10
+                    atoms.add("${prefix}$tens")
+                    
+                    val ones = remaining % 10
+                    if (ones > 0) {
+                        atoms.add("${prefix}$ones")
+                    }
                 }
             }
+            
+            return atoms
         }
-        
-        return atoms
     }
 }

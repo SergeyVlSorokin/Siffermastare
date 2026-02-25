@@ -1,6 +1,6 @@
 # Story 7.6: Adapt Existing Strategies & Generators to Atoms-in-Question Architecture
 
-Status: draft
+Status: done
 
 ## Story
 
@@ -20,15 +20,15 @@ Stories 7-3 (Standard Number Strategy) and 7-4 (Digital Time Strategy) were impl
 
 1. **`StandardNumberEvaluationStrategy`** — Remove internal `decompose(target)` call; use `question.atoms` instead.
 2. **`CardinalGenerator`** — Populate `Question.atoms` using standard number decomposition logic. Switch `evaluationStrategy` from `ExactMatchEvaluationStrategy` to `StandardNumberEvaluationStrategy`.
-3. **`OrdinalGenerator`** — Populate `Question.atoms` using **ordinal-prefixed** atoms (e.g., `ord:20`, `ord:5`). Switch to `OrdinalNumberEvaluationStrategy` (Story 7-9). The decomposition structure is identical to cardinals, but atom IDs use the `ord:` prefix to track mastery separately.
-4. **`TrickyPairsGenerator`** — Populate `Question.atoms` using standard number decomposition logic. Switch `evaluationStrategy` from `ExactMatchEvaluationStrategy` to `StandardNumberEvaluationStrategy`.
-5. **`DigitalTimeEvaluationStrategy`** — Remove internal `decomposeTimeFull()` / `decomposeHours()` / `decomposeMinutes()` calls for **target**; use `question.atoms` instead. Keep input decomposition for comparison.
-6. **`TimeGenerator`** — Populate `Question.atoms` using digital time decomposition logic.
-7. **All corresponding tests** — Update to pass atoms in `Question` and verify generators produce correct atoms.
+3. **`TrickyPairsGenerator`** — Populate `Question.atoms` using standard number decomposition logic. Switch `evaluationStrategy` from `ExactMatchEvaluationStrategy` to `StandardNumberEvaluationStrategy`.
+4. **`DigitalTimeEvaluationStrategy`** — Remove internal `decomposeTimeFull()` / `decomposeHours()` / `decomposeMinutes()` calls for **target**; use `question.atoms` instead. Keep input decomposition for comparison.
+5. **`TimeGenerator`** — Populate `Question.atoms` using digital time decomposition logic.
+6. **All corresponding tests** — Update to pass atoms in `Question` and verify generators produce correct atoms.
 
 ### Out of Scope
 
 - `InformalTimeGenerator` + `InformalTimeEvaluationStrategy` — handled by Story 7-5.
+- `OrdinalGenerator` + `OrdinalNumberEvaluationStrategy` — deferred to Story 7-9 (ordinals need a dedicated strategy with `ord:` prefix).
 - Future strategies (Phone, Fractions, Decimals) — Stories 7-7, 7-8, 7-10 will be designed with the new architecture natively.
 
 ## Acceptance Criteria
@@ -67,15 +67,7 @@ Stories 7-3 (Standard Number Strategy) and 7-4 (Digital Time Strategy) were impl
 3. **Then** `question.atoms` == `["30"]`
 4. **And** `question.evaluationStrategy` is `StandardNumberEvaluationStrategy`
 
-### AC6: OrdinalGenerator populates ordinal atoms
-
-1. **Given** An `OrdinalGenerator`
-2. **When** It generates a question for target "25"
-3. **Then** `question.atoms` == `["ord:20", "ord:5"]`
-4. **And** For target "13", `question.atoms` == `["ord:13"]`
-5. **And** For target "7", `question.atoms` == `["ord:7"]`
-
-### AC7: All existing tests pass
+### AC6: All existing tests pass
 
 1. **Given** The refactored code
 2. **When** All tests in `StandardNumberEvaluationStrategyTest` and `DigitalTimeEvaluationStrategyTest` are run
@@ -83,31 +75,29 @@ Stories 7-3 (Standard Number Strategy) and 7-4 (Digital Time Strategy) were impl
 
 ## Tasks / Subtasks
 
-- [ ] Move decomposition logic to generators
-  - [ ] Extract `decompose()` from `StandardNumberEvaluationStrategy` into a shared utility or directly into generators
-  - [ ] Extract time decomposition logic from `DigitalTimeEvaluationStrategy` into `TimeGenerator`
-- [ ] Update generators to populate `Question.atoms`
-  - [ ] `CardinalGenerator` — populate atoms, switch to `StandardNumberEvaluationStrategy`
-  - [ ] `OrdinalGenerator` — populate ordinal-prefixed atoms (`ord:` prefix), switch to `OrdinalNumberEvaluationStrategy` (Story 7-9)
-  - [ ] `TrickyPairsGenerator` — populate atoms, switch to `StandardNumberEvaluationStrategy`
-  - [ ] `TimeGenerator` — populate atoms
-- [ ] Refactor strategies to consume `question.atoms`
-  - [ ] `StandardNumberEvaluationStrategy.evaluate()` — use `question.atoms` instead of `decompose(target)`
-  - [ ] `DigitalTimeEvaluationStrategy.evaluate()` — use `question.atoms` for target atoms
-- [ ] Update tests
-  - [ ] Update `StandardNumberEvaluationStrategyTest` — pass atoms in Question for all test cases
-  - [ ] Update `DigitalTimeEvaluationStrategyTest` — pass atoms in Question for all test cases
-  - [ ] Add generator tests for atoms output (CardinalGenerator, OrdinalGenerator, TrickyPairsGenerator, TimeGenerator)
-- [ ] Verify all existing tests still pass
+- [x] Move decomposition logic to generators
+  - [x] Extract `decompose()` from `StandardNumberEvaluationStrategy` into a shared utility or directly into generators
+  - [x] Extract time decomposition logic from `DigitalTimeEvaluationStrategy` into `TimeGenerator`
+- [x] Update generators to populate `Question.atoms`
+  - [x] `CardinalGenerator` — populate atoms, switch to `StandardNumberEvaluationStrategy`
+  - [x] `TrickyPairsGenerator` — populate atoms, switch to `StandardNumberEvaluationStrategy`
+  - [x] `TimeGenerator` — populate atoms
+- [x] Refactor strategies to consume `question.atoms`
+  - [x] `StandardNumberEvaluationStrategy.evaluate()` — use `question.atoms` instead of `decompose(target)`
+  - [x] `DigitalTimeEvaluationStrategy.evaluate()` — use `question.atoms` for target atoms
+- [x] Update tests
+  - [x] Update `StandardNumberEvaluationStrategyTest` — pass atoms in Question for all test cases
+  - [x] Update `DigitalTimeEvaluationStrategyTest` — pass atoms in Question for all test cases
+  - [x] Add generator tests for atoms output (CardinalGenerator, TrickyPairsGenerator, TimeGenerator)
+- [x] Verify all existing tests still pass
 
 ## Dev Notes
 
-- **Ordinal atom prefix:** `OrdinalGenerator` uses `ord:` prefix for all atoms (e.g., `ord:20`, `ord:5`). This tracks ordinal mastery separately from cardinal mastery per `learning-model-spec.md` §2.1. Swedish ordinals sound fundamentally different from cardinals (e.g., *femte* vs *fem*, *tjugonde* vs *tjugo*), so a user's ability to recognize one does not imply ability to recognize the other.
-- **Strategy reuse:** `StandardNumberEvaluationStrategy` works unchanged for ordinals — the bag-logic comparison is atom-ID agnostic. The strategy compares atoms by string ID, so `ord:20` in the target is matched against `ord:20` in the decomposed input. The strategy's internal `decompose()` for **user input** will need an `ordinal: Boolean` parameter (or the generator passes a prefix) to produce matching `ord:` atoms.
-- **Decomposition logic reuse:** The `decompose()` method currently in `StandardNumberEvaluationStrategy` is still needed for decomposing _user input_ during evaluation. Consider keeping a `companion object` or utility for input decomposition, while removing target decomposition from the strategy.
-- **Digital Time decomposition reuse:** Similarly, `DigitalTimeEvaluationStrategy` still needs input decomposition. Only remove the _target_ atom derivation path.
-- **Strategy wiring:** `CardinalGenerator` and `OrdinalGenerator` currently use `ExactMatchEvaluationStrategy`. This story should switch them to `StandardNumberEvaluationStrategy` since that strategy was built specifically for them (Story 7-3). This was likely deferred during 7-3 implementation.
+- **Decomposition logic reuse:** The `decompose()` method in `StandardNumberEvaluationStrategy.companion` is used by generators for atom population AND by the strategy for decomposing _user input_ during evaluation.
+- **Digital Time decomposition reuse:** `DigitalTimeEvaluationStrategy` uses `TimeGenerator.decomposeTwoDigitPart()` for input decomposition. Target atoms come from `question.atoms`.
+- **Strategy wiring:** `CardinalGenerator` and `TrickyPairsGenerator` now use `StandardNumberEvaluationStrategy` instead of the original `ExactMatchEvaluationStrategy`.
 - **Dependencies:** This story depends on Story 7-5's first task (adding `atoms` to `Question`). If 7-5 is not yet started, the `Question` model change can be done as part of this story or coordinated.
+- **Ordinals:** `OrdinalGenerator` atom population and strategy wiring is deferred to Story 7-9, which introduces a dedicated `OrdinalNumberEvaluationStrategy`.
 
 ### Project Structure Notes
 
@@ -128,3 +118,43 @@ Files to modify:
 - [Story 7-3](file:///c:/Users/Serge/source/repos/Siffermastare/docs/sprint-artifacts/7-3-standard-number-strategy.md)
 - [Story 7-4](file:///c:/Users/Serge/source/repos/Siffermastare/docs/sprint-artifacts/7-4-time-evaluation-strategy.md)
 - [Story 7-5](file:///c:/Users/Serge/source/repos/Siffermastare/docs/sprint-artifacts/7-5-informal-time-evaluation-strategy.md)
+
+## Dev Agent Record
+
+### Implementation Plan
+- Moved `decompose()` to `StandardNumberEvaluationStrategy.companion` with `prefix` parameter for ordinal support
+- Extracted time decomposition into `TimeGenerator.companion` (`decomposeTime()`, `decomposeTwoDigitPart()`)
+- All strategies now read `question.atoms` as ground truth — no internal target decomposition
+- Input decomposition preserved: strategies still decompose user input for comparison
+
+### Completion Notes
+- ✅ `StandardNumberEvaluationStrategy` — companion `decompose(number, prefix)`, reads `question.atoms`
+- ✅ `DigitalTimeEvaluationStrategy` — uses `question.atoms` for target, delegates input decomp to `TimeGenerator.decomposeTwoDigitPart()`
+- ✅ `CardinalGenerator` — populates atoms via `decompose()`, uses `StandardNumberEvaluationStrategy`
+- ✅ `TrickyPairsGenerator` — populates atoms, uses `StandardNumberEvaluationStrategy`
+- ✅ `TimeGenerator` — populates atoms via `decomposeTime()`
+- ✅ All existing tests updated with atom-aware `createQuestion()` helpers
+- ✅ New generator atom tests added for CardinalGenerator, TrickyPairsGenerator, TimeGenerator
+- ✅ Full regression suite passes
+
+### Debug Log
+- Initial build failure was transient Gradle daemon issue; resolved on retry
+
+## File List
+
+### Modified
+- `app/src/main/java/com/siffermastare/domain/validation/strategies/StandardNumberEvaluationStrategy.kt`
+- `app/src/main/java/com/siffermastare/domain/evaluation/DigitalTimeEvaluationStrategy.kt`
+- `app/src/main/java/com/siffermastare/domain/generators/CardinalGenerator.kt`
+- `app/src/main/java/com/siffermastare/domain/generators/TrickyPairsGenerator.kt`
+- `app/src/main/java/com/siffermastare/domain/generators/TimeGenerator.kt`
+- `app/src/test/java/com/siffermastare/domain/validation/strategies/StandardNumberEvaluationStrategyTest.kt`
+- `app/src/test/java/com/siffermastare/domain/evaluation/DigitalTimeEvaluationStrategyTest.kt`
+- `app/src/test/java/com/siffermastare/domain/generators/NumberGeneratorTest.kt`
+- `app/src/test/java/com/siffermastare/domain/generators/TrickyPairsGeneratorTest.kt`
+- `app/src/test/java/com/siffermastare/domain/generators/TimeGeneratorTest.kt`
+
+## Change Log
+
+- 2026-02-25: Adapted strategies to atoms architecture — strategies now consume `question.atoms`, generators populate atoms, decomposition logic extracted to companion objects
+- 2026-02-25: Code review fixes — Fixed `DigitalTimeEvaluationStrategy` to truly use `question.atoms` (was re-deriving from target string); removed ordinal references (deferred to Story 7-9); updated `epics.md` Story 7.3 AC; improved `TrickyPairsGeneratorTest`

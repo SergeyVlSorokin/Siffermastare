@@ -1,11 +1,13 @@
 package com.siffermastare.domain.evaluation
 
+import com.siffermastare.domain.generators.TimeGenerator
 import com.siffermastare.domain.models.Question
 
 /**
  * Strictly evaluates Digital Time questions (e.g. "1400").
- * Decomposes time into High-Level Parts (HH, MM) and then atoms.
- * Enforces ORDER of atoms within each part.
+ * Uses question.atoms as the target atom list (Generator Owns Atoms rule).
+ * Decomposes user INPUT into atoms and compares against target atoms.
+ * Enforces ORDER of atoms within each part (Hours, Minutes).
  */
 class DigitalTimeEvaluationStrategy : EvaluationStrategy {
 
@@ -17,28 +19,33 @@ class DigitalTimeEvaluationStrategy : EvaluationStrategy {
 
         // 2. Parse Target
         val target = question.targetValue // e.g., "1430"
+        val targetAtoms = question.atoms
         
         // 3. Normalize Input (handle 3-digit case "513" -> "0513")
         val normalizedInput = if (input.length == 3) "0$input" else input
         
-        // If input is not 4 digits after normalization (e.g. too short/long), fails structure check.
+        // If input is not 4 digits after normalization, fails structure check.
         if (normalizedInput.length != 4) {
-             // Fallback: If structure is wrong, we can't align HH/MM reliably. 
-             // Mark all target atoms as failed.
-             val updates = decomposeTimeFull(target).associateWith { listOf(false).toMutableList() }.toMutableMap()
+             // Fallback: mark all target atoms as failed.
+             val updates = targetAtoms.distinct().associateWith { atom ->
+                 List(targetAtoms.count { it == atom }) { false }.toMutableList()
+             }.toMutableMap()
              return EvaluationResult(isCorrect = false, atomUpdates = updates)
         }
 
-        // 4. Split and Decompose Parts
+        // 4. Split question.atoms into H and M parts using target string structure
         val targetH = target.substring(0, 2)
         val targetM = target.substring(2, 4)
         val inputH = normalizedInput.substring(0, 2)
         val inputM = normalizedInput.substring(2, 4)
         
-        val targetHAtoms = decomposeHours(targetH)
-        val targetMAtoms = decomposeMinutes(targetM)
-        val inputHAtoms = decomposeHours(inputH)
-        val inputMAtoms = decomposeMinutes(inputM)
+        // Split question.atoms: first N atoms belong to hours, rest to minutes
+        // N is determined by the hour part's decomposition structure
+        val hourAtomCount = TimeGenerator.decomposeTwoDigitPart(targetH).size
+        val targetHAtoms = targetAtoms.take(hourAtomCount)
+        val targetMAtoms = targetAtoms.drop(hourAtomCount)
+        val inputHAtoms = TimeGenerator.decomposeTwoDigitPart(inputH)
+        val inputMAtoms = TimeGenerator.decomposeTwoDigitPart(inputM)
         
         // 5. Evaluate Parts
         val updates = mutableMapOf<String, MutableList<Boolean>>()
@@ -82,60 +89,5 @@ class DigitalTimeEvaluationStrategy : EvaluationStrategy {
         }
         
         return allMatched
-    }
-
-    // Helper to decompose complete time (for fallback)
-    private fun decomposeTimeFull(timeStr: String): List<String> {
-        if (timeStr.length != 4) return emptyList()
-        val h = decomposeHours(timeStr.substring(0, 2))
-        val m = decomposeMinutes(timeStr.substring(2, 4))
-        return h + m
-    }
-
-    private fun decomposeHours(hh: String): List<String> {
-        return decomposeTwoDigitPart(hh)
-    }
-
-    private fun decomposeMinutes(mm: String): List<String> {
-        return decomposeTwoDigitPart(mm)
-    }
-
-    private fun decomposeTwoDigitPart(partStr: String): List<String> {
-        val valInt = partStr.toInt()
-        val d1 = partStr[0].digitToInt()
-        val d2 = partStr[1].digitToInt()
-        
-        val atoms = mutableListOf<String>()
-        if (valInt in 1..9) { // 01-09 -> "noll X"
-            if (d1 == 0) atoms.add("0")
-            atoms.add(d2.toString())
-        } else if (valInt == 0) { // 00 -> "noll noll"
-            atoms.add("0")
-            atoms.add("0")
-        } else { // 10-99
-            atoms.addAll(decomposeStandard(valInt))
-        }
-        return atoms
-    }
-
-    private fun decomposeStandard(number: Int): List<String> {
-        val list = mutableListOf<String>()
-        if (number == 0) {
-            list.add("0")
-            return list
-        }
-        
-        val tens = (number / 10) * 10
-        val ones = number % 10
-        
-        if (number in 10..19) {
-            // Teens are atomic (including 10)
-            list.add(number.toString())
-        } else {
-            // 20-99
-            if (tens > 0) list.add(tens.toString())
-            if (ones > 0) list.add(ones.toString())
-        }
-        return list
     }
 }

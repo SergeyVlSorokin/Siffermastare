@@ -257,7 +257,7 @@ I want the system to understand that "25" is composed of "20" and "5",
 So that I can get partial credit if I mistype one part.
 
 **Acceptance Criteria:**
-**Given** A "Cardinal" or "Ordinal" Lesson
+**Given** A "Cardinal" or "Tricky Pairs" Lesson
 **When** Target is "25" and I type "24"
 **Then** It generates `EqualityResult`
 **And** Atom `20` is **Success** (Correct stem)

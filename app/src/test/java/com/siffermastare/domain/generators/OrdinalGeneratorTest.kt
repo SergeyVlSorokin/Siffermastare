@@ -1,5 +1,6 @@
 package com.siffermastare.domain.generators
 
+import com.siffermastare.domain.validation.strategies.StandardNumberEvaluationStrategy
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -8,22 +9,6 @@ class OrdinalGeneratorTest {
 
     @Test
     fun `generateLesson returns correct ordinal formats`() {
-        // We'll test specific numbers to verify the suffix logic
-        // 1 -> 1:a
-        // 2 -> 2:a
-        // 3 -> 3:e
-        // 11 -> 11:e
-        // 12 -> 12:e
-        // 21 -> 21:a
-        // 22 -> 22:a
-        
-        // Since the generator uses random, we might need a way to test specific logic 
-        // or we just instantiate it and inspect what it produces if we mock/spy, 
-        // but it's simpler to just expose the formatting logic or verify a larger sample.
-        // For now, let's just create a generator that produces deterministic output or specific range?
-        // The generator interface is random. 
-        // However, we can test the `min/max` and ensure format is *valid* (ends in :a or :e).
-        
         val generator = OrdinalGenerator(1, 25)
         val questions = generator.generateLesson(count = 50) 
         
@@ -52,10 +37,34 @@ class OrdinalGeneratorTest {
         val questions = generator.generateLesson(count = 1)
         val q = questions.first()
         
-        // Target value is what user types, so it should be just digits "1", "2" etc.
-        // Spoken text is "1:a"
-        
         assertTrue(q.targetValue.all { it.isDigit() })
         assertTrue(q.spokenText.contains(":"))
+    }
+
+    @Test
+    fun `OrdinalGenerator populates ordinal atoms for 25`() {
+        val generator = OrdinalGenerator(25, 25)
+        val question = generator.generateLesson(1).first()
+        assertEquals(listOf("ord:20", "ord:5"), question.atoms)
+    }
+
+    @Test
+    fun `OrdinalGenerator populates ordinal atoms for 13`() {
+        val generator = OrdinalGenerator(13, 13)
+        val question = generator.generateLesson(1).first()
+        assertEquals(listOf("ord:13"), question.atoms)
+    }
+
+    @Test
+    fun `OrdinalGenerator populates ordinal atoms for 7`() {
+        val generator = OrdinalGenerator(7, 7)
+        val question = generator.generateLesson(1).first()
+        assertEquals(listOf("ord:7"), question.atoms)
+    }
+
+    @Test
+    fun `OrdinalGenerator uses StandardNumberEvaluationStrategy`() {
+        val generator = OrdinalGenerator(1, 10)
+        assertTrue(generator.evaluationStrategy is StandardNumberEvaluationStrategy)
     }
 }
