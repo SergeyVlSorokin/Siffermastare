@@ -1,11 +1,12 @@
 package com.siffermastare.domain.generators
 
 import com.siffermastare.domain.models.Question
-import com.siffermastare.domain.evaluation.ExactMatchEvaluationStrategy
+import com.siffermastare.domain.evaluation.PhoneNumberDecomposer
+import com.siffermastare.domain.evaluation.PhoneNumberEvaluationStrategy
 
 class PhoneNumberGenerator : NumberGenerator {
 
-    override val evaluationStrategy = ExactMatchEvaluationStrategy()
+    override val evaluationStrategy = PhoneNumberEvaluationStrategy()
 
     override fun generateLesson(count: Int): List<Question> {
         return List(count) {
@@ -33,10 +34,14 @@ class PhoneNumberGenerator : NumberGenerator {
             
             val spokenText = "$spokenPrefix, $spokenGroup1, $spokenGroup2, $spokenGroup3"
 
+            // Hybrid atom decomposition
+            val atoms = PhoneNumberDecomposer.decompose(targetValue)
+
             Question(
                 targetValue = targetValue,
                 spokenText = spokenText,
-                visualHint = "07$prefixDigit-$group1 $group2 $group3"
+                visualHint = "07$prefixDigit-$group1 $group2 $group3",
+                atoms = atoms
             )
         }
     }

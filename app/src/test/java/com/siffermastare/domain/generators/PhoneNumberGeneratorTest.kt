@@ -1,5 +1,8 @@
 package com.siffermastare.domain.generators
 
+import com.siffermastare.domain.evaluation.PhoneNumberDecomposer
+import com.siffermastare.domain.evaluation.PhoneNumberEvaluationStrategy
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -27,6 +30,7 @@ class PhoneNumberGeneratorTest {
             )
         }
     }
+
     @Test
     fun testLeadingZeroPairs_spokenCorrectly() {
         // Generate enough numbers to hit 00-09 in pairs
@@ -79,5 +83,51 @@ class PhoneNumberGeneratorTest {
              assertTrue("Pair '$pairDigits' should be spoken as 'noll ...' but was '$spokenPair'", 
                  spokenPair.lowercase().startsWith("noll"))
         }
+    }
+
+    // ===== AC1: Atoms verification =====
+
+    @Test
+    fun `atoms are populated with hybrid decomposition for known target`() {
+        // Generate lessons and verify atoms for each
+        val lesson = generator.generateLesson(20)
+        lesson.forEach { question ->
+            val expected = PhoneNumberDecomposer.decompose(question.targetValue)
+            assertEquals(
+                "Atoms for target '${question.targetValue}' should match hybrid decomposition",
+                expected,
+                question.atoms
+            )
+        }
+    }
+
+    @Test
+    fun `atoms for target with standard pairs`() {
+        // Generate and find a question with pair >= 10
+        val lesson = generator.generateLesson(200)
+        val withStandardPair = lesson.find { q ->
+            val pair1 = q.targetValue.substring(6, 8).toInt()
+            pair1 >= 10
+        }
+        assertTrue("Should find question with pair >= 10", withStandardPair != null)
+
+        val atoms = withStandardPair!!.atoms
+        // Should have atoms (not empty)
+        assertTrue("Atoms should not be empty", atoms.isNotEmpty())
+        // Verify they match the decompose function
+        assertEquals(
+            PhoneNumberDecomposer.decompose(withStandardPair.targetValue),
+            atoms
+        )
+    }
+
+    // ===== AC1: Strategy type verification =====
+
+    @Test
+    fun `evaluationStrategy is PhoneNumberEvaluationStrategy`() {
+        assertTrue(
+            "Strategy should be PhoneNumberEvaluationStrategy",
+            generator.evaluationStrategy is PhoneNumberEvaluationStrategy
+        )
     }
 }
