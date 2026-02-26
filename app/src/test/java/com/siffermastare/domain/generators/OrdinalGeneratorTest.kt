@@ -1,6 +1,6 @@
 package com.siffermastare.domain.generators
 
-import com.siffermastare.domain.validation.strategies.StandardNumberEvaluationStrategy
+import com.siffermastare.domain.validation.strategies.OrdinalNumberEvaluationStrategy
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -63,8 +63,8 @@ class OrdinalGeneratorTest {
     }
 
     @Test
-    fun `OrdinalGenerator uses StandardNumberEvaluationStrategy`() {
+    fun `OrdinalGenerator uses OrdinalNumberEvaluationStrategy`() {
         val generator = OrdinalGenerator(1, 10)
-        assertTrue(generator.evaluationStrategy is StandardNumberEvaluationStrategy)
+        assertTrue(generator.evaluationStrategy is OrdinalNumberEvaluationStrategy)
     }
 }

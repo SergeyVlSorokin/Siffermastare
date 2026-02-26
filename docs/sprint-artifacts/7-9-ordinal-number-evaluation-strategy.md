@@ -1,6 +1,6 @@
 # Story 7.9: Ordinal Number Evaluation Strategy
 
-Status: draft
+Status: done
 
 ## Story
 
@@ -89,20 +89,20 @@ data class EvaluationResult(
 
 ## Tasks / Subtasks
 
-- [ ] Implement `OrdinalNumberEvaluationStrategy`
-  - [ ] Create class implementing `EvaluationStrategy`
-  - [ ] Reuse decomposition logic from `StandardNumberEvaluationStrategy` but produce `ord:`-prefixed atoms for user input
-  - [ ] Implement bag-logic comparison between `question.atoms` (target) and decomposed input
-- [ ] Unit Tests (`OrdinalNumberEvaluationStrategyTest`)
-  - [ ] Exact match (25 vs 25) → ord:20 OK, ord:5 OK, isCorrect=True
-  - [ ] Partial match (25 vs 24) → ord:20 OK, ord:5 Fail, isCorrect=False
-  - [ ] Complete mismatch (25 vs 99) → ord:20 Fail, ord:5 Fail, isCorrect=False
-  - [ ] 3-digit exact match (123 vs 123) → ord:1 OK, ord:20 OK, ord:3 OK, isCorrect=True
-  - [ ] 3-digit partial match (123 vs 120) → ord:1 OK, ord:20 OK, ord:3 Fail, isCorrect=False
-  - [ ] Structural mismatch (25 vs 205) → ord:5 OK, ord:20 Fail, isCorrect=False
-  - [ ] Edge case 0 (0 vs 0) → ord:0 OK, isCorrect=True
-  - [ ] Edge case 1000 (1000 vs 1000) → ord:1 OK, isCorrect=True
-  - [ ] Repeated atoms (555 vs 554) → ord:50 OK, ord:5 Mixed (1 OK, 1 Fail), isCorrect=False
+- [x] Implement `OrdinalNumberEvaluationStrategy`
+  - [x] Create class implementing `EvaluationStrategy`
+  - [x] Reuse decomposition logic from `StandardNumberEvaluationStrategy` but produce `ord:`-prefixed atoms for user input
+  - [x] Implement bag-logic comparison between `question.atoms` (target) and decomposed input
+- [x] Unit Tests (`OrdinalNumberEvaluationStrategyTest`)
+  - [x] Exact match (25 vs 25) → ord:20 OK, ord:5 OK, isCorrect=True
+  - [x] Partial match (25 vs 24) → ord:20 OK, ord:5 Fail, isCorrect=False
+  - [x] Complete mismatch (25 vs 99) → ord:20 Fail, ord:5 Fail, isCorrect=False
+  - [x] 3-digit exact match (123 vs 123) → ord:1 OK, ord:20 OK, ord:3 OK, isCorrect=True
+  - [x] 3-digit partial match (123 vs 120) → ord:1 OK, ord:20 OK, ord:3 Fail, isCorrect=False
+  - [x] Structural mismatch (25 vs 205) → ord:5 OK, ord:20 Fail, isCorrect=False
+  - [x] Edge case 0 (0 vs 0) → ord:0 OK, isCorrect=True
+  - [x] Edge case 1000 (1000 vs 1000) → ord:1 OK, isCorrect=True
+  - [x] Repeated atoms (555 vs 554) → ord:50 OK, ord:5 Mixed (1 OK, 1 Fail), isCorrect=False
 
 ## Dev Notes
 
@@ -120,3 +120,29 @@ data class EvaluationResult(
 - [Story 7-3 (Standard Number Strategy)](file:///c:/Users/Serge/source/repos/Siffermastare/docs/sprint-artifacts/7-3-standard-number-strategy.md)
 - [Story 7-6 (Atoms Architecture)](file:///c:/Users/Serge/source/repos/Siffermastare/docs/sprint-artifacts/7-6-adapt-strategies-to-atoms-architecture.md)
 - [learning-model-spec.md §2.1](file:///c:/Users/Serge/source/repos/Siffermastare/docs/learning-model-spec.md)
+
+## Dev Agent Record
+
+### Completion Notes
+Implemented the Ordinal Number Evaluation Strategy, utilizing the bag logic comparison against `ord:` prefixed atoms. Included thorough test coverage based on the specified edge cases and normal exact/partial match use cases. Evaluated input correctly compares against expected target ordinals. Connected the evaluation strategy within `OrdinalGenerator` ensuring proper injection of strategy evaluation.
+
+### Senior Developer Review (AI)
+Reviewed the story and implementation.
+- **Fixed:** Added missing domain validation bounds inside `OrdinalGenerator` (Medium issue).
+- **Fixed:** Decoupled `OrdinalNumberEvaluationStrategyTest` from `StandardNumberEvaluationStrategy.decompose` (Low issue).
+- *Note:* The input parsing issue for valid ordinal suffixes is irrelevant since the app's numpad strictly prevents non-numeric input.
+
+## File List
+
+- [NEW] `app/src/main/java/com/siffermastare/domain/validation/strategies/OrdinalNumberEvaluationStrategy.kt`
+- [NEW] `app/src/test/java/com/siffermastare/domain/validation/strategies/OrdinalNumberEvaluationStrategyTest.kt`
+- [MODIFY] `app/src/main/java/com/siffermastare/domain/generators/OrdinalGenerator.kt`
+- [MODIFY] `app/src/test/java/com/siffermastare/domain/generators/OrdinalGeneratorTest.kt`
+
+## Change Log
+
+- Created `OrdinalNumberEvaluationStrategy` class logic handling standard numeric parsing onto `ord:` atom lists.
+- Wrote full unit test coverage suite inside `OrdinalNumberEvaluationStrategyTest.kt` mapping to given constraints.
+- Switched the standard evaluator in `OrdinalGenerator.kt` to the new custom ordinal strategy.
+- Updated generator test file validating class strategy updates.
+- [Code Review] Added bounds validation in `OrdinalGenerator` and decoupled tests in `OrdinalNumberEvaluationStrategyTest`.

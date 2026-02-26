@@ -1,6 +1,7 @@
 package com.siffermastare.domain.generators
 
 import com.siffermastare.domain.models.Question
+import com.siffermastare.domain.validation.strategies.OrdinalNumberEvaluationStrategy
 import com.siffermastare.domain.validation.strategies.StandardNumberEvaluationStrategy
 import kotlin.random.Random
 
@@ -17,7 +18,13 @@ class OrdinalGenerator(
     private val max: Int
 ) : NumberGenerator {
 
-    override val evaluationStrategy = StandardNumberEvaluationStrategy()
+    init {
+        require(min >= 0) { "min must be >= 0" }
+        require(max <= 1000) { "max must be <= 1000" }
+        require(min <= max) { "min must be <= max" }
+    }
+
+    override val evaluationStrategy = OrdinalNumberEvaluationStrategy()
 
     override fun generateLesson(count: Int): List<Question> {
         return List(count) {
