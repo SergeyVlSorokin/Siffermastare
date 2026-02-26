@@ -1,12 +1,12 @@
 package com.siffermastare.domain.generators
 
 import com.siffermastare.domain.models.Question
-import com.siffermastare.domain.evaluation.ExactMatchEvaluationStrategy
+import com.siffermastare.domain.evaluation.FractionsEvaluationStrategy
 import com.siffermastare.domain.utils.SwedishNumberFormatter
 
 class FractionsGenerator : NumberGenerator {
     
-    override val evaluationStrategy = ExactMatchEvaluationStrategy()
+    override val evaluationStrategy = FractionsEvaluationStrategy()
     
     companion object {
         private const val MIN_DENOMINATOR = 2
@@ -36,17 +36,17 @@ class FractionsGenerator : NumberGenerator {
             Question(
                 targetValue = targetValue,
                 spokenText = spokenText,
-                visualHint = targetValue
+                visualHint = targetValue,
+                atoms = listOf(numerator.toString(), "ord:$denominator")
             )
         }
     }
 
-    private fun formatSpokenText(numerator: Int, denominator: Int): String {
+    internal fun formatSpokenText(numerator: Int, denominator: Int): String {
         val numStr = if (numerator == 1) "en" else SwedishNumberFormatter.toText(numerator)
         
-        val baseDenom = DENOMINATOR_NAMES[denominator] ?: "${denominator}:del"
-        val denStr = if (denominator == 2 && numerator > 1) "halvor" else baseDenom
-        val suffix = if (numerator > 1 && denominator != 2) "ar" else ""
+        val denStr = DENOMINATOR_NAMES[denominator] ?: "${denominator}:del"
+        val suffix = if (numerator > 1) "ar" else ""
         
         return "$numStr $denStr$suffix"
     }

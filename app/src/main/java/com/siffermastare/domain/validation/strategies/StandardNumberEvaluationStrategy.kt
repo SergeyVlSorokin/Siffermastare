@@ -1,9 +1,9 @@
 package com.siffermastare.domain.validation.strategies
 
+import com.siffermastare.domain.evaluation.BagLogicHelper
 import com.siffermastare.domain.evaluation.EvaluationResult
 import com.siffermastare.domain.evaluation.EvaluationStrategy
 import com.siffermastare.domain.models.Question
-import kotlin.math.min
 
 /**
  * Strategy for standard integer numbers (0-1000).
@@ -21,29 +21,13 @@ class StandardNumberEvaluationStrategy : EvaluationStrategy {
 
         // If input is non-numeric, fail all target atoms
         if (inputInt == null) {
-            val updates = targetAtoms.distinct().associateWith { atom ->
-                List(targetAtoms.count { it == atom }) { false }
-            }
-            return EvaluationResult(false, updates)
+            return EvaluationResult(false, BagLogicHelper.failAll(targetAtoms))
         }
 
         val inputAtoms = decompose(inputInt)
 
         // Bag Logic comparison
-        val updates = mutableMapOf<String, List<Boolean>>()
-        val targetCounts = targetAtoms.groupingBy { it }.eachCount()
-        val inputCounts = inputAtoms.groupingBy { it }.eachCount()
-
-        targetCounts.forEach { (atom, required) ->
-            val provided = inputCounts[atom] ?: 0
-            val matches = min(required, provided)
-            val misses = required - matches
-            
-            val atomResults = mutableListOf<Boolean>()
-            repeat(matches) { atomResults.add(true) }
-            repeat(misses) { atomResults.add(false) }
-            updates[atom] = atomResults
-        }
+        val updates = BagLogicHelper.compare(targetAtoms, inputAtoms)
 
         // Correct only if numeric values are equal
         val isCorrect = inputInt == target
