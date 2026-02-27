@@ -3,10 +3,10 @@ package com.siffermastare.domain.generators
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import com.siffermastare.domain.validation.strategies.StandardNumberEvaluationStrategy
 
 class DecimalsGeneratorTest {
 
-    // Ideally would inject random seed, but for now testing via pattern matching on output
     private val generator = DecimalsGenerator()
 
     @Test
@@ -36,43 +36,40 @@ class DecimalsGeneratorTest {
     }
 
     @Test
-    fun `spoken text format is correct for simple decimal`() {
-        // We can't verify exact "3,5" => "tre komma fem" without controlling random, 
-        // but we can check the format structure relative to targetValue.
+    fun `question owns atoms representing the integer and decimal parts`() {
+        val questions = generator.generateLesson(500)
         
-        // However, we can instantiate the formatter directly if we make it accessible, 
-        // OR we just assume the generator implementation and check consistency.
-        // Let's rely on finding examples in a large batch or just checking logic consistency.
+        // Find a few specific examples from the generated list to assert against
+        val qZero = questions.find { it.targetValue == "0,0" || it.targetValue == "0,00" }
+        if (qZero != null) {
+            val decimals = qZero.targetValue.split(",")[1]
+            if (decimals == "0") {
+                assertEquals(listOf("0", "0"), qZero.atoms)
+            } else {
+                assertEquals(listOf("0", "0", "0"), qZero.atoms)
+            }
+        }
         
-        // Better: For this test class, let's verify specific known inputs if possible. 
-        // Since we can't seed the Random in the current interface, we'll verify properties.
-        
-        val questions = generator.generateLesson(100)
-        questions.forEach { q ->
-            val target = q.targetValue
-            val spoken = q.spokenText
-            
-            // Should contain "komma"
-            assertTrue("Spoken text '$spoken' should contain 'komma'", spoken.contains("komma"))
-            
-            // Basic check: starts with number name
-            // difficult to reverse engineer numberToText fully here without duplicating logic.
+        val qLeadingZero = questions.find { it.targetValue.endsWith(",05") }
+        if (qLeadingZero != null) {
+            val intPart = qLeadingZero.targetValue.split(",")[0].toInt()
+            val expectedIntAtoms = StandardNumberEvaluationStrategy.decompose(intPart)
+            val expectedAtoms = expectedIntAtoms + listOf("0", "5")
+            assertEquals(expectedAtoms, qLeadingZero.atoms)
+        }
+
+        val qNoDecimal = questions.find { it.targetValue.endsWith(",0") && it.targetValue != "0,0" }
+        if (qNoDecimal != null) {
+            val intPart = qNoDecimal.targetValue.split(",")[0].toInt()
+            val expectedIntAtoms = StandardNumberEvaluationStrategy.decompose(intPart)
+            val expectedAtoms = expectedIntAtoms + listOf("0")
+            assertEquals(expectedAtoms, qNoDecimal.atoms)
         }
     }
-    
-    // To strictly test the logic requested (0,01 vs 0,1), we need to test the private formatting logic
-    // or expose it package-private. 
-    // I will write a test that acts like a unit test for the formatting logic by making a temporary 
-    // subclass or just reflecting? No, that's messy.
-    // I will verify that IF we get "0,01", the spoken text is "noll komma noll ett".
-    
+
     @Test
     fun `validate specific formatting rules on generated samples`() {
-        // Generate enough to hopefully hit edge cases, or manually verify logic via reflection if necessary (not ideal).
-        // Since TDD requires me to write the test first, I will write checking logic that asserts correctness 
-        // FOR WHATEVER IS GENERATED.
-        
-        val questions = generator.generateLesson(500) // generate enough to hit 0,01 roughly
+        val questions = generator.generateLesson(500) 
         
         questions.forEach { q ->
             val parts = q.targetValue.split(",")
@@ -80,20 +77,23 @@ class DecimalsGeneratorTest {
             val spoken = q.spokenText
             
             // assert separator
-            assertTrue(spoken.contains("komma"))
+            assertTrue("Spoken text should contain 'komma'", spoken.contains("komma"))
+            
+            val distinctParts = spoken.split("komma ")
+            assertEquals("Spoken text should have exactly one 'komma'", 2, distinctParts.size)
+            val decimalSpoken = distinctParts[1]
             
             // Check leading zero logic
             if (dec.length == 2 && dec.startsWith("0")) {
-                // e.g., "0,05"
-                // Spoken should contain "komma noll"
-                // "noll komma noll fem"
-                val distinctParts = spoken.split("komma ")
-                val decimalSpoken = distinctParts[1]
                 assertTrue("Decimal part '$decimalSpoken' for '$dec' should start with 'noll'", 
                     decimalSpoken.startsWith("noll"))
+                
+                if (dec == "00") {
+                    assertEquals("Decimal '00' should be spoken as 'noll noll'", "noll noll", decimalSpoken)
+                }
+            } else if (dec == "0") {
+                assertEquals("Decimal '0' should be spoken as 'noll'", "noll", decimalSpoken)
             }
-            
-            // Removed dead code block (checking if dec.length==2 and !startsWith("0") and < 10, which is impossible)
         }
     }
 }

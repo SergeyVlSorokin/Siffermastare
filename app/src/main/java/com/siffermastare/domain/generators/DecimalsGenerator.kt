@@ -1,13 +1,14 @@
 package com.siffermastare.domain.generators
 
 import com.siffermastare.domain.models.Question
-import com.siffermastare.domain.evaluation.ExactMatchEvaluationStrategy
+import com.siffermastare.domain.validation.strategies.DecimalsEvaluationStrategy
+import com.siffermastare.domain.validation.strategies.StandardNumberEvaluationStrategy
 import com.siffermastare.domain.utils.SwedishNumberFormatter
 import kotlin.random.Random
 
 class DecimalsGenerator : NumberGenerator {
 
-    override val evaluationStrategy = ExactMatchEvaluationStrategy()
+    override val evaluationStrategy = DecimalsEvaluationStrategy()
 
     override fun generateLesson(count: Int): List<Question> {
         return List(count) {
@@ -22,7 +23,6 @@ class DecimalsGenerator : NumberGenerator {
             
             if (isTwoDecimals) {
                 // 00 to 99. 
-                // Random.nextInt(100) -> 0..99
                 decimalValue = Random.nextInt(100)
                 decimalPartString = String.format("%02d", decimalValue)
             } else {
@@ -34,10 +34,24 @@ class DecimalsGenerator : NumberGenerator {
             val targetValue = "$integerPart,$decimalPartString"
             val spokenText = formatSpokenText(integerPart, decimalPartString, decimalValue)
             
+            // Build atoms list
+            val atoms = mutableListOf<String>()
+            atoms.addAll(StandardNumberEvaluationStrategy.decompose(integerPart))
+            
+            var i = 0
+            while (i < decimalPartString.length && decimalPartString[i] == '0') {
+                atoms.add("0")
+                i++
+            }
+            if (decimalValue > 0) {
+                atoms.addAll(StandardNumberEvaluationStrategy.decompose(decimalValue))
+            }
+            
             Question(
                 targetValue = targetValue,
                 spokenText = spokenText,
-                visualHint = targetValue
+                visualHint = targetValue,
+                atoms = atoms
             )
         }
     }
@@ -45,19 +59,9 @@ class DecimalsGenerator : NumberGenerator {
     private fun formatSpokenText(integerPart: Int, decimalPartStr: String, decimalValue: Int): String {
         val intText = SwedishNumberFormatter.toText(integerPart)
         
-        // Decimal part logic
-        // Rule: "komma" separator
-        // Rule: 0,01 -> " ... komma noll ett"
-        // Rule: 3,14 -> "... komma fjorton"
-        
         val decText = if (decimalPartStr.length == 2 && decimalPartStr.startsWith("0")) {
-            // Case 0,05 -> "noll fem"
-            // Case 0,00 is unlikely/invalid for this drill usually but if generated: "noll noll"
              "noll ${SwedishNumberFormatter.toText(decimalValue)}"
         } else {
-            // Case 0,5 -> "fem"
-            // Case 0,14 -> "fjorton"
-            // Case 0,10 -> "tio"
             SwedishNumberFormatter.toText(decimalValue)
         }
         

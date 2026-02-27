@@ -1,0 +1,575 @@
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:processDebugNavigationResources UP-TO-DATE
+> Task :app:compileDebugNavigationResources UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :app:kspDebugKotlin
+> Task :app:compileDebugKotlin
+> Task :app:compileDebugJavaWithJavac UP-TO-DATE
+> Task :app:processDebugJavaRes UP-TO-DATE
+> Task :app:bundleDebugClassesToRuntimeJar
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:kspDebugUnitTestKotlin
+> Task :app:compileDebugUnitTestKotlin
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes UP-TO-DATE
+
+> Task :app:testDebugUnitTest
+
+ExampleUnitTest > addition_isCorrect PASSED
+
+KnowledgeRepositoryTest > getAtomState returns default state when missing PASSED
+
+KnowledgeRepositoryTest > updateAtomState calls dao insertOrUpdate PASSED
+
+KnowledgeRepositoryTest > getAtomState returns existing state when present PASSED
+
+LessonSessionManagerTest > submitAnswer handles correct answer PASSED
+
+LessonSessionManagerTest > submitAnswer uses custom validator when provided PASSED
+
+LessonSessionManagerTest > startLesson initializes state correctly PASSED
+
+LessonSessionManagerTest > submitAnswer handles incorrect answer PASSED
+
+DigitalTimeEvaluationStrategyTest > testMidnight PASSED
+
+DigitalTimeEvaluationStrategyTest > testMinuteMismatch PASSED
+
+DigitalTimeEvaluationStrategyTest > testLeadingZeroOptional PASSED
+
+DigitalTimeEvaluationStrategyTest > testTripleZero PASSED
+
+DigitalTimeEvaluationStrategyTest > testTripleZeroError PASSED
+
+DigitalTimeEvaluationStrategyTest > test24hMismatch PASSED
+
+DigitalTimeEvaluationStrategyTest > testComplexMinute PASSED
+
+DigitalTimeEvaluationStrategyTest > testExactMatch PASSED
+
+DigitalTimeEvaluationStrategyTest > testTeensBoundary PASSED
+
+DigitalTimeEvaluationStrategyTest > testSwappedDigits PASSED
+
+ExactMatchEvaluationStrategyTest > evaluate returns false when input does not match target PASSED
+
+ExactMatchEvaluationStrategyTest > evaluate returns false for matching validation with extra spaces (strict match) PASSED
+
+ExactMatchEvaluationStrategyTest > evaluate returns true when input matches target exactly PASSED
+
+FractionsEvaluationStrategyTest > non-numeric input fails all atoms PASSED
+
+FractionsEvaluationStrategyTest > denominator 10 correct input PASSED
+
+FractionsEvaluationStrategyTest > input with no slash fails all atoms PASSED
+
+FractionsEvaluationStrategyTest > input with extra whitespace is trimmed and graded correctly PASSED
+
+FractionsEvaluationStrategyTest > wrong numerator 5 over 4 instead of 3 over 4 PASSED
+
+FractionsEvaluationStrategyTest > empty input fails all atoms PASSED
+
+FractionsEvaluationStrategyTest > wrong denominator 1 over 4 instead of 1 over 2 PASSED
+
+FractionsEvaluationStrategyTest > correct input 1 over 2 marks all atoms Success PASSED
+
+FractionsEvaluationStrategyTest > correct input 3 over 4 marks all atoms Success PASSED
+
+FractionsEvaluationStrategyTest > slash with non-numeric denominator fails all atoms PASSED
+
+FractionsEvaluationStrategyTest > completely wrong input fails all atoms PASSED
+
+FractionsEvaluationStrategyTest > denominator 10 wrong numerator PASSED
+
+FractionsEvaluationStrategyTest > input with multiple slashes fails all atoms PASSED
+
+InformalTimeEvaluationStrategyTest > 10_3 Tjugo i tre - wrong minute 0250 PASSED
+
+InformalTimeEvaluationStrategyTest > 12_2 non-digit input returns incorrect PASSED
+
+InformalTimeEvaluationStrategyTest > 5_1 Fem over tva - exact 0205 PASSED
+
+InformalTimeEvaluationStrategyTest > 6_4 Fem i tre - wrong minute 0250 PASSED
+
+InformalTimeEvaluationStrategyTest > 11_1 Tio over tio - exact 1010 PASSED
+
+InformalTimeEvaluationStrategyTest > 1_9 Klockan tolv - 2400 PASSED
+
+InformalTimeEvaluationStrategyTest > 2_2 Kvart over fyra - 24h 1615 PASSED
+
+InformalTimeEvaluationStrategyTest > 10_1 Tjugo i tre - exact 0240 PASSED
+
+InformalTimeEvaluationStrategyTest > 1_5 Klockan tva - extra minutes 0205 PASSED
+
+InformalTimeEvaluationStrategyTest > 5_4 Fem over tva - wrong minute 0217 PASSED
+
+InformalTimeEvaluationStrategyTest > 9_3 Tio over atta - cross direction 0850 PASSED
+
+InformalTimeEvaluationStrategyTest > 2_4 Kvart over fyra - opposite direction 0445 PASSED
+
+InformalTimeEvaluationStrategyTest > 7_3 Fem i halv tre - opposite direction 0235 PASSED
+
+InformalTimeEvaluationStrategyTest > 5_6 Fem over tva - wrong hour same dir 0305 PASSED
+
+InformalTimeEvaluationStrategyTest > 1_4 Klockan tva - wrong hour 0300 PASSED
+
+InformalTimeEvaluationStrategyTest > 5_5 Fem over tva - cross dir wrong hour 0455 PASSED
+
+InformalTimeEvaluationStrategyTest > 12_7 valid boundary 2400 accepted PASSED
+
+InformalTimeEvaluationStrategyTest > 1_7 Klockan tolv - midnight 0000 PASSED
+
+InformalTimeEvaluationStrategyTest > 8_2 Fem over halv tre - opposite dir 0225 PASSED
+
+InformalTimeEvaluationStrategyTest > 4_1 Kvart i fem - exact 0445 PASSED
+
+InformalTimeEvaluationStrategyTest > 1_10 Klockan tolv - wrong hour 0100 PASSED
+
+InformalTimeEvaluationStrategyTest > 5_2 Fem over tva - 24h 1405 PASSED
+
+InformalTimeEvaluationStrategyTest > 8_1 Fem over halv tre - exact 0235 PASSED
+
+InformalTimeEvaluationStrategyTest > 12_4 too long input 5 digits PASSED
+
+InformalTimeEvaluationStrategyTest > 12_3 too short input 2 digits PASSED
+
+InformalTimeEvaluationStrategyTest > 2_1 Kvart over fyra - exact 0415 PASSED
+
+InformalTimeEvaluationStrategyTest > 6_2 Fem i tre - 24h 1455 PASSED
+
+InformalTimeEvaluationStrategyTest > 7_5 Fem i halv tre - wrong hour in halv 0325 PASSED
+
+InformalTimeEvaluationStrategyTest > 11_3 Tio over tio - minute wrong hour ok 1005 PASSED
+
+InformalTimeEvaluationStrategyTest > 8_3 Fem over halv tre - outside halv 0205 PASSED
+
+InformalTimeEvaluationStrategyTest > 2_3 Kvart over fyra - wrong minute 0430 PASSED
+
+InformalTimeEvaluationStrategyTest > 1_1 Klockan tva - exact match 0200 PASSED
+
+InformalTimeEvaluationStrategyTest > 1_3 Klockan tva - leading zero skipped 200 PASSED
+
+InformalTimeEvaluationStrategyTest > 12_5 hour exceeds 24 rejected PASSED
+
+InformalTimeEvaluationStrategyTest > 7_4 Fem i halv tre - outside halv 0205 PASSED
+
+InformalTimeEvaluationStrategyTest > 3_2 Halv tre - 24h 1430 PASSED
+
+InformalTimeEvaluationStrategyTest > 9_1 Tio over atta - exact 0810 PASSED
+
+InformalTimeEvaluationStrategyTest > 7_1 Fem i halv tre - exact 0225 PASSED
+
+InformalTimeEvaluationStrategyTest > 3_4 Halv tre - wrong hour 0430 PASSED
+
+InformalTimeEvaluationStrategyTest > 3_5 Halv tre - not in halv zone 0215 PASSED
+
+InformalTimeEvaluationStrategyTest > 1_8 Klockan tolv - leading zero 000 PASSED
+
+InformalTimeEvaluationStrategyTest > 12_1 empty string returns incorrect with no atoms PASSED
+
+InformalTimeEvaluationStrategyTest > 5_3 Fem over tva - cross direction 0155 PASSED
+
+InformalTimeEvaluationStrategyTest > 3_6 Halv tre - exact hour 0200 PASSED
+
+InformalTimeEvaluationStrategyTest > 4_3 Kvart i fem - halv zone 0430 PASSED
+
+InformalTimeEvaluationStrategyTest > 3_1 Halv tre - exact 0230 PASSED
+
+InformalTimeEvaluationStrategyTest > 7_6 Fem i halv tre - wrong minute 0217 PASSED
+
+InformalTimeEvaluationStrategyTest > 11_2 Tio over tio - minute ok hour wrong 0110 PASSED
+
+InformalTimeEvaluationStrategyTest > 9_2 Tio over atta - wrong minute 0805 PASSED
+
+InformalTimeEvaluationStrategyTest > 2_5 Kvart over fyra - wrong hour 0515 PASSED
+
+InformalTimeEvaluationStrategyTest > 4_4 Kvart i fem - wrong all 0350 PASSED
+
+InformalTimeEvaluationStrategyTest > 4_2 Kvart i fem - opposite direction 0515 PASSED
+
+InformalTimeEvaluationStrategyTest > 10_2 Tjugo i tre - opposite dir 0220 PASSED
+
+InformalTimeEvaluationStrategyTest > 6_1 Fem i tre - exact 0255 PASSED
+
+InformalTimeEvaluationStrategyTest > 12_6 minute exceeds 59 rejected PASSED
+
+InformalTimeEvaluationStrategyTest > 3_3 Halv tre - wrong hour but literal match 0330 PASSED
+
+InformalTimeEvaluationStrategyTest > 8_4 Fem over halv tre - wrong hour 0535 PASSED
+
+InformalTimeEvaluationStrategyTest > 1_2 Klockan tva - 24h equivalent 1400 PASSED
+
+InformalTimeEvaluationStrategyTest > 6_5 Fem i tre - wrong hour 0455 PASSED
+
+InformalTimeEvaluationStrategyTest > 1_6 Klockan tolv - exact 1200 PASSED
+
+InformalTimeEvaluationStrategyTest > 7_2 Fem i halv tre - 24h 1425 PASSED
+
+InformalTimeEvaluationStrategyTest > 6_3 Fem i tre - cross direction 0305 PASSED
+
+InformalTimeIntegrationTest > minutes i - tjugo i tre PASSED
+
+InformalTimeIntegrationTest > duplicate atom - tio over tio PASSED
+
+InformalTimeIntegrationTest > minutes over halv - fem over halv tre PASSED
+
+InformalTimeIntegrationTest > kvart i - kvart i tre PASSED
+
+InformalTimeIntegrationTest > minutes over - fem over tva PASSED
+
+InformalTimeIntegrationTest > minutes i halv - fem i halv tre PASSED
+
+InformalTimeIntegrationTest > noon - klockan tolv PASSED
+
+InformalTimeIntegrationTest > 24h generator input evaluates with 12h user answer PASSED
+
+InformalTimeIntegrationTest > 24h generator input evaluates with 24h user answer PASSED
+
+InformalTimeIntegrationTest > midnight - klockan tolv PASSED
+
+InformalTimeIntegrationTest > bulk - generated questions self-evaluate correctly PASSED
+
+InformalTimeIntegrationTest > wrong answer detected through full pipeline PASSED
+
+InformalTimeIntegrationTest > bulk - second alternative also evaluates correctly PASSED
+
+InformalTimeIntegrationTest > exact hour - klockan tva PASSED
+
+InformalTimeIntegrationTest > halv - halv tre PASSED
+
+InformalTimeIntegrationTest > kvart over - kvart over fyra PASSED
+
+PhoneNumberEvaluationStrategyTest > decompose standard phone number PASSED
+
+PhoneNumberEvaluationStrategyTest > pair 00 zeros are bag-counted with prefix zeros PASSED
+
+PhoneNumberEvaluationStrategyTest > decompose pair tens only 20 PASSED
+
+PhoneNumberEvaluationStrategyTest > correct input 0701234567 marks all atoms Success PASSED
+
+PhoneNumberEvaluationStrategyTest > pair 10 decomposes to single atom PASSED
+
+PhoneNumberEvaluationStrategyTest > pair 05 decomposes to individual digit atoms 0 and 5 PASSED
+
+PhoneNumberEvaluationStrategyTest > pair 05 evaluation grades digit atoms correctly PASSED
+
+PhoneNumberEvaluationStrategyTest > decomposePair less than 10 returns individual digits PASSED
+
+PhoneNumberEvaluationStrategyTest > non-numeric input fails all target atoms PASSED
+
+PhoneNumberEvaluationStrategyTest > decomposePair 10 or more uses standard decomposition PASSED
+
+PhoneNumberEvaluationStrategyTest > pair 12 decomposes to single teen atom PASSED
+
+PhoneNumberEvaluationStrategyTest > partial error last digit 9 instead of 7 provides granular feedback PASSED
+
+PhoneNumberEvaluationStrategyTest > completely wrong input fails all target atoms PASSED
+
+PhoneNumberEvaluationStrategyTest > decompose pair teen 12 PASSED
+
+PhoneNumberEvaluationStrategyTest > decompose pair double zero 00 PASSED
+
+PhoneNumberEvaluationStrategyTest > pair 00 decomposes to two zero atoms PASSED
+
+PhoneNumberEvaluationStrategyTest > too short input returns incorrect with no atom grading PASSED
+
+PhoneNumberEvaluationStrategyTest > empty string input returns incorrect with no atom grading PASSED
+
+PhoneNumberEvaluationStrategyTest > too long input returns incorrect with no atom grading PASSED
+
+PhoneNumberEvaluationStrategyTest > pair 20 decomposes to tens-only atom PASSED
+
+PhoneNumberEvaluationStrategyTest > decompose pair leading zero 05 PASSED
+
+DecimalsGeneratorTest > generated values have 1 or 2 decimals PASSED
+
+DecimalsGeneratorTest > question owns atoms representing the integer and decimal parts PASSED
+
+DecimalsGeneratorTest > generated values contain comma PASSED
+
+DecimalsGeneratorTest > generateLesson returns correct number of questions PASSED
+
+DecimalsGeneratorTest > validate specific formatting rules on generated samples PASSED
+
+FractionsGeneratorTest > generated questions have correct atoms - cardinal numerator and ordinal denominator PASSED
+
+FractionsGeneratorTest > generateLesson produces valid fraction format PASSED
+
+FractionsGeneratorTest > formatSpokenText produces correct text for various fractions PASSED
+
+FractionsGeneratorTest > evaluationStrategy is FractionsEvaluationStrategy PASSED
+
+FractionsGeneratorTest > generateLesson returns correct number of questions PASSED
+
+InformalTimeGeneratorTest > testAtoms_exactHour PASSED
+
+InformalTimeGeneratorTest > testAtoms_duplicateAtom PASSED
+
+InformalTimeGeneratorTest > testAtoms_minutesI PASSED
+
+InformalTimeGeneratorTest > testAtoms_exactHour_tolv PASSED
+
+InformalTimeGeneratorTest > testAtoms_kvartI PASSED
+
+InformalTimeGeneratorTest > testHalf PASSED
+
+InformalTimeGeneratorTest > testGenerateLesson_createsPipeDelimitedTargets PASSED
+
+InformalTimeGeneratorTest > testAtoms_minutesOver PASSED
+
+InformalTimeGeneratorTest > testQuarterTo PASSED
+
+InformalTimeGeneratorTest > testAtoms_halv PASSED
+
+InformalTimeGeneratorTest > testGenerateLesson_populatesAtoms PASSED
+
+InformalTimeGeneratorTest > testAtoms_minutesOverHalv PASSED
+
+InformalTimeGeneratorTest > testToNextHour PASSED
+
+InformalTimeGeneratorTest > testAtoms_kvartOver PASSED
+
+InformalTimeGeneratorTest > testExactHours PASSED
+
+InformalTimeGeneratorTest > testQuarterPast PASSED
+
+InformalTimeGeneratorTest > testToHalf PASSED
+
+InformalTimeGeneratorTest > testPastHalf PASSED
+
+InformalTimeGeneratorTest > testPastHour PASSED
+
+InformalTimeGeneratorTest > testAtoms_minutesIHalv PASSED
+
+NumberGeneratorTest > CardinalGenerator uses StandardNumberEvaluationStrategy PASSED
+
+NumberGeneratorTest > CardinalGenerator populates atoms for 25 PASSED
+
+NumberGeneratorTest > CardinalGenerator populates atoms for all generated questions PASSED
+
+NumberGeneratorTest > generateLesson sets spokenText equal to digits PASSED
+
+NumberGeneratorTest > CardinalGenerator populates atoms for 0 PASSED
+
+NumberGeneratorTest > CardinalGenerator populates atoms for 505 PASSED
+
+NumberGeneratorTest > generateLesson respects min and max bounds PASSED
+
+NumberGeneratorTest > generateLesson returns correct number of questions PASSED
+
+OrdinalGeneratorTest > OrdinalGenerator populates ordinal atoms for 13 PASSED
+
+OrdinalGeneratorTest > OrdinalGenerator populates ordinal atoms for 25 PASSED
+
+OrdinalGeneratorTest > OrdinalGenerator uses OrdinalNumberEvaluationStrategy PASSED
+
+OrdinalGeneratorTest > generateLesson returns correct ordinal formats PASSED
+
+OrdinalGeneratorTest > generateLesson targetValue is digit string PASSED
+
+OrdinalGeneratorTest > OrdinalGenerator populates ordinal atoms for 7 PASSED
+
+PhoneNumberGeneratorTest > atoms for target with standard pairs PASSED
+
+PhoneNumberGeneratorTest > atoms are populated with hybrid decomposition for known target PASSED
+
+PhoneNumberGeneratorTest > testGenerateQuestion_returnsValidFormat PASSED
+
+PhoneNumberGeneratorTest > evaluationStrategy is PhoneNumberEvaluationStrategy PASSED
+
+PhoneNumberGeneratorTest > testLeadingZeroPairs_spokenCorrectly PASSED
+
+TimeGeneratorTest > decomposeTime for 1430 returns 14 30 PASSED
+
+TimeGeneratorTest > decomposeTime for 1019 returns 10 19 PASSED
+
+TimeGeneratorTest > decomposeTime for 0003 returns 0 0 0 3 PASSED
+
+TimeGeneratorTest > decomposeTime for 0515 returns 0 5 15 PASSED
+
+TimeGeneratorTest > generateLesson produces correct format PASSED
+
+TimeGeneratorTest > TimeGenerator populates atoms for generated questions PASSED
+
+TimeGeneratorTest > decomposeTime for 0030 returns 0 0 30 PASSED
+
+TimeGeneratorTest > decomposeTime for 2359 returns 20 3 50 9 PASSED
+
+TrickyPairsGeneratorTest > TrickyPairsGenerator atoms for 30 is single atom PASSED
+
+TrickyPairsGeneratorTest > TrickyPairsGenerator populates atoms for single-atom number PASSED
+
+TrickyPairsGeneratorTest > testGenerateQuestion_spokenTextMatchesTarget PASSED
+
+TrickyPairsGeneratorTest > TrickyPairsGenerator uses StandardNumberEvaluationStrategy PASSED
+
+TrickyPairsGeneratorTest > testGenerateQuestion_returnsTrickyNumber PASSED
+
+SwedishNumberFormatterTest > toText formats compound numbers correctly PASSED
+
+SwedishNumberFormatterTest > toText formats 0-9 correctly PASSED
+
+SwedishNumberFormatterTest > toText formats 10-19 correctly PASSED
+
+SwedishNumberFormatterTest > toText formats tens correctly PASSED
+
+AnswerValidatorTest > validateTime_validatesPhoneNumberIgnoreSeparators PASSED
+
+AnswerValidatorTest > isTimeLesson_returnsTrueForPhoneNumber PASSED
+
+AnswerValidatorTest > validateTime_handlesHandlesRawTarget PASSED
+
+AnswerValidatorTest > validateTime_handlesMultipleTargets PASSED
+
+AnswerValidatorTest > validateTime_normalizesMissingLeadingZero PASSED
+
+AnswerValidatorTest > validateTime_handlesShortInput PASSED
+
+AnswerValidatorTest > validateTime_normalizesMissingColon PASSED
+
+AnswerValidatorTest > isTimeLesson_returnsFalseForOthers PASSED
+
+AnswerValidatorTest > isTimeLesson_returnsTrueForTimeDigital PASSED
+
+AnswerValidatorTest > validateTime_validatesExactMatch PASSED
+
+DecimalsEvaluationStrategyTest > Partial Match - Wrong decimal part PASSED
+
+DecimalsEvaluationStrategyTest > Missing Comma - Integer fallback PASSED
+
+DecimalsEvaluationStrategyTest > Partial Match - Integer part wrong PASSED
+
+DecimalsEvaluationStrategyTest > Wrong Length - Missing trailing decimals PASSED
+
+DecimalsEvaluationStrategyTest > Partial Match - Wrong length in decimal part PASSED
+
+DecimalsEvaluationStrategyTest > Exact Match PASSED
+
+DecimalsEvaluationStrategyTest > Multiple Commas - Invalid format PASSED
+
+OrdinalNumberEvaluationStrategyTest > repeated atoms 555 vs 554 PASSED
+
+OrdinalNumberEvaluationStrategyTest > invalid input returns all failures PASSED
+
+OrdinalNumberEvaluationStrategyTest > edge case 1000 PASSED
+
+OrdinalNumberEvaluationStrategyTest > 3-digit partial match 123 vs 120 PASSED
+
+OrdinalNumberEvaluationStrategyTest > 3-digit exact match 123 vs 123 PASSED
+
+OrdinalNumberEvaluationStrategyTest > edge case 0 PASSED
+
+OrdinalNumberEvaluationStrategyTest > exact match 25 vs 25 returns correct and success updates PASSED
+
+OrdinalNumberEvaluationStrategyTest > partial match 25 vs 24 returns incorrect and mixed updates PASSED
+
+OrdinalNumberEvaluationStrategyTest > structural mismatch 25 vs 205 PASSED
+
+OrdinalNumberEvaluationStrategyTest > complete mismatch 25 vs 99 returns incorrect and failure updates PASSED
+
+StandardNumberEvaluationStrategyTest > invalid input returns all failures PASSED
+
+StandardNumberEvaluationStrategyTest > repeated atoms 505 vs 500 PASSED
+
+StandardNumberEvaluationStrategyTest > repeated atoms 505 vs 505 PASSED
+
+StandardNumberEvaluationStrategyTest > edge case 1000 PASSED
+
+StandardNumberEvaluationStrategyTest > decompose 0 returns 0 PASSED
+
+StandardNumberEvaluationStrategyTest > 3-digit partial match 123 vs 120 PASSED
+
+StandardNumberEvaluationStrategyTest > decompose 13 returns 13 (teen) PASSED
+
+StandardNumberEvaluationStrategyTest > 3-digit exact match 123 vs 123 PASSED
+
+StandardNumberEvaluationStrategyTest > edge case 0 PASSED
+
+StandardNumberEvaluationStrategyTest > exact match 25 vs 25 returns correct and success updates PASSED
+
+StandardNumberEvaluationStrategyTest > decompose 1000 returns 1 PASSED
+
+StandardNumberEvaluationStrategyTest > partial match 25 vs 24 returns incorrect and mixed updates PASSED
+
+StandardNumberEvaluationStrategyTest > decompose 505 returns 5 and 5 PASSED
+
+StandardNumberEvaluationStrategyTest > structural mismatch 25 vs 205 PASSED
+
+StandardNumberEvaluationStrategyTest > decompose with ordinal prefix PASSED
+
+StandardNumberEvaluationStrategyTest > complete mismatch 25 vs 99 returns incorrect and failure updates PASSED
+
+StandardNumberEvaluationStrategyTest > 3-digit hundreds only 500 vs 500 PASSED
+
+StandardNumberEvaluationStrategyTest > decompose 25 returns 20 and 5 PASSED
+
+HomeViewModelTest > initial state is empty PASSED
+
+HomeViewModelTest > calculates streak correctly PASSED
+
+HomeViewModelTest > calculates streak with gap resets PASSED
+
+LessonViewModelTest > initialState_exitDialog_isHidden PASSED
+
+LessonViewModelTest > lessonComplete_savesStatsToRepository PASSED
+
+LessonViewModelTest > onGiveUp_setsRevealedState_andFillsInput PASSED
+
+LessonViewModelTest > onCheck_inRevealedState_advancesQuestion PASSED
+
+LessonViewModelTest > nextQuestion_resetsRate_toNormal PASSED
+
+LessonViewModelTest > correctAnswer_setsCorrectState_thenNeutral PASSED
+
+LessonViewModelTest > slowReplay_setsSlowRate_andTriggersReplay PASSED
+
+LessonViewModelTest > onBackPress_showsExitDialog PASSED
+
+LessonViewModelTest > onDismissExitDialog_hidesDialog PASSED
+
+LessonViewModelTest > initialState_isQuestionOne_Neutral PASSED
+
+LessonViewModelTest > incorrectAnswer_setsIncorrectState_thenReplays PASSED
+
+LessonViewModelTest > correctAnswer_resetsAttempts PASSED
+
+LessonViewModelTest > timeLesson_usesFlexibleValidation PASSED
+
+LessonViewModelTest > incorrectAnswer_incrementsAttempts PASSED
+
+TimeFormatterTest > format_threeDigits_insertsColonAfterFirst PASSED
+
+TimeFormatterTest > format_handlesPipeDelimitedValues PASSED
+
+TimeFormatterTest > format_emptyString_returnsEmpty PASSED
+
+TimeFormatterTest > format_shortString_returnsOriginal PASSED
+
+TimeFormatterTest > format_fourDigits_insertsColonAfterSecond PASSED
+
+[Incubating] Problems report is available at: file:///C:/Users/Serge/source/repos/Siffermastare/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.13/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 13s
+27 actionable tasks: 7 executed, 20 up-to-date
