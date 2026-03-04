@@ -4,7 +4,7 @@ import com.siffermastare.data.repository.KnowledgeRepository
 import com.siffermastare.domain.evaluation.EvaluationResult
 import com.siffermastare.util.TimeProvider
 
-class KnowledgeEngine(
+open class KnowledgeEngine(
     private val repository: KnowledgeRepository,
     private val timeProvider: TimeProvider
 ) {
@@ -15,7 +15,7 @@ class KnowledgeEngine(
         const val MAX_WEIGHT = 1.3f
     }
 
-    suspend fun processEvaluation(result: EvaluationResult, elapsedMs: Long, targetLength: Int) {
+    open suspend fun processEvaluation(result: EvaluationResult, elapsedMs: Long, targetLength: Int) {
         val mpe = if (targetLength > 0) {
             elapsedMs.toFloat() / targetLength.toFloat()
         } else {

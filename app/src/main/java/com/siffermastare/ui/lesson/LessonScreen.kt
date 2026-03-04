@@ -73,9 +73,11 @@ fun LessonScreen(
     val context = LocalContext.current
     val application = context.applicationContext as SiffermastareApplication
     val repository = application.lessonRepository
+    val knowledgeEngine = application.knowledgeEngine
+    val timeProvider = application.timeProvider
     
     val viewModel: LessonViewModel = viewModel(
-        factory = LessonViewModelFactory(repository)
+        factory = LessonViewModelFactory(repository, knowledgeEngine, timeProvider)
     )
 
     val uiState by viewModel.uiState.collectAsState()

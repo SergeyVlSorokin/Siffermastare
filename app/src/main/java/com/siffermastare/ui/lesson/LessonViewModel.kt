@@ -2,16 +2,19 @@ package com.siffermastare.ui.lesson
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.siffermastare.data.database.LessonResult
+import com.siffermastare.data.repository.LessonRepository
+import com.siffermastare.domain.LessonSessionManager
+import com.siffermastare.domain.LessonState
+import com.siffermastare.domain.engine.KnowledgeEngine
+import com.siffermastare.domain.generators.NumberGeneratorFactory
+import com.siffermastare.util.TimeProvider
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import com.siffermastare.data.repository.LessonRepository
-import com.siffermastare.domain.LessonSessionManager
-import com.siffermastare.domain.LessonState
-import com.siffermastare.domain.generators.NumberGeneratorFactory
 
 enum class AnswerState {
     NEUTRAL,
@@ -40,7 +43,9 @@ data class LessonUiState(
 
 class LessonViewModel(
     private val repository: LessonRepository,
-    private val sessionManager: LessonSessionManager = LessonSessionManager()
+    private val knowledgeEngine: KnowledgeEngine? = null,
+    private val timeProvider: TimeProvider,
+    private val sessionManager: LessonSessionManager = LessonSessionManager(knowledgeEngine, timeProvider)
 ) : ViewModel() {
 
     // Helper mapping until we merge LessonUiState with LessonState
@@ -70,7 +75,7 @@ class LessonViewModel(
     // Called from UI/Navigation to start specific lesson
     fun loadLesson(lessonId: String) {
         currentLessonId = lessonId
-        val generator = com.siffermastare.domain.generators.NumberGeneratorFactory.create(lessonId)
+        val generator = NumberGeneratorFactory.create(lessonId)
         sessionManager.startLesson(generator)
         startTime = System.currentTimeMillis()
         totalAttempts = 0
@@ -79,7 +84,7 @@ class LessonViewModel(
         finalAccuracy = 0f
         finalAvgSpeed = 0L
         
-        val newMaxLength = if (lessonId == com.siffermastare.domain.generators.NumberGeneratorFactory.ID_PHONE_NUMBER) 12 else 8
+        val newMaxLength = if (lessonId == NumberGeneratorFactory.ID_PHONE_NUMBER) 12 else 8
         _uiState.update { it.copy(maxInputLength = newMaxLength) }
     }
 
@@ -172,11 +177,7 @@ class LessonViewModel(
 
         totalAttempts++
         
-        // Delegate verification to Manager
-        val isTimeLesson = com.siffermastare.domain.validation.AnswerValidator.isTimeLesson(currentLessonId)
-        val validator = if (isTimeLesson) com.siffermastare.domain.validation.AnswerValidator::validateTime else null
-
-        val isCorrect = sessionManager.submitAnswer(currentInput, validator)
+        val isCorrect = sessionManager.submitAnswer(currentInput, scope = viewModelScope)
         
         viewModelScope.launch {
             if (isCorrect) {
@@ -228,7 +229,7 @@ class LessonViewModel(
             totalTimeMs / totalQuestions
         } else { 0L }
 
-        val result = com.siffermastare.data.database.LessonResult(
+        val result = LessonResult(
             accuracy = finalAccuracy,
             averageSpeed = finalAvgSpeed,
             lessonType = currentLessonId

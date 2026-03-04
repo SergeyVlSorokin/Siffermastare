@@ -19,6 +19,7 @@ import org.junit.Before
 
 import com.siffermastare.data.database.LessonResult
 import com.siffermastare.data.repository.LessonRepository
+import com.siffermastare.testdoubles.FakeTimeProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
@@ -27,11 +28,12 @@ class LessonViewModelTest {
 
     private lateinit var viewModel: LessonViewModel
     private val fakeRepository = FakeLessonRepository()
+    private val fakeTimeProvider = FakeTimeProvider()
 
     @Before
     fun setup() {
         Dispatchers.setMain(UnconfinedTestDispatcher())
-        viewModel = LessonViewModel(fakeRepository)
+        viewModel = LessonViewModel(fakeRepository, timeProvider = fakeTimeProvider)
         viewModel.loadLesson("cardinal_0_20")
     }
 
