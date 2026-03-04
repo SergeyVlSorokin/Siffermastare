@@ -2,7 +2,8 @@ package com.siffermastare.data.repository
 
 import com.siffermastare.data.database.AtomState
 import com.siffermastare.data.database.AtomStateDao
-import com.siffermastare.util.TimeProvider
+import com.siffermastare.testdoubles.FakeAtomStateDao
+import com.siffermastare.testdoubles.FakeTimeProvider
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -55,21 +56,4 @@ class KnowledgeRepositoryTest {
         val stored = atomStateDao.getAtomState("1")
         assertEquals(state, stored)
     }
-}
-
-class FakeAtomStateDao : AtomStateDao {
-    private val states = mutableMapOf<String, AtomState>()
-
-    override suspend fun getAtomState(atomId: String): AtomState? {
-        return states[atomId]
-    }
-
-    override suspend fun insertOrUpdate(atomState: AtomState) {
-        states[atomState.atomId] = atomState
-    }
-}
-
-class FakeTimeProvider : TimeProvider {
-    var currentTime: Long = 0L
-    override fun currentTimeMillis(): Long = currentTime
 }
