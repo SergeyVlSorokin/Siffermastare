@@ -2,6 +2,7 @@ package com.siffermastare.ui.lesson
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import kotlinx.coroutines.flow.first
@@ -125,7 +126,7 @@ class LessonViewModelTest {
         val finalState = viewModel.uiState.first()
         assertEquals("Lesson should be complete", true, finalState.isLessonComplete)
         
-        val expectedAcc = (10f / 10f) * 100f
+        val expectedAcc = (9f / 10f) * 100f
         assertEquals(expectedAcc, result?.accuracy ?: 0f, 0.1f)
         
         assertTrue((result?.averageSpeed ?: -1L) >= 0)
@@ -155,14 +156,17 @@ class LessonViewModelTest {
 
     @Test
     fun incorrectAnswer_incrementsAttempts() = runTest {
+        val target = viewModel.uiState.value.targetNumber
+        val wrong = if (target == "0") 1 else 0
+
         // Attempt 1
-        viewModel.onDigitClick(9) // Wrong
+        viewModel.onDigitClick(wrong)
         viewModel.onCheckClick()
         advanceTimeBy(LessonViewModel.FEEDBACK_DELAY + 100)
         assertEquals(1, viewModel.uiState.value.incorrectAttempts)
 
         // Attempt 2
-        viewModel.onDigitClick(9)
+        viewModel.onDigitClick(wrong)
         viewModel.onCheckClick()
         advanceTimeBy(LessonViewModel.FEEDBACK_DELAY + 100)
         assertEquals(2, viewModel.uiState.value.incorrectAttempts)
@@ -303,6 +307,35 @@ class LessonViewModelTest {
         
         assertEquals(AnswerState.NEUTRAL, viewModel.uiState.value.answerState) // Should have advanced
         assertEquals(2, viewModel.uiState.value.questionCount)
+    }
+
+    @Test
+    fun `getAtomSummary returns null before lesson completes`() = runTest {
+        val summary = viewModel.getAtomSummary()
+        assertEquals(null, summary)
+    }
+
+    @Test
+    fun `getAtomSummary returns non-null when strategy produces atomUpdates`() = runTest {
+        // Complete all 10 questions — CardinalGenerator uses StandardNumberEvaluationStrategy
+        // which produces atomUpdates with target value as atom ID
+        repeat(10) {
+            val state = viewModel.uiState.first()
+            val target = state.targetNumber
+            target.forEach { c -> viewModel.onDigitClick(c.digitToInt()) }
+            viewModel.onCheckClick()
+            advanceTimeBy(LessonViewModel.FEEDBACK_DELAY + 100)
+        }
+
+        val finalState = viewModel.uiState.first()
+        assertTrue("Lesson should be complete", finalState.isLessonComplete)
+
+        val summary = viewModel.getAtomSummary()
+        assertNotNull("Atom summary should be non-null when strategy produces atomUpdates", summary)
+
+        val (improved, needsPractice) = summary!!
+        assertTrue("All correct answers should produce improved atoms", improved.isNotEmpty())
+        assertTrue("No failures expected when all answers are correct", needsPractice.isEmpty())
     }
 }
 

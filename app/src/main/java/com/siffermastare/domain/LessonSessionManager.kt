@@ -32,12 +32,14 @@ class LessonSessionManager(
     private var questions: List<Question> = emptyList()
     private var currentIndex = 0
     private var currentGenerator: NumberGenerator? = null
+    private val sessionResults = mutableListOf<EvaluationResult>()
 
     fun startLesson(generator: NumberGenerator) {
         currentGenerator = generator
         questions = generator.generateLesson()
         currentIndex = 0
-        
+        sessionResults.clear()
+
         _lessonState.update {
             it.copy(
                 currentQuestion = questions.getOrNull(currentIndex),
@@ -78,6 +80,7 @@ class LessonSessionManager(
         if (validator != null) {
             val isCorrect = validator(input, currentQ.targetValue)
             val fakeResult = EvaluationResult(isCorrect, emptyMap())
+            sessionResults.add(fakeResult)
             processAsync(isCorrect, fakeResult)
             return isCorrect
         }
@@ -86,6 +89,7 @@ class LessonSessionManager(
         val strategy = currentGenerator?.evaluationStrategy
         if (strategy != null) {
             val result = strategy.evaluate(input, currentQ)
+            sessionResults.add(result)
             processAsync(result.isCorrect, result)
             return result.isCorrect
         }
@@ -93,6 +97,7 @@ class LessonSessionManager(
         // Priority 3: Fallback (Strict Equality)
         val isCorrect = input == currentQ.targetValue
         val fakeResult = EvaluationResult(isCorrect, emptyMap())
+        sessionResults.add(fakeResult)
         processAsync(isCorrect, fakeResult)
         return isCorrect
     }
@@ -115,4 +120,6 @@ class LessonSessionManager(
             _lessonState.update { it.copy(isLessonComplete = true) }
         }
     }
+
+    fun getSessionResults(): List<EvaluationResult> = sessionResults.toList()
 }

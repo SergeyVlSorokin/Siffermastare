@@ -7,6 +7,7 @@
     <string name="lesson_replay">Repetera</string>
     <string name="lesson_slow_replay">Sakta</string>
     <string name="lesson_give_up">Ge Upp</string>
+    <string name="lesson_check">Kontrollera</string>
     
     <!-- Exit Dialog -->
     <string name="dialog_exit_title">Avsluta lektionen?</string>
@@ -36,4 +37,8 @@
     <string name="menu_phone_numbers">Telefonnummer</string>
     <string name="menu_fractions">Bråk</string>
     <string name="menu_decimals">Decimaltal</string>
+
+    <!-- Summary Atom Sections -->
+    <string name="summary_improved_title">Förbättrad kunskap</string>
+    <string name="summary_needs_practice_title">Behöver övning</string>
 </resources>

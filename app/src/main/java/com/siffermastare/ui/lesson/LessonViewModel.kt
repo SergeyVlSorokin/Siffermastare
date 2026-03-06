@@ -8,6 +8,8 @@ import com.siffermastare.domain.LessonSessionManager
 import com.siffermastare.domain.LessonState
 import com.siffermastare.domain.engine.KnowledgeEngine
 import com.siffermastare.domain.generators.NumberGeneratorFactory
+import com.siffermastare.domain.models.AtomSummary
+import com.siffermastare.domain.models.buildAtomSummaries
 import com.siffermastare.util.TimeProvider
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,6 +54,8 @@ class LessonViewModel(
     private val _uiState = MutableStateFlow(LessonUiState())
     val uiState: StateFlow<LessonUiState> = _uiState.asStateFlow()
 
+    private var isCalculatingResults = false
+
     // Metric Tracking
     private var startTime: Long = 0L
     private var totalTimeMs: Long = 0L
@@ -62,6 +66,7 @@ class LessonViewModel(
     // Final Stats
     private var finalAccuracy: Float = 0f
     private var finalAvgSpeed: Long = 0L
+    private var atomSummaryResult: Pair<List<AtomSummary>, List<AtomSummary>>? = null
 
     init {
         // Observe Manager State
@@ -83,6 +88,7 @@ class LessonViewModel(
         totalTimeMs = 0L
         finalAccuracy = 0f
         finalAvgSpeed = 0L
+        isCalculatingResults = false
         
         val newMaxLength = if (lessonId == NumberGeneratorFactory.ID_PHONE_NUMBER) 12 else 8
         _uiState.update { it.copy(maxInputLength = newMaxLength) }
@@ -99,7 +105,7 @@ class LessonViewModel(
                 // Manager handles nextQuestion, so we just reflect state
                 questionCount = sessionState.questionCount,
                 totalQuestions = sessionState.totalQuestions,
-                isLessonComplete = sessionState.isLessonComplete,
+                // isLessonComplete is updated to true *after* calculation finishes
                 // New question? Reset rate to 1.0f if neutral?
                 // Logic: If transitioning to neutral/new question, reset rate.
                 // We'll trust onCheckClick to do it, OR do it here if checking.
@@ -109,8 +115,12 @@ class LessonViewModel(
         }
         
         // Handle Lesson Completion Trigger
-        if (sessionState.isLessonComplete && !wasComplete) {
-             viewModelScope.launch { calculateAndSaveResults() }
+        if (sessionState.isLessonComplete && !wasComplete && !isCalculatingResults) {
+             isCalculatingResults = true
+             viewModelScope.launch { 
+                 calculateAndSaveResults() 
+                 _uiState.update { it.copy(isLessonComplete = true) }
+             }
         }
     }
 
@@ -183,7 +193,10 @@ class LessonViewModel(
             if (isCorrect) {
                  val endTime = System.currentTimeMillis()
                  totalTimeMs += (endTime - startTime)
-                 correctAnswers++
+                 // Only count as correct for accuracy if answered on first attempt
+                 if (_uiState.value.incorrectAttempts == 0) {
+                     correctAnswers++
+                 }
                  
                 _uiState.update { it.copy(answerState = AnswerState.CORRECT) }
                 delay(FEEDBACK_DELAY)
@@ -229,6 +242,11 @@ class LessonViewModel(
             totalTimeMs / totalQuestions
         } else { 0L }
 
+        val sessionResults = sessionManager.getSessionResults()
+        val (improved, needsPractice) = buildAtomSummaries(sessionResults)
+        atomSummaryResult = if (improved.isEmpty() && needsPractice.isEmpty()) null
+                            else Pair(improved, needsPractice)
+
         val result = LessonResult(
             accuracy = finalAccuracy,
             averageSpeed = finalAvgSpeed,
@@ -239,6 +257,8 @@ class LessonViewModel(
 
     // Expose generated stats for the View
     fun getFinalStats(): Pair<Float, Long> = Pair(finalAccuracy, finalAvgSpeed)
+
+    fun getAtomSummary(): Pair<List<AtomSummary>, List<AtomSummary>>? = atomSummaryResult
 
     companion object {
         const val FEEDBACK_DELAY = 500L

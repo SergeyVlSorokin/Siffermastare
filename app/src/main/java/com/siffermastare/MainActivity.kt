@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -15,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import com.siffermastare.ui.home.HomeScreen
 import com.siffermastare.ui.lesson.LessonScreen
 import com.siffermastare.ui.summary.SummaryScreen
+import com.siffermastare.ui.summary.SummaryDataHolder
 import com.siffermastare.ui.navigation.Screen
 import com.siffermastare.ui.theme.SiffermästareTheme
 
@@ -66,6 +68,7 @@ class MainActivity : ComponentActivity() {
                         ) { backStackEntry ->
                             val accuracy = backStackEntry.arguments?.getFloat("accuracy") ?: 0f
                             val avgSpeed = backStackEntry.arguments?.getLong("avgSpeed") ?: 0L
+                            val atomData = remember { SummaryDataHolder.consume() }
                             
                             SummaryScreen(
                                 accuracy = accuracy,
@@ -73,7 +76,9 @@ class MainActivity : ComponentActivity() {
                                 onNavigateHome = {
                                     // Pop back to Home
                                     navController.popBackStack(Screen.Home.route, false)
-                                }
+                                },
+                                improvedAtoms = atomData?.first ?: emptyList(),
+                                needsPracticeAtoms = atomData?.second ?: emptyList()
                             )
                         }
                     }

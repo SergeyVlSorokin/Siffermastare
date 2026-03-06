@@ -6,6 +6,7 @@ import com.siffermastare.data.repository.LessonRepository
 import com.siffermastare.data.repository.LessonRepositoryImpl
 import com.siffermastare.data.repository.RoomKnowledgeRepository
 import com.siffermastare.domain.engine.KnowledgeEngine
+import com.siffermastare.util.AndroidLogger
 import com.siffermastare.util.SystemTimeProvider
 import com.siffermastare.util.TimeProvider
 
@@ -25,7 +26,7 @@ class SiffermastareApplication : Application() {
     
     // Knowledge Repository backed by Room
     val knowledgeRepository by lazy {
-        RoomKnowledgeRepository(database.atomStateDao(), timeProvider)
+        RoomKnowledgeRepository(database.atomStateDao(), timeProvider, AndroidLogger())
     }
     
     // Knowledge Engine instance (lazy)

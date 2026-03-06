@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -205,5 +206,34 @@ class LessonSessionManagerTest {
         runCurrent()
         
         assertTrue("Answer should still be graded correctly despite DB failure", result)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `getSessionResults accumulates results across multiple submits`() = runTest {
+        val manager = LessonSessionManager(null, fakeTimeProvider)
+        manager.startLesson(fakeGenerator)
+
+        manager.submitAnswer("5", scope = this)
+        manager.submitAnswer("9", scope = this)
+        manager.submitAnswer("5", scope = this)
+
+        val results = manager.getSessionResults()
+        assertEquals(3, results.size)
+        assertTrue(results[0].isCorrect)
+        assertFalse(results[1].isCorrect)
+        assertTrue(results[2].isCorrect)
+    }
+
+    @Test
+    fun `getSessionResults returns empty list after startLesson`() = runTest {
+        val manager = LessonSessionManager(null, fakeTimeProvider)
+        manager.startLesson(fakeGenerator)
+
+        manager.submitAnswer("5", scope = this)
+        assertEquals(1, manager.getSessionResults().size)
+
+        manager.startLesson(fakeGenerator)
+        assertTrue("Session results should be cleared after startLesson", manager.getSessionResults().isEmpty())
     }
 }

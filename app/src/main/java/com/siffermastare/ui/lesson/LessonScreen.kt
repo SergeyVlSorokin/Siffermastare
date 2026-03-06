@@ -56,6 +56,7 @@ import com.siffermastare.SiffermastareApplication
 import com.siffermastare.ui.lesson.LessonViewModelFactory
 import com.siffermastare.ui.theme.CorrectGreen
 import com.siffermastare.domain.generators.NumberGeneratorFactory
+import com.siffermastare.ui.summary.SummaryDataHolder
 
 /**
  * Lesson screen composable.
@@ -157,6 +158,10 @@ fun LessonScreen(
     LaunchedEffect(uiState.isLessonComplete) {
         if (uiState.isLessonComplete) {
             val (accuracy, avgSpeed) = viewModel.getFinalStats()
+            val atomSummary = viewModel.getAtomSummary()
+            if (atomSummary != null) {
+                SummaryDataHolder.set(atomSummary.first, atomSummary.second)
+            }
             onLessonComplete(accuracy, avgSpeed)
         }
     }
@@ -209,7 +214,7 @@ fun LessonScreen(
                         ) {
                             Icon(
                                 imageVector = androidx.compose.material.icons.Icons.Filled.Visibility,
-                                contentDescription = "Give Up",
+                                contentDescription = stringResource(R.string.lesson_give_up),
                                 modifier = Modifier.fillMaxSize(),
                                 tint = if (isRevealEnabled) Color.Black else Color.LightGray
                             )
@@ -231,7 +236,7 @@ fun LessonScreen(
                         ) {
                             Icon(
                                 imageVector = androidx.compose.material.icons.Icons.Outlined.PlayCircle,
-                                contentDescription = "Replay",
+                                contentDescription = stringResource(R.string.lesson_replay),
                                 modifier = Modifier.fillMaxSize(),
                                 tint = Color.Black
                             )
@@ -252,7 +257,7 @@ fun LessonScreen(
                             // Slow Replay (Turtle/Sakta)
                             Icon(
                                 imageVector = androidx.compose.material.icons.Icons.Filled.SlowMotionVideo,
-                                contentDescription = "Slow Replay",
+                                contentDescription = stringResource(R.string.lesson_slow_replay),
                                 modifier = Modifier.fillMaxSize(),
                                 tint = Color.Black
                             )
@@ -298,7 +303,7 @@ fun LessonScreen(
                 ) {
                     Icon(
                         imageVector = checkIcon,
-                        contentDescription = "Check",
+                        contentDescription = stringResource(R.string.lesson_check),
                         modifier = Modifier.size(32.dp)
                     )
                 }
