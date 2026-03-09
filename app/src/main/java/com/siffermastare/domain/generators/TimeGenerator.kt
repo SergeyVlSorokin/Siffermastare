@@ -93,4 +93,16 @@ class TimeGenerator : NumberGenerator {
             return list
         }
     }
+    
+    override fun getAllAtomIds(): Set<String> {
+        val ids = mutableSetOf<String>()
+        for (h in 0..23) {
+            val hStr = h.toString().padStart(2, '0')
+            for (m in 0..59) {
+                val mStr = m.toString().padStart(2, '0')
+                ids.addAll(decomposeTime(hStr, mStr))
+            }
+        }
+        return ids
+    }
 }

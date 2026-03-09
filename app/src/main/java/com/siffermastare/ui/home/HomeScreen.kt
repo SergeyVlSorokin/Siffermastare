@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.navigation.NavController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.layout.Row
@@ -24,6 +26,8 @@ import com.siffermastare.SiffermastareApplication
 import com.siffermastare.ui.navigation.Screen
 import com.siffermastare.ui.theme.SiffermästareTheme
 import com.siffermastare.domain.generators.NumberGeneratorFactory
+import com.siffermastare.ui.components.BetaHeatmapBar
+import androidx.compose.foundation.clickable
 
 
 import androidx.compose.foundation.rememberScrollState
@@ -41,6 +45,8 @@ import androidx.compose.foundation.layout.safeDrawing
  * @param navController The [NavController] used for navigating between screens.
  * @param modifier Modifier to be applied to the layout.
  */
+import com.siffermastare.domain.usecases.GetMasteryDataUseCase
+
 @Composable
 fun HomeScreen(
     navController: NavController,
@@ -51,7 +57,7 @@ fun HomeScreen(
     val repository = application.lessonRepository
     
     val viewModel: HomeViewModel = viewModel(
-        factory = HomeViewModelFactory(repository)
+        factory = HomeViewModelFactory(repository, application.getMasteryDataUseCase)
     )
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -74,24 +80,60 @@ fun HomeScreen(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // Dashboard Stats
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 32.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            DashboardStatCard(
-                label = stringResource(R.string.dashboard_lessons_label),
-                value = uiState.totalLessons.toString(),
-                modifier = Modifier.weight(1f)
-            )
-            DashboardStatCard(
-                label = stringResource(R.string.dashboard_streak_label),
-                value = "${uiState.currentStreak} ${stringResource(R.string.dashboard_streak_days_suffix)}", // e.g., "5 Days"
-                modifier = Modifier.weight(1f)
-            )
+        // Combined Dashboard Stats & Mastery Card
+        uiState.globalMastery?.let { globalMastery ->
+            androidx.compose.material3.OutlinedCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .clickable { navController.navigate(Screen.Mastery.route) },
+                colors = androidx.compose.material3.CardDefaults.outlinedCardColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                ),
+                border = androidx.compose.foundation.BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = stringResource(R.string.mastery_overall),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    
+                    BetaHeatmapBar(
+                        alpha = globalMastery.alpha,
+                        beta = globalMastery.beta,
+                        mu = globalMastery.mu,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 12.dp)
+                    )
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "${stringResource(R.string.dashboard_lessons_label)}: ${uiState.totalLessons}",
+                            style = MaterialTheme.typography.labelLarge, // Button font size
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "${stringResource(R.string.dashboard_streak_label)}: ${uiState.currentStreak} ${stringResource(R.string.dashboard_streak_days_suffix)}",
+                            style = MaterialTheme.typography.labelLarge, // Button font size
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
         }
+        
+        Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = { navController.navigate(Screen.Lesson.createRoute("cardinal_0_20")) },
@@ -167,33 +209,4 @@ fun HomeScreen(
     }
 }
 
-@Composable
-fun DashboardStatCard(
-    label: String,
-    value: String,
-    modifier: Modifier = Modifier
-) {
-    androidx.compose.material3.Card(
-        modifier = modifier,
-        colors = androidx.compose.material3.CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        )
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = value,
-                style = MaterialTheme.typography.displaySmall, // Big number
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-    }
-}
-
+// Unused Composable removed

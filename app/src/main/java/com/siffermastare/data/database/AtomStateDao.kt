@@ -10,6 +10,9 @@ interface AtomStateDao {
     @Query("SELECT * FROM atom_states WHERE atomId = :atomId")
     suspend fun getAtomState(atomId: String): AtomState?
 
+    @Query("SELECT * FROM atom_states")
+    suspend fun getAllAtomStates(): List<AtomState>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdate(atomState: AtomState)
 }

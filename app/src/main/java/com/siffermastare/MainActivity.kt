@@ -17,6 +17,7 @@ import com.siffermastare.ui.home.HomeScreen
 import com.siffermastare.ui.lesson.LessonScreen
 import com.siffermastare.ui.summary.SummaryScreen
 import com.siffermastare.ui.summary.SummaryDataHolder
+import com.siffermastare.ui.mastery.MasteryScreen
 import com.siffermastare.ui.navigation.Screen
 import com.siffermastare.ui.theme.SiffermästareTheme
 
@@ -37,6 +38,9 @@ class MainActivity : ComponentActivity() {
                     ) {
                         composable(Screen.Home.route) {
                             HomeScreen(navController = navController)
+                        }
+                        composable(Screen.Mastery.route) {
+                            MasteryScreen(onNavigateBack = { navController.popBackStack() })
                         }
                         composable(
                             route = Screen.Lesson.route,

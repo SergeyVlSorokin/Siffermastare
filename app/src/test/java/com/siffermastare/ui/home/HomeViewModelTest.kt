@@ -2,6 +2,8 @@ package com.siffermastare.ui.home
 
 import com.siffermastare.data.database.LessonResult
 import com.siffermastare.data.repository.LessonRepository
+import com.siffermastare.domain.usecases.GetMasteryDataUseCase
+import com.siffermastare.testdoubles.FakeKnowledgeRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -22,6 +24,8 @@ import java.time.LocalDate
 class HomeViewModelTest {
 
     private lateinit var fakeRepository: FakeLessonRepository
+    private lateinit var fakeKnowledgeRepository: FakeKnowledgeRepository
+    private lateinit var testUseCase: GetMasteryDataUseCase
     private lateinit var viewModel: HomeViewModel
     private val testDispatcher = StandardTestDispatcher()
 
@@ -29,6 +33,8 @@ class HomeViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         fakeRepository = FakeLessonRepository()
+        fakeKnowledgeRepository = FakeKnowledgeRepository()
+        testUseCase = GetMasteryDataUseCase(fakeKnowledgeRepository)
     }
 
     @After
@@ -39,7 +45,7 @@ class HomeViewModelTest {
     @Test
     fun `initial state is empty`() = runTest {
         // Default fake has 0 lessons, empty timestamps
-        viewModel = HomeViewModel(fakeRepository)
+        viewModel = HomeViewModel(fakeRepository, testUseCase)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(0, viewModel.uiState.value.totalLessons)
@@ -60,7 +66,7 @@ class HomeViewModelTest {
         val timestamps = listOf(today, yesterday, threeDaysAgo)
         fakeRepository.setTimestamps(timestamps)
 
-        viewModel = HomeViewModel(fakeRepository)
+        viewModel = HomeViewModel(fakeRepository, testUseCase)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(5, viewModel.uiState.value.totalLessons)
@@ -80,7 +86,7 @@ class HomeViewModelTest {
         val timestamps = listOf(twoDaysAgo, threeDaysAgo)
         fakeRepository.setTimestamps(timestamps)
 
-        viewModel = HomeViewModel(fakeRepository)
+        viewModel = HomeViewModel(fakeRepository, testUseCase)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(0, viewModel.uiState.value.currentStreak)

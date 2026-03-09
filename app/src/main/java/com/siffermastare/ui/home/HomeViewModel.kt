@@ -8,44 +8,49 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 
+import com.siffermastare.domain.model.AtomMastery
+import com.siffermastare.domain.usecases.GetMasteryDataUseCase
+
 data class HomeUiState(
     val totalLessons: Int = 0,
-    val currentStreak: Int = 0
+    val currentStreak: Int = 0,
+    val globalMastery: AtomMastery? = null
 )
 
 class HomeViewModel(
-    private val lessonRepository: LessonRepository
+    private val lessonRepository: LessonRepository,
+    private val getMasteryDataUseCase: GetMasteryDataUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     init {
-        // Collect both flows and combine/update state
-        // Optimized: combine them? Or just collect separately.
-        // Combining is cleaner for atomic updates.
-        
-        // Actually, timestamps update might be frequent if user plays.
-        // combine is good.
-        
-        combine(
-            lessonRepository.getLessonCount(),
-            lessonRepository.getAllTimestamps()
-        ) { count, timestamps ->
-            val streak = calculateStreak(timestamps)
-            HomeUiState(
-                totalLessons = count,
-                currentStreak = streak
-            )
-        }.onEach { state ->
-            _uiState.value = state
-        }.launchIn(viewModelScope)
+        viewModelScope.launch {
+            combine(
+                lessonRepository.getLessonCount(),
+                lessonRepository.getAllTimestamps()
+            ) { count, timestamps ->
+                Pair(count, timestamps)
+            }
+            .distinctUntilChanged()
+            .collectLatest { (count, timestamps) ->
+                val streak = calculateStreak(timestamps)
+                val masteryData = getMasteryDataUseCase()
+                _uiState.value = HomeUiState(
+                    totalLessons = count,
+                    currentStreak = streak,
+                    globalMastery = masteryData.globalState
+                )
+            }
+        }
     }
 
     private fun calculateStreak(timestamps: List<Long>): Int {
@@ -91,11 +96,14 @@ class HomeViewModel(
     }
 }
 
-class HomeViewModelFactory(private val repository: LessonRepository) : ViewModelProvider.Factory {
+class HomeViewModelFactory(
+    private val repository: LessonRepository,
+    private val getMasteryDataUseCase: GetMasteryDataUseCase
+) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
-            return HomeViewModel(repository) as T
+            return HomeViewModel(repository, getMasteryDataUseCase) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

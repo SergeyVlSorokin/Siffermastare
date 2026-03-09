@@ -405,10 +405,13 @@ So that I feel motivated by my progress.
 
 **Acceptance Criteria:**
 **Given** I am on the Home Screen
-**Then** The old "Total Lessons / Streak" text stats are REMOVED
-**And** A visual "Mastery Map" is displayed
-**And** It shows proficiency (Alpha/Beta levels) for key groups: Digits (0-9), Teens (10-19), Tens (20-90)
-**And** It aggregates the atomic data from `atom_states` table
+**Then** The old "Total Lessons / Streak" text stats are reduced dramatically in size
+**And** A visual "Overall Mastery Bar" (Beta Heatmap gradient) is prominently displayed
+**And** This overall bar aggregates the total $\alpha$ (successes) and $\beta$ (failures) across all atoms
+**When** The user taps the overall mastery stat area
+**Then** They navigate to a new "Mastery Dashboard" screen
+**And** This new screen displays a list of all individual tracked atoms using the Beta Heatmap visualization
+**And** A simple legend explains the colors (Red/Yellow/Green), without mentioning statistical terms like PDF or Opacity
 
 
 

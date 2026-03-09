@@ -56,4 +56,12 @@ class PhoneNumberGenerator : NumberGenerator {
         // We use text to be consistent and avoid TTS ambiguity
         return com.siffermastare.domain.utils.SwedishNumberFormatter.toText(n)
     }
+    
+    override fun getAllAtomIds(): Set<String> {
+        // Phone number atoms are individual digits 0-9 (from prefix/group1)
+        // and pairs 0-99 (from group2/group3)
+        val ids = mutableSetOf<String>()
+        for (n in 0..9) ids.add(n.toString())
+        return ids
+    }
 }

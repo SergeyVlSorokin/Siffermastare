@@ -41,6 +41,8 @@ class LessonSessionManagerTest {
     private val fakeGenerator = object : NumberGenerator {
         override val evaluationStrategy = ExactMatchEvaluationStrategy()
 
+        override fun getAllAtomIds(): Set<String> = emptySet()
+
         override fun generateLesson(count: Int): List<Question> {
             return List(count) { 
                 Question(targetValue = "5", spokenText = "5", visualHint = null) 
@@ -50,6 +52,8 @@ class LessonSessionManagerTest {
 
     private val multiCharGenerator = object : NumberGenerator {
         override val evaluationStrategy = ExactMatchEvaluationStrategy()
+
+        override fun getAllAtomIds(): Set<String> = emptySet()
 
         override fun generateLesson(count: Int): List<Question> {
             return List(count) {

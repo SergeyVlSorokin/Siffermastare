@@ -51,4 +51,12 @@ class OrdinalGenerator(
             else -> ":e"
         }
     }
+    
+    override fun getAllAtomIds(): Set<String> {
+        val ids = mutableSetOf<String>()
+        for (n in min..max) {
+            ids.addAll(StandardNumberEvaluationStrategy.decompose(n, "ord:"))
+        }
+        return ids
+    }
 }

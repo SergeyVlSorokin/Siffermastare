@@ -4,5 +4,6 @@ import com.siffermastare.data.database.AtomState
 
 interface KnowledgeRepository {
     suspend fun getAtomState(atomId: String): AtomState
+    suspend fun getAllAtomStates(): List<AtomState>
     suspend fun updateAtomState(atomState: AtomState)
 }

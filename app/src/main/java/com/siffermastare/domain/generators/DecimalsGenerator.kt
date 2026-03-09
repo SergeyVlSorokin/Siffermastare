@@ -67,4 +67,15 @@ class DecimalsGenerator : NumberGenerator {
         
         return "$intText komma $decText"
     }
+    
+    override fun getAllAtomIds(): Set<String> {
+        val ids = mutableSetOf<String>()
+        // Integer parts 0-99
+        for (n in 0..99) {
+            ids.addAll(StandardNumberEvaluationStrategy.decompose(n))
+        }
+        // Decimal parts can also have a leading zero: add "0" explicitly
+        ids.add("0")
+        return ids
+    }
 }

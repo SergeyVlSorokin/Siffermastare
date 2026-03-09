@@ -26,6 +26,10 @@ class RoomKnowledgeRepository(
         )
     }
 
+    override suspend fun getAllAtomStates(): List<AtomState> {
+        return atomStateDao.getAllAtomStates()
+    }
+
     override suspend fun updateAtomState(atomState: AtomState) {
         val mean = atomState.alpha / (atomState.alpha + atomState.beta)
         logger?.d(TAG, "UPDATE atom=${atomState.atomId} α=${atomState.alpha} β=${atomState.beta} mean=${"%.3f".format(mean)}")

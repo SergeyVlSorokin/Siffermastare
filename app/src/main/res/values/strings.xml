@@ -14,6 +14,7 @@
     <string name="dialog_exit_message">Dina framsteg sparas inte.</string>
     <string name="dialog_exit_confirm">Avsluta</string>
     <string name="dialog_exit_cancel">Avbryt</string>
+    <string name="cd_navigate_back">Tillbaka</string>
     
     <!-- Summary Screen -->
     <string name="lesson_complete_title">Lektionen klar!</string>
@@ -41,4 +42,21 @@
     <!-- Summary Atom Sections -->
     <string name="summary_improved_title">Förbättrad kunskap</string>
     <string name="summary_needs_practice_title">Behöver övning</string>
+
+    <!-- Mastery Dashboard -->
+    <string name="mastery_title">Behärskningsöversikt</string>
+    <string name="mastery_overall">Sammanlagd behärskning</string>
+    <string name="mastery_detailed_breakdown">Detaljerad översikt</string>
+    <string name="mastery_empty_state">Börja genomföra lektioner för att se dina detaljerade framsteg här!</string>
+    <string name="mastery_empty_state_filtered">Inga övade atomer att visa. Ändra filtret för att visa otestade atomer.</string>
+    <string name="mastery_legend_title">Förklaring</string>
+    <string name="mastery_legend_mastered">Behärskas</string>
+    <string name="mastery_legend_learning">Inlärning</string>
+    <string name="mastery_legend_needs_work">Behöver övas</string>
+    <string name="mastery_legend_untested">Otestad</string>
+    
+    <string name="mastery_sort_natural">Naturlig ordning</string>
+    <string name="mastery_sort_increasing">Kunskap (låg först)</string>
+    <string name="mastery_sort_decreasing">Kunskap (hög först)</string>
+    <string name="mastery_show_untested">Visa otestade</string>
 </resources>

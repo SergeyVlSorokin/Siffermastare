@@ -14,4 +14,10 @@ interface NumberGenerator {
      * @param count The number of questions to generate (default 10).
      */
     fun generateLesson(count: Int = 10): List<Question>
+    
+    /**
+     * Returns all possible atom IDs this generator can ever produce.
+     * Used by the Mastery Dashboard to enumerate untested atoms.
+     */
+    fun getAllAtomIds(): Set<String>
 }

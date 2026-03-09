@@ -18,6 +18,10 @@ class FakeKnowledgeRepository : KnowledgeRepository {
         )
     }
 
+    override suspend fun getAllAtomStates(): List<AtomState> {
+        return states.values.toList()
+    }
+
     override suspend fun updateAtomState(atomState: AtomState) {
         states[atomState.atomId] = atomState
     }

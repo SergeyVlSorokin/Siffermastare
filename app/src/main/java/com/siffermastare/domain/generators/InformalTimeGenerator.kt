@@ -109,4 +109,14 @@ class InformalTimeGenerator : NumberGenerator {
             }
         }
     }
+    
+    override fun getAllAtomIds(): Set<String> {
+        val ids = mutableSetOf<String>()
+        for (h in 0..23) {
+            for (m in 0..59) {
+                ids.addAll(buildAtoms(h, m))
+            }
+        }
+        return ids
+    }
 }

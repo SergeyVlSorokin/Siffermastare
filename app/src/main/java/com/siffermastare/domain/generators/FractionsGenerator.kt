@@ -50,4 +50,16 @@ class FractionsGenerator : NumberGenerator {
         
         return "$numStr $denStr$suffix"
     }
+    
+    override fun getAllAtomIds(): Set<String> {
+        val ids = mutableSetOf<String>()
+        for (denominator in MIN_DENOMINATOR..MAX_DENOMINATOR) {
+            for (numerator in 1 until denominator) {
+                // atoms = [numerator, ord:denominator]
+                ids.add(numerator.toString())
+                ids.add("ord:$denominator")
+            }
+        }
+        return ids
+    }
 }

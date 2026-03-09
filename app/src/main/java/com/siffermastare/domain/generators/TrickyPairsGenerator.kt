@@ -32,4 +32,12 @@ class TrickyPairsGenerator : NumberGenerator {
              )
         }
     }
+    
+    override fun getAllAtomIds(): Set<String> {
+        val ids = mutableSetOf<String>()
+        for (numberStr in trickyNumbers) {
+            ids.addAll(StandardNumberEvaluationStrategy.decompose(numberStr.toInt()))
+        }
+        return ids
+    }
 }
